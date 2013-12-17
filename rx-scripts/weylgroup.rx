@@ -1,0 +1,24 @@
+set weylgroupA3=[[],[2],[1],[0],[2,1],[1,2],[1,0],[0,2],[0,1],[2,1,0],[1,2,1],[1,0,2],[0,2,1],[0,1,2],[0,1,0],[1,2,1,0],[1,0,2,1],[0,2,1,0],[0,1,2,1],[0,1,0,2],[1,0,2,1,0],[0,1,2,1,0],[0,1,0,2,1],[0,1,0,2,1,0]]
+
+{move_towards_dominant(rd,v)=(s_i.v,i) where i is the first simple root negative on v}
+set move_towards_dominant(RootDatum rd,[int] v)=([int],int):
+if is_dominant(rd,v) then (v,-1) else
+let n=semisimple_rank(rd) in
+let w=^simple_coroots(rd)*v in 
+let done=false in
+let i=0 in
+while done=false do if w[i]<0 then v:=simple_reflection(rd,i)*v;done:=true else i:=i+1 fi od;(v,i) fi
+
+{make_dominant(rd,v) returns (wv,w) where w in W, wv is dominant
+ w=[a1,a2,...,ak] acts by s_{a1}s_{a2}...s_{ak}v
+make_dominant_internal is a recursive function with a third argument to keep track of w
+user should only use make_dominant(rd,[int] or [rat] v)}
+make_dominant_internal:(RootDatum,[int],[int]->([int],[int]))
+make_dominant_internal:=((RootDatum rd, [int] v,[int] w):
+if is_dominant(rd,v) then (v,w) else let (new_v,k)=move_towards_dominant(rd,v) in make_dominant_internal(rd,new_v,w#k) fi);
+set make_dominant(RootDatum rd, [int] v)=([int],[int]):make_dominant_internal(rd,v,[])
+
+set make_dominant(RootDatum rd,[rat] v)=([rat],[int]):
+let (num,denom)=%v in let (vector,w)=make_dominant(rd,num) in (vector/denom,w)
+
+set inverse([int] v)=for i:#v downto 0 do v[i] od

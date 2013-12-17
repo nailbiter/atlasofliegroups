@@ -1,112 +1,244 @@
-{ the functions in this file have not been carefully checked }
-
-<hermitian.rx
-
+<modules
+{load this before loading coherent}
 set translate_debug=false
 
-{ translate Param p, at infinitesimal character gamma,
-  to new infinitesimal character gamma_new
-  assumes gamma,gamma_new are dominant, delta=gamma_new-gamma is integral
-  replaces (x,lambda,nu) with (x,lambda+delta,nu+delta)
-  if gamma,gamma_new are regular, p and T(p,gamma_new) will have
-    identical block structure
-  if gamma is regular and gamma_new is singular, block of T(p,gamma_new)
-    will be a quotient of block at gamma
-  if gamma or gamma_new is not dominant, no guarantees
+{--------------formal translation of parameters----------------}
+{
+ if p=(x,lambda,nu) is a parameter, so is p'=(x,lambda+gamma,nu+gamma) for any integral gamma
+ p' might be non-standard, non-final, or zero
+ infinitesimal character(p')=infinitesimal character(p)+gamma (not necessarily dominant)
+ infinitesimal character is allowed to go from singular to nonsingular
 }
-set T(Param p, ratvec gamma_new)= Param:
-  let (x,lambdaminusrho,nu)=%p
-  , delta=ratvectovec(gamma_new-infinitesimal_character(p))
-  in  param(x,lambdaminusrho+delta,nu+delta)
+
+set translate_by(Param p, [int] shift)=Param:normparam(x(p), lambda(p)+shift, nu(p)+shift)
+set translate_to(Param p, ratvec target)=Param:
+ let shift=target-infinitesimal_character(p) in 
+ if not(is_integer(shift)) then error("translation is not integral") else normparam(x(p),lambda(p)+shift,nu(p)+shift) fi
+
+{-------------- formal translation of virtual parameters----------------}
 
 { translate a ParamPol by translating each term }
-set T(ParamPol P, ratvec gamma_new)= ParamPol:
-( let Q=null_module(real_form(P)) in
-  for (w,q) in %P do Q +:= (w,T(q,gamma_new)) od
-; Q
-)
+set translate_by(ParamPol P, [int] shift)= ParamPol:
+let Q=null_module(P) in for (w,q) in %P do Q +:= (w,translate_by(q,shift)) od; Q
 
+set translate_to(ParamPol P, ratvec target)= ParamPol:
+let Q=null_module(P) in for (w,q) in %P do Q +:= (w,translate_to(q,target)) od; Q
+
+{-------------- translation of standard and irreducible modules----------------}
+
+{auxiliary function: assume p is irreducible, check if any simple alpha is in the tau invariant}
+set irreducible_is_nonzero(Param p)=bool:
+let rv=true,gamma=infinitesimal_character(p)  in 
+for i in tau(p) do if simple_roots(root_datum(p))[i]*gamma=0 then rv:=false fi od;rv
+set irreducible_is_zero(Param p)=bool:not irreducible_is_nonzero(p)
+
+{auxiliary function: translating gamma->gamma', test if gamma' is at least as singular
+<gamma,alpha^v>=0 => <gamma',alpha^v>=0}
+set not_less_singular(RootDatum rd,ratvec gamma,ratvec gamma_new)=bool:
+let rv=true in for a in simple_coroots(rd) do if (a*gamma=0 and a*gamma_new !=0) then rv:=false fi od;rv
+set is_less_singular(RootDatum rd,ratvec gamma,ratvec gamma_new)=bool:not not_less_singular(rd,gamma,gamma_new)
+
+{if translation of an irreducible J is 0, abort with error
+to test for this use translate_to_is_zero}
+
+set translate_to((Param,string)(p,type),ratvec target)=(Param,string):
+let p=dominant(p),gamma=infinitesimal_character(p) in 
+let rv=(p,type) in
+if is_less_singular(root_datum(p),gamma,target) then error("cannot translate modules to less singular\
+infinitesimal character, except by using phi function")
+elif not is_integer(gamma-target) then error("difference of infinitesimal characters is not integral") 
+elif not is_dominant(root_datum(p),target) then error("target infinitesimal character is not dominant") else
+ if (type=std) then rv:=(translate_to(p,target),type) 
+ elif (type=irr) then 
+   if irreducible_is_zero(translate_to(p,target)) then 
+{     (prints("irreducible translates to 0"),(p,type))}
+      error("irreducible translates to 0")
+     else rv:=(translate_to(p,target),type)
+   fi 
+ fi 
+fi;rv
+
+{tricky point: translation of irreducible to more singular can be 0, translate_to returns error (no such 
+thing as an "empty" Param)
+translation of ParamPol _can_ be the empty ParamPol [], so translation of irreducible viewed as a ParamPol can be []
+since translate_to(J(p),k) can abort with an error, need a test to avoid this}
+set translate_to_is_zero((Param,string)(p,type),ratvec target)=bool:
+let p=dominant(p),gamma=infinitesimal_character(p) in 
+let rv=false in 
+if not is_integer(gamma-target) then error("cannot project to this infinitesimal character") 
+elif not is_dominant(root_datum(real_form(p)),target) then error("cannnot translate to non-dominant parameter") else
+  if irreducible_is_zero(translate_to(p,target)) then rv:=true fi
+fi ;rv
+set translate_to_is_nonzero((Param,string)(p,type),ratvec target)=bool:not translate_to_is_zero((p,type),target)
+
+set translate_by((Param,string)(p,type),[int] shift)=
+translate_to((p,type),infinitesimal_character(dominant(p))+shift)
+
+{-------------- translation of virtual modules----------------}
+
+set translate_by((ParamPol,string)(P,type), [int] shift)=
+let Q=null_module(P) in 
+if type=std then for (w,q) in %P do Q +:= (w,translate_by(q,shift)) od 
+elif type=irr then for (w,q) in %P do let qshift=translate_by(q,shift) in
+ if irreducible_is_nonzero(qshift) then Q +:= (w,translate_by(q,shift)) fi od  fi;(Q,type)
+
+set translate_to((ParamPol,string)(P,type), ratvec target)=
+let Q=null_module(P) in 
+if type=std then for (w,q) in %P do Q +:= (w,translate_to(q,target)) od 
+elif type=irr then for (w,q) in %P do let qtarget=translate_to(q,target) in
+ if irreducible_is_nonzero(qtarget) then Q +:= (w,translate_to(q,target)) fi od  fi;(Q,type)
+
+{-------------- translation to walls----------------}
+
+{------------psi_alpha: formal translation of parameters to walls-----------}
 { translate parameter p to simple root wall #k of the integral root system }
-set Psi(Param p,int k)= Param:
-  let rd=integrality_datum(p), gamma=infinitesimal_character(p)
+{ guaranteed to exist if G is semisimple and simply connected, but not otherwise}
+{translate  parameter to single wall}
+set psi(Param p,int k)= Param:
+  let p=dominant(p),rd=integrality_datum(p), gamma=infinitesimal_character(p)
   then coroot=simple_coroots(rd)[k]
   then c=rattoint(coroot*gamma) { integrality assures this is integer }
   then shift=c*fundamental_weight(rd,k) { this will be -delta in T }
   in
-  if not is_integer(shift) then error("cannot project to this wall")
-  else T(p,gamma-shift)
+  if not is_integer(shift) then error("cannot translate to this infinitesimal character")
+  else translate_to(p,gamma-shift)
   fi
 
-{translate ParamPol to simple root wall #k of the integral root system}
-set Psi(ParamPol P,int k)= ParamPol:
-( let Q=null_module(real_form(P)) in
-  for (w,q) in %P do Q +:= (w,Psi(q,k)) od
-; Q
-)
-
+{translate p to multiple walls}
 { translate p to intersection of set of simple root walls of integral system }
-set Psi(Param p,[int] v)= Param:
+set psi(Param p,[int] v)= Param:for k:#v do p:=psi(p,v[k]) od;p
+
+
+{------------psi_alpha: formal translation of virtual parameters to walls-----------}
+
+{translate ParamPol to single wall}
+{translate ParamPol to simple root wall #k of the integral root system}
+set psi(ParamPol P,int k)= ParamPol:let Q=null_module(P) in for (w,q) in %P do Q +:= (w,psi(q,k)) od; Q
+
+{ translate ParamPol to multiple walls}
+set psi(ParamPol P,[int] v)= ParamPol:for k in v do P:=psi(P,v[k]) od;P
+
+{------------psi_alpha: translation of standards/irreducibles to walls-----------}
+
+{translate standard/irreducible to single wall
+ irreducible aborts with error if 0, see translate_to; use psi_is_zero to avoid this}
+set psi((Param,string)(p,type),int k)= (Param,string):
+  let p=dominant(p),rd=integrality_datum(p), gamma=infinitesimal_character(p)
+  then coroot=simple_coroots(rd)[k]
+  then c=rattoint(coroot*gamma) { integrality assures this is integer }
+  then shift=c*fundamental_weight(rd,k) { this will be -delta in T }
+  in
+  if not is_integer(shift) then error("cannot translate to this infinitesimal character")
+  else (translate_to((p,type),gamma-shift))
+  fi
+
+{see translate_to_is_zero}
+set psi_is_zero((Param,string)(p,type),int k)=bool:
+  let p=dominant(p),rd=integrality_datum(p), gamma=infinitesimal_character(p)
+  then coroot=simple_coroots(rd)[k]
+  then c=rattoint(coroot*gamma) { integrality assures this is integer }
+  then shift=c*fundamental_weight(rd,k) { this will be -delta in T }
+  in
+  if not is_integer(shift) then error("cannot translate to this infinitesimal character")
+  else (translate_to_is_zero((p,type),gamma-shift))
+  fi
+set psi_is_zero((Param,string)(p,type),int k)=bool:psi_is_zero((p,type),k)
+
+{translate standard/irreducible to many walls}
+set psi((Param,string)(p,type),[int] v)= (Param,string):
 ( let rd=integrality_datum(p), gamma=infinitesimal_character(p)
   then shift = ratvec: null(rank(rd))
   in
   for k in v { select components in fundamental weight basis for these k }
-  do shift +:= rattoint(simple_coroots(rd)[k]*gamma)*fundamental_weight(rd,k)
-  od
+  do shift +:= rattoint(simple_coroots(rd)[k]*gamma)*fundamental_weight(rd,k) od
 ; if not is_integer(shift) then error("cannot project to this subspace")
-  else T(p,gamma-shift)
+  else (translate_to((p,type),gamma-shift))
+  fi
+)
+set psi_is_zero((Param,string)(p,type),[int] v)=bool:
+( let rd=integrality_datum(p), gamma=infinitesimal_character(p)
+  then shift = ratvec: null(rank(rd))
+  in
+  for k in v { select components in fundamental weight basis for these k }
+  do shift +:= rattoint(simple_coroots(rd)[k]*gamma)*fundamental_weight(rd,k) od
+; if not is_integer(shift) then error("cannot project to this subspace")
+  else (translate_to_is_zero((p,type),gamma-shift))
   fi
 )
 
-{ translate P to intersection of set of simple root walls of integral system }
-set Psi(ParamPol P,[int] v)= ParamPol:
- let Q=null_module(real_form(P)) in for (w,q) in %P do Q +:= (w,Psi(q,v)) od; Q
 
-{ the "pseudo-tau" invariant }
-{ this is a subset of simple integral roots such that:
-  1) one can translate to this wall (i.e., the requisite translation is in X^*)
-  2) this translation is 0
-  If G is simply connected this should be the usual tau_invariant
-  Example: the trivial representation of SO(3), the unique simple root
-  is in the pseudo-tau invariant, but you can't translate to the wall,
-  since rho is not in the root lattice
-
-  root k of the integral roots is in pseudo-tau(p) if
-  <gamma,alpha_k^v>*fund_weight is integral, and
-  Psi(p,k)=0 or its x(Psi(p,k)) gets changed by make_final
-  (here Psi(p,k) is the translation of the standard module for p)
-}
-
-set root_in_pseudo_tau (Param p,int k)= bool:
-  let rd=integrality_datum(p)
-  then weight=
-    (simple_coroots(rd)[k]*infinitesimal_character(p))*fundamental_weight(rd,k)
+{see translate_to_is_zero}
+{set psi_is_zero((Param,string)(p,type),[int] v)=bool:
+( let rd=integrality_datum(p), gamma=infinitesimal_character(p)
+  then shift = ratvec: null(rank(rd))
   in
-  ( is_integer(weight) and is_zero(Psi(p,k))
-    or not x(Psi(p,k))=x(make_final(Psi(p,k))[0]) )
+  for k in v { select components in fundamental weight basis for these k }
+  do shift +:= rattoint(simple_coroots(rd)[k]*gamma)*fundamental_weight(rd,k) od
+; if not is_integer(shift) then error("cannot project to this subspace")
+  else (translate_to_is_zero((p,type),gamma-shift))
+  fi
+)}
 
-{ set of integers, defining a subset of the simple integral roots }
-set pseudo_tau (Param p)= [int]:
-( let rd=integrality_datum(p), rv=[int]: [] in
-  for i:ss_rank(rd) do if root_in_pseudo_tau(p,i) then rv #:= i fi od
-; rv
-)
+{------------ psi_alpha: translation of virtual modules to walls-------------}
 
-{ set of integers, defining a subset of the simple integral roots }
-set pseudo_tau_complement (Param p)= [int]:
-( let rd=integrality_datum(p), rv= [int]: [] in
-  for i:ss_rank(rd) do if not root_in_pseudo_tau(p,i) then rv #:= i fi od
-; rv
-)
+set psi((ParamPol,string)(P,type),int k)=
+(ParamPol,string):let Q=null_module(P) in for (w,q) in %P do 
+if not psi_is_zero((q,type),k) then Q +:= (w,psi(q,k)) fi od; (Q,type)
+
+{translate ParamPol to multiple walls}
+set psi((ParamPol,string)(P,type),[int] v)=(ParamPol,string):
+for k:#v do let (Q,)=psi((P,type),v[k]) in Q;P:=Q od;(P,type)
+
+{------------ phi_alpha: translation away from single root wall-------------}
+
+{------------phi_alpha: translation of stds/irrs away from one  wall-----------}
+{
+set phi((Param,string)(p,type), int k, ratvec v)=(ParamPol,string):
+let (gamma,rd)=(infinitesimal_character(p),root_datum(p)) then a=simple_coroots(rd)[k] in
+ if not(is_integer(v-gamma)) then error("translation is not integral") 
+ elif not is_regular(rd,v) then error("translation is not to regular infinitesimal character") 
+ elif not ((a*gamma)=0 and (a*v !=0)) then error("this is not translation away from a single root wall") 
+ elif (#singular_roots(rd,gamma) !=1) then error("this is not translation away from a single root wall") fi;\
+ (translate_to(p,v),type)+coherent(k,(translate_to(p,v),type))
+}
+{------------phi_alpha: translation of ParamPol away from one  wall-----------}
+
+{set phi((ParamPol,string)(P,type),int k,ratvec v)=(ParamPol,string):
+let Q=null_module(P) in for (w,q) in %P do let (R,type)=phi((q,type),k,v) in Q +:= (w,R) od; (Q,type)}
+
+
+{------------phi_alpha*psi_alpha: translation of stds/irrs to and from from one  wall-----------}
+
+{set phi_psi((Param,string)(p,type),int k)=phi(psi((p,type),k),k,infinitesimal_character(p))}
+
+
+
+{------------ Other Stuff -----------}
 
 { push Param p to the most singular place where the irreducible is non-zero,
-  i.e. to all of the root walls not in the pseudo_tau_invariant}
-set make_maximally_singular (Param p)= Param: Psi(p,pseudo_tau_complement(p))
+  i.e. to all of the root walls not in the tau_invariant
+  this is well defined if G is semisimple and simply connected
+  but otherwise translation to some walls may not be defined
+}
+set make_maximally_singular (Param p)= Param: psi(p,tau_complement(p))
+
+{ push Param p to the most singular place where the irreducible is non-zero,
+  i.e. to all of the root walls not in the tau_invariant
+  this is well defined if G is semisimple and simply connected
+  but otherwise translation to some walls may not be defined
+}
+set make_maximally_singular (Param p)= Param: psi(p,tau_complement(p))
+
+
+
+
 
 { translate each term in a list of parameters to all the simple root walls
   not in its tau_invariant, and test if it is unitary.
   The even special unipotents of G should (all?) show up this way, varying
   over all blocks at rho
 }
+
 set test_even_unipotent (Param p)= void:
 ( let q=make_maximally_singular(p)
   then Q=hermitian_form_irreducible(q)
@@ -121,3 +253,33 @@ set test_even_unipotent (Param p)= void:
 { test_even_unipotent of a list of parameters }
 set test_even_unipotent ([Param] params)= void:
   for p in params do  test_even_unipotent(p) od
+
+
+
+addone:([int],int->[int])
+addone:=(([int] v, int k):
+let rv=if k>=#v then null(#v) elif
+v[#v-k-1]=0 then v[#v-k-1]:=1;v else
+v[#v-k-1]:=0;addone(v,k+1) fi in rv);
+
+set generate_all_binary(int n)=[vec]:
+let v=null(n) then
+rv=[v] in
+let ()=for i:2^n-1  do v:=addone(v,0);rv:=rv#v od in rv
+
+set generate_all_subsets([int] S)=
+let b=generate_all_binary(#S) in
+for x in b do 
+ let rv=[] in for i:#x do if x[i]=1 then rv:=rv#S[i] else rv:=rv  fi od;rv od  
+
+set push_to_all_walls(Param p)=
+for A in generate_all_subsets(tau_complement(p)) do 
+ prints(A, ", ", is_unitary(psi(p,A))) od
+
+
+set cf(Param p)=(ratvec v):Param:translate_to(p,v)
+
+
+
+
+

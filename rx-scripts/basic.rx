@@ -1,3 +1,5 @@
+
+
 set #(int n)= [int]: for i:n do i od       { [0,1,...,n-1] }
 set #(bool b) = int: if b then 1 else 0 fi { Iverson symbol }
 set #(ratvec v)= int: let (n,)=%v in #n    { length }
@@ -9,8 +11,11 @@ set != ((string,string)p) = bool: not =p
 set > ((string,string)p) = bool: not <=p
 set >= (string x, string y) = bool: y<=x
 set < (string x, string y) = bool: y>x
-
 set *(string s, int n)= string: let r="" in (for i:n do r#:=s od; r)
+
+{fix > for rational numbers, -1/1>0 gave wrong answer}
+set > (rat r,rat s)=let (a,b)=%r then (c,d)=%s in a*d-b*c>0
+set >= (rat r,rat s)=let (a,b)=%r then (c,d)=%s in a*d-b*c>=0
 
 set *(int c,vec v) = vec: for e in v do c*e od
 set *(int c,mat m) = mat: for col in m do for e in col do c*e od od
@@ -197,6 +202,36 @@ set is_noncompact(int s,KGBElt x) = status(s,x)=3
 set is_compact(int s,KGBElt x) = status(s,x)=1
 set is_descent(int s,KGBElt x) = status(s,x)<3
 set is_ascent(int s,KGBElt x) = status(s,x)>=3
-set status_code(int s,KGBElt x) = ["C+","ic","r ","nc","C+"][status(s,x)]
-set status_code(KGBElt x) =
+set status_code(int s,KGBElt x) = ["C-","ic","r ","nc","C+"][status(s,x)]
+set status_codes(KGBElt x) =
   for s:semisimple_rank(real_form(x)) do status_code(s,x) od
+set x(Param p) = KGBElt: let (x,,) =%p in x {so don't have to load misc.rx}
+set status_codes(Param p)=status_codes(x(p))
+
+set imaginary_type(int s, Param p)=if cross(s,Cayley(s,p))=Cayley(s,p) then 1 else 2 fi
+set real_type(int s,Param p)=imaginary_type(s,Cayley(s,p))
+
+set is_parity(int s,Param p)=bool: if status_code(s,x(p))="r " then inv_Cayley(s,p)=p else false fi
+set is_non_parity(int s,Param p)=bool: if status_code(s,x(p))="r " then not(is_parity(s,p)) else false fi
+
+set full_status_code(int s,Param p)=string:
+if is_real(s,x(p)) then 
+ if is_parity(s,p) then "rn" else ["r1","r2"][real_type(s,p)-1] fi
+elif is_noncompact(s,x(p)) then ["i1","i2"][imaginary_type(s,p)-1] else
+status_code(s,x(p)) fi
+
+set full_status_codes(Param p)=[string]:for s:semisimple_rank(real_form(p)) do full_status_code(s,p) od
+
+set in_tau(int s,Param p)=bool:if is_compact(s,x(p)) or status_code(s,x(p))="C-" or is_non_parity(s,p) then true else false fi
+set tau(Param p)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau(s,p) then rv:=rv#s fi od;rv
+set in_tau_complement(int s,Param p)=bool:not(in_tau(s,p))
+set tau_complement(Param p)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau_complement(s,p) then rv:=rv#s fi od;rv
+
+set null_module(Param p)=ParamPol:null_module(real_form(p))
+set null_module(ParamPol P)=ParamPol:null_module(real_form(P))
+
+{ define dot product ratvec*ratvec,ratvec*vec,vec*ratvec }
+set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)
+
+set singular_roots(RootDatum rd,ratvec v)=[int]:
+let rv=[] in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od;rv

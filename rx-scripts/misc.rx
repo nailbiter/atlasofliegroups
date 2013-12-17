@@ -2,10 +2,15 @@
 
 { test if an integer is even, or a rational is an integer }
 set is_even (int i)    = bool: i%2=0
+set is_odd (int i)    = bool: not is_even(i)
 set is_integer (rat r) = bool: denom(r)=1
+set is_positive (rat r)=bool: r>0
+set is_nonnegative (rat r)=bool: r>=0
 
 { test if a ratvec is in fact a vec (integers)}
 set is_integer (ratvec v) = bool: denom(v)=1
+set is_positive (ratvec v)=let positive=true in for r in v do positive:=(positive and r>0) od;positive
+set is_nonnegative (ratvec v)=let nonnegative=true in for r in v do nonnegative:=(nonnegative and r>=0) od;nonnegative
 
 { make a rational into an integer if possible }
 set rattoint (rat r) = int:
@@ -15,8 +20,8 @@ set rattoint (rat r) = int:
 set ratvectovec (ratvec v)= vec:
   let (w,d)=%v in if d=1 then w else error("Not an integer vector") fi
 
-{ define dot product ratvec*ratvec,ratvec*vec,vec*ratvec }
-set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)
+{ define dot product ratvec*ratvec,ratvec*vec,vec*ratvec  moved to basic.rx}
+{set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)}
 
 { transform ParamPol into a list of (Split,Param) pairs; previously built-in }
 set %(ParamPol P) = [(Split,Param)]: for c@p in P do (c,p) od
@@ -33,6 +38,7 @@ set Quasisplit_form(RootDatum r)=quasisplit_form (inner_class (r,"u"))
 set Quasisplit_form(LieType t)= Quasisplit_form(simply_connected(t))
 
 set root_datum(Param p)=RootDatum: real_form(p)
+set root_datum(ParamPol P)=RootDatum: real_form(P)
 
 set print_real_forms(RealForm G)= void:
   for n@i in form_names(inner_class(G))
@@ -40,6 +46,11 @@ set print_real_forms(RealForm G)= void:
   od; prints("To define a real form rf do: set rf=real_forms(G)[i]")
 
 set ss_rank(RootDatum rd)= semisimple_rank(rd)
+
+set is_dominant(RootDatum rd, ratvec v)=bool:is_nonnegative(numer(v)*simple_coroots(rd))
+set is_regular(RootDatum rd,ratvec v)= bool:
+let w=numer(v)*simple_coroots(rd) in let regular=true in for r in v do regular:=(regular and r!=0) od;regular
+set is_strictly_dominant(RootDatum rd, ratvec v)=bool:is_dominant(rd,v) and is_regular(rd,v)
 
 { test if rartional weight (not necessarily dominant) is regular }
 set is_regular(RootDatum rd,ratvec lambda)= bool:
@@ -54,7 +65,7 @@ set is_regular(Param p)=is_regular(real_form(p),infinitesimal_character(p))
 set rhocheck(RootDatum rd)= ratvec: rho(dual(rd))
 set rhocheck(RealForm G)  = ratvec: rhocheck(root_datum(G))
 
-{ make rho as an vector of integers if possible }
+{ make rho as a vector of integers if possible }
 set intrho (RealForm G) = vec: ratvectovec(rho(G))
 set intrho (RootDatum r)= vec: ratvectovec(rho(r))
 
@@ -74,15 +85,16 @@ set nu(Param p) = ratvec: let (,,nu) =%p in nu
 set param(RealForm G,int k, vec lambda,ratvec nu)=param(KGB(G,k),lambda,nu)
 
 { normparam(G,x,lambda,nu)=param(G,x,lambda-rho(G),nu), so you can enter
-  lambda without the rho shift (don't need a denominator if lambda\in X^*(H)) }
-set normparam (RealForm G,int x,ratvec lambda,ratvec nu) =
-  param(G,x,ratvectovec(lambda-rho(G)),nu)
+  lambda without the rho shift, lambda may have denominator 2}
+set normparam (RealForm G,int x,ratvec lambda,ratvec nu)=Param:param(G,x,ratvectovec(lambda-rho(G)),nu)
+set normparam (KGBElt x,ratvec lambda,ratvec nu)=Param:param(x,ratvectovec(lambda-rho(real_form(x))),nu)
 
-{ finite dimensional with highest weight tau in X^*
-  I'm not sure this always works; it returns
-    param(last KGB element,tau,tau+rho) so lambda=tau+rho }
-set finite_dimensional(RealForm G,vec tau) = Param:
-  param(KGB(G,KGB_size(G)-1),tau,tau+rho(G))
+
+{ finite dimensional with highest weight gamma in X^*
+  param(last KGB element,lambdaminusrho=gamma,gamma+rho) so (lambda,nu)=(gamma+rho,gamma+rho)
+  consequently every simple root is in the tau-invariant,
+  and the infinitesimal character is gamma+rho }
+set finite_dimensional(RealForm G,vec gamma) = Param:param(KGB(G,KGB_size(G)-1),gamma,gamma+rho(G))
 
 { get just the parameters from a block, just a shorcut to: (params,)=block(p) }
 set get_block (Param p) = [Param]: let (params,)=block(p) in params
@@ -137,3 +149,23 @@ set at_s(vec v)=eval(v,s)
 { evaluate polynomial at integer }
 set eval(vec v,int k)= int:
   let sum=0 in  for i:#v downto 0 do sum:= v[i] + k*sum od; sum
+
+{tests for classes of groups}
+
+set fundamental_Cartan(RealForm G)=CartanClass:Cartan_class(G,0)
+set most_split_Cartan(RealForm G)=CartanClass:Cartan_class(G,nr_of_Cartan_classes(G)-1)
+
+set is_equal_rank(RealForm G)=bool:
+let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 
+
+set is_split(RealForm G)=bool:
+let ((a,b,),,,)=Cartan_info(most_split_Cartan(G)) in a+b=0 
+
+set is_quasisplit(RealForm G)=bool:form_number(G)=nr_of_real_forms(G)-1
+
+set large_fundamental_series(RealForm G)=Param:
+if not(is_quasisplit(G)) then error("group is not quasisplit")  else param(G,0,null(rank(G)), null(rank(G)))  fi
+
+set large_discrete_series(RealForm G)=Param:
+if not(is_equal_rank(G)) then error("group is not equal rank") else large_fundamental_series(G) fi
+
