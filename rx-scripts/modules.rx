@@ -15,13 +15,13 @@ set to_string(ratvec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_string(v
 set kgb_number(KGBElt x)=int:
 let  G=real_form(x) in let (kgb,i,rv)=(KGB(G), 0, -1) in while i<#kgb do if x=KGB(G,i) then (rv:=i,i:=#kgb) else i:=i+1 fi od;rv
 
-set to_string(Param p)=string:let (x,lambda,nu)=%p in let n=kgb_number(x) in 
+set to_string(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in 
 "(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
-set to_string_std(Param p)=string:let (x,lambda,nu)=%p in let n=kgb_number(x) in 
+set to_string_std(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p),nu(p)) in let n=kgb_number(x) in 
 "I(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
-set to_string_irr(Param p)=string:let (x,lambda,nu)=%p in let n=kgb_number(x) in 
+set to_string_irr(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in 
 "J(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
 set to_string(Param p, string type)=string:

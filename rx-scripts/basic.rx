@@ -242,4 +242,4 @@ set *(int n,Param p)=n*virtual(p)
 set -(Param p)=(-1)*p
 set -(ParamPol P,Param p)=P+(-1)*virtual(p)
 set +(Param p,Param q)=virtual(p)+virtual(q)
-set -(Param p,Param q)=virtual(p)-virtual(q)
+set -(Param p,Param q)=virtual(p)+(-1)*virtual(q)
