@@ -117,4 +117,4 @@ let Q=(null_module(P),type) in for (w,q) in %P do Q +:= w*phi((q,type),k,v) od; 
 
 {------------phi_alpha*psi_alpha: translation of stds/irrs to and from from one  wall-----------}
 
-{set phi_psi((Param,string)(p,type),int k)=phi(psi((p,type),k),k,infinitesimal_character(p))}
+set phi_psi((Param,string)(p,type),int k)=phi(psi((p,type),k),k,infinitesimal_character(p))
