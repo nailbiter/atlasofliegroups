@@ -235,3 +235,11 @@ set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)
 
 set singular_roots(RootDatum rd,ratvec v)=[int]:
 let rv=[] in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od;rv
+
+{some necessities now that implicit conversion Param->ParamPol is disabled}
+set virtual(Param p)=null_module(real_form(p))+p
+set *(int n,Param p)=n*virtual(p)
+set -(Param p)=(-1)*p
+set -(ParamPol P,Param p)=P+(-1)*virtual(p)
+set +(Param p,Param q)=virtual(p)+virtual(q)
+set -(Param p,Param q)=virtual(p)-virtual(q)

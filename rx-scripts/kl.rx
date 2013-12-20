@@ -272,7 +272,7 @@ set regular_character_formula (Param p)= ParamPol:
       for q@i in block do
 	let poly_at_1 = eval(polys[KL[i,init]],1) in
 	if poly_at_1!=0 then
-	  sum +:= (-1)^length(i,stops)*poly_at_1*q
+	  sum +:= (-1)^length(i,stops)*poly_at_1*virtual(q)
 	fi
       od
     ; (-1)^length(init,stops)*sum
@@ -289,7 +289,7 @@ set singular_character_formula (Param p) = ParamPol:
     , poly_at_1 = cumul_init_at_1[i] { #cumul_init_at_1 = #indices }
     in
     if poly_at_1!=0 then
-      sum +:= (-1)^(length(ind_i,stops))*poly_at_1*q
+      sum +:= (-1)^(length(ind_i,stops))*poly_at_1*virtual(q)
     fi
   od
 ; (-1)^length(init,stops)*sum
@@ -314,7 +314,7 @@ set regular_composition_series(Param p) = ParamPol:
     for q@i in block do
       let coeff=M[i,init] in
       if coeff!=0 then
-	sum +:= coeff*q
+	sum +:= coeff*virtual(q)
       fi
     od
   ; sum
@@ -327,7 +327,7 @@ set singular_composition_series(Param p) = ParamPol:
   in
   for coeff@i in col_M { indices[i] is index into block } do
     if coeff!=0 then
-      sum +:= coeff*block[indices[i]]
+      sum +:= coeff*virtual(block[indices[i]])
     fi
   od
 ; sum

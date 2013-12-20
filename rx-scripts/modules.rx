@@ -78,8 +78,9 @@ set module_print(ParamPol P,string type)=
 if (type=irr or type=std)  then array_prints(to_string(P,type)) else error("Incorrect type") fi
 set mprint(ParamPol P)=module_print(P)
 set mprint(ParamPol P,string type)=module_print(P,type)
+set mprint((Param,string)(p,type))=mprint(virtual(p),type)
 
-set virtual(Param p)=null_module(real_form(p))+p
+{moved to basic.rx set virtual(Param p)=null_module(real_form(p))+p}
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
 
@@ -110,7 +111,7 @@ else error("incorrect type(s)") fi
 
 set +((Param,string)(p,typep),(Param,string)(q,typeq))=(ParamPol,string):virtual(p,typep)+virtual(q,typeq)
 
-set +((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(q,typeq)+(P,typeP)
+set +((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(P,typeP)+(virtual(q),typeq)
 {the next line causes a disambiguation error (?):
  workaround: to add (ParamPol P,Param q) do P+virtual(q)
 set +((Param,string)(p,typep),(ParamPol,string)(Q,typeQ))=(ParamPol,string):virtual(p,typep)+(Q,typeQ)

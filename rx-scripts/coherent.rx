@@ -30,8 +30,8 @@ set coherent_std(int k,Param p)=ParamPol:
 let (x,,)=%p then
 type=status(k,x) then
 N=null_module(real_form(p)) in
-if type=1 then N-p {compact imaginary}
-elif type=3 then N+nci_Cayley(k,p)-cross(k,p) {non-compact imaginary}
+if type=1 then N-virtual(p) {compact imaginary}
+elif type=3 then N+nci_Cayley(k,p)-virtual(cross(k,p)) {non-compact imaginary}
 else N+cross(k,p)  {complex or real} fi
 
 {coherent continuation action of simple root on ParamPol, basis of standards}
@@ -105,7 +105,7 @@ let (gamma,rd)=(infinitesimal_character(p),root_datum(p)) then a=simple_coroots(
  elif not is_regular(rd,v) then error("translation is not to regular infinitesimal character") 
  elif not ((a*gamma)=0 and (a*v !=0)) then error("this is not translation away from a single root wall") 
  elif (#singular_roots(rd,gamma) !=1) then error("this is not translation away from a single root wall") fi;\
- (translate_to(p,v),type)+coherent(k,(translate_to(p,v),type))
+ (virtual(translate_to(p,v)),type)+coherent(k,(translate_to(p,v),type))
 
 {------------phi_alpha: translation of ParamPol away from one  wall-----------}
 
