@@ -3720,17 +3720,6 @@ void module_coefficient::evaluate(level l) const
     push_value(new split_int_value(m->val[p->val]));
 }
 
-@ We also allow implicitly converting a parameter to a virtual module.
-
-@< Local function def...@>=
-void param_to_poly()
-{ shared_module_parameter p = get<module_parameter_value>();
-@/test_standard(*p);
-  const shared_real_form& rf=p->rf;
-  push_value(new@|
-    virtual_module_value(rf,rf->rc().expand_final(p->val)));
-}
-
 @ The main operations for virtual modules are addition and subtraction of
 parameters, or of other virtual modules.
 
@@ -4053,7 +4042,6 @@ in these coercions, which we define as |static| variables her as well.
   coercion(rf_type,rd_type,"RdRf",real_form_to_root_datum_coercion);
   coercion(int_type,split_type,"SpI",int_to_split_coercion);
   coercion(int_int_type,split_type,"Sp(I,I)",pair_to_split_coercion);
-  coercion(param_type,param_pol_type,"PolP",param_to_poly);
 }
 
 
