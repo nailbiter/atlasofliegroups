@@ -86,15 +86,15 @@ else error("incorrect type") fi
 
 {---------------coherent families---------------------------------------}
 
-set cf((ParamPol,string)(P,type),ratvec v)=
+set coherent_family((ParamPol,string)(P,type),ratvec v)=
 if is_dominant(root_datum(P),v) then translate_to((P,type),v)
 else let (v_dominant,w)=make_dominant(root_datum(P),v) in 
 coherent(w,translate_to((P,type),v_dominant)) fi
 
-set cf((Param,string)(p,type),ratvec v)=cf((virtual(p),type),v)
+set coherent_family((Param,string)(p,type),ratvec v)=coherent_family((virtual(p),type),v)
 
-set cf((ParamPol,string)(P,type))=(ratvec v):cf((P,type),v)
-set cf((Param,string)(p,type))=(ratvec v):cf((p,type),v)
+set coherent_family((ParamPol,string)(P,type))=(ratvec v):coherent_family((P,type),v)
+set coherent_family((Param,string)(p,type))=(ratvec v):coherent_family((p,type),v)
 
 
 {------------phi_alpha: translation of stds/irrs away from one  wall-----------}
@@ -118,3 +118,5 @@ let Q=(null_module(P),type) in for (w,q) in %P do Q +:= w*phi((q,type),k,v) od; 
 {------------phi_alpha*psi_alpha: translation of stds/irrs to and from from one  wall-----------}
 
 set phi_psi((Param,string)(p,type),int k)=phi(psi((p,type),k),k,infinitesimal_character(p))
+
+set phi_psi((ParamPol,string)(P,type),int k)=phi(psi((P,type),k),k,infinitesimal_character(P))

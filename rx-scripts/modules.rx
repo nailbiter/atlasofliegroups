@@ -78,11 +78,13 @@ set module_print(ParamPol P,string type)=
 if (type=irr or type=std)  then array_prints(to_string(P,type)) else error("Incorrect type") fi
 set mprint(ParamPol P)=module_print(P)
 set mprint(ParamPol P,string type)=module_print(P,type)
-set mprint((Param,string)(p,type))=mprint(virtual(p),type)
+set mprint((Param,string)(p,type))=prints(to_string(p,type))
 
 {moved to basic.rx set virtual(Param p)=null_module(real_form(p))+p}
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
+
+
 
 {equality of (ParamPol,irr or std)
 (P,irr)=(Q,irr) or (P,std)=(Q,std): P=Q
@@ -110,7 +112,11 @@ else error("incorrect type(s)") fi
 set +((Param,string)(p,typep),(Param,string)(q,typeq))=(ParamPol,string):virtual(p,typep)+virtual(q,typeq)
 
 set +((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(P,typeP)+(virtual(q),typeq)
+{the next line causes a disambiguation error (?):
+ workaround: to add (ParamPol P,Param q) do P+virtual(q)
 set +((Param,string)(p,typep),(ParamPol,string)(Q,typeQ))=(ParamPol,string):virtual(p,typep)+(Q,typeQ)
+}
+
 
 {unary -}
 set -((ParamPol,string)(P,type))=(ParamPol,string):((-1)*P,type)
@@ -120,14 +126,15 @@ set -((Param,string)(p,type))=-virtual(p,type)
 set -((ParamPol,string)(P,typeP),(ParamPol,string)(Q,typeQ))=(ParamPol,string):(P,typeP)+((-1)*Q,typeQ)
 set -((Param,string)(p,typep),(ParamPol,string)(Q,typeQ))=(ParamPol,string):virtual(p,typep)+((-1)*Q,typeQ)
 set -((Param,string)(p,typep),(Param,string)(q,typeq))=(ParamPol,string):virtual(p,typep)+(-virtual(q,typeq))
-set -((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(P,typeP)+(-virtual(q,typeq))
+{the next line causes a disambiguation error (?):
+ workaround: to subtract  (ParamPol P,Param q) do P-virtual(q)
+set -((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(P,typeP)+(-virtual(q,typeq))}
 
 set *(Split w,(ParamPol, string)(P,type))=(w*P,type)
 set *(Split w,(Param, string)(p,type))=(w*virtual(p),type)
 
 
 set =((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=bool:(P,typeP)=(virtual(q,typeq))
-set =((Param,string)(q,typeq),(ParamPol,string)(P,typeP))=bool:(P,typeP)=(virtual(q,typeq))
 
 set infinitesimal_character(Param p,string type)=ratvec:infinitesimal_character(p)
 set infinitesimal_character(Param p,string type)=ratvec:infinitesimal_character(p)
