@@ -1,30 +1,32 @@
-{ this file is just a suggestion for a possible personal start-up file }
+{this file is a sample personal start-up file 
+see README.rx-scripts for more information on each file
+also see realex.help and functions.help}
 
-{ load the files you want: }
-<lietypes.rx
-<groups.rx { this also loads basic.rx }
+{start by loading all other files
+to prevent loading of a file comment it out like this: {<coherent}}
 
-{ loading hermitian.rx, which recursively also loads misc,iterate_deform,kl }
-<hermitian.rx
+<lietypes
+<basic
+<misc
+<groups
+<iterate_deform
+<hermitian
+<unitary
+<nilpotent
+<W_orbit
+<generate_groups
+<modules
+<translate
+<coherent
 
-<unitary.rx {some unitary parameters}
-
-{ you could also load translate.rx, but it's not necessary for the code below }
-{<translate.rx}
-
-{ some representations you might be working with }
-set t=trivial(SL(2,R))
+{here are some examples of things you might define}
 
 set G=Sp(4,R)
-set blockG=trivial_block(G)
-set tG=trivial(G)
-set dsG=blockG[0]
+set block=trivial_block(G)
+set trivial_parameter=trivial(G)
+set t=trivial_parameter
+set trivial=J(trivial_parameter)
+set ds=large_discrete_series(G)
+set pi=J(ds)
 
-set H=split_form(F4)
-set pH=spherical_principal_series(H,[0,1,0,2]/6)
 
-set G2ad=quasisplit_form(inner_class(adjoint("G2"),"e"))
-set tG2ad=trivial(G2ad)
-set pG2ad=spherical_principal_series(G2ad,[3,2]/3)
-
-{ put personal personal definitions here }

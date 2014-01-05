@@ -1,30 +1,32 @@
-basic.rx          basic functions
-groups.rx     	  defining groups
-det.rx        	  matrix functions (determinant, inverse)
-misc.rx       	  miscellaneous useful commands
-lietypes.rx   	  lets you say C4 instead of "C4", and so forth
-hermitian.rx  	  functions related to c-forms and Hermitian forms
-kl.rx         	  Kazhdan-Lusztig polynomials
-my.rx         	  sample personal rx file
-unitary.rx  	  some unitary parameters
-nilpotent.rx	  for parameters related to nilpotent orbits
-translate.rx  	  functions related to translation {experimental}
-sort.rx		  functions for sorting parameter lists in various ways
-test.rx		  functions for testing the algorithms in many cases
-iterate_deform.rx algorithm for deforming nu to 0, now built into Atlas
-sp4.rx        	  some stuff tailored to Sp(4,R)
+Each file contains definitions of realex commands
+The files have the extension .rx, for example basic.rx
 
-To load basic.rx, for example, do:
+basic             essential basic functions
+misc              more standard useful commands
+groups            defining groups like this: set G=SL(2,R)
+det               matrix functions (determinant, inverse)
+lietypes          lets you say C4 instead of "C4", and so forth
+hermitian         functions related to c-forms and Hermitian forms
+kl                Kazhdan-Lusztig polynomials
+unitary           some unitary parameters
+nilpotent         for parameters related to nilpotent orbits
+modules    	  irreducible modules J(p) and standard modules I(p)
+translate  	  translation principle
+coherent   	  coherent continuation
+sort              functions for sorting parameter lists in various ways
+test              functions for testing the algorithms in many cases
+iterate_deform    algorithm for deforming nu to 0 (not essential - mostly moved into atlas)
+sp4               some stuff tailored to Sp(4,R)
+weylgroup 	  basic Weyl group functions, also see W_orbit
+W_orbit    	  compute W-orbits and also generate elements of W
+generate_groups   run over many groups
+my                sample personal rx file
 
-<basic or <basic.rx
+To load basic.rx, give this command in realex:
+<basic
 
-Every file will also load all the files on which it depends.
-Probably you should just do:
+The provided file my.rx loads all of these, so do:
 
-<hermitian
+<my
 
-This will load everything needed to compute Hermitian forms
-
-translate.rx is somewhat experimental
-
-I recommend making a file my.rx along the lines of the one included.
+I recommend editing my.rx to suit your needs.

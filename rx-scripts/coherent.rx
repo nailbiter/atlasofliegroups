@@ -86,12 +86,12 @@ else error("incorrect type") fi
 
 {---------------coherent families---------------------------------------}
 
-set coherent_family((ParamPol,string)(P,type),ratvec v)=
+set coherent_family((ParamPol,string)(P,type),ratvec v)=(ParamPol,string):
 if is_dominant(root_datum(P),v) then translate_to((P,type),v)
 else let (v_dominant,w)=make_dominant(root_datum(P),v) in 
 coherent(w,translate_to((P,type),v_dominant)) fi
 
-set coherent_family((Param,string)(p,type),ratvec v)=coherent_family((virtual(p),type),v)
+set coherent_family((Param,string)(p,type),ratvec v)=(ParamPol,string):coherent_family((virtual(p),type),v)
 
 set coherent_family((ParamPol,string)(P,type))=(ratvec v):coherent_family((P,type),v)
 set coherent_family((Param,string)(p,type))=(ratvec v):coherent_family((p,type),v)
@@ -120,3 +120,21 @@ let Q=(null_module(P),type) in for (w,q) in %P do Q +:= w*phi((q,type),k,v) od; 
 set phi_psi((Param,string)(p,type),int k)=phi(psi((p,type),k),k,infinitesimal_character(p))
 
 set phi_psi((ParamPol,string)(P,type),int k)=phi(psi((P,type),k),k,infinitesimal_character(P))
+
+
+{------------skew symmetrized coherent continuation ------------}
+
+{sum over W_S of (-1)^{w} (w.P)}
+set skew_symmetrize_coherent([int] S,(ParamPol,string)(P,type))=
+let N=(null_module(real_form(P)),type) in 
+let WS=W_orbit_W_elements(root_datum(P),S,ratvectovec(2*rho(root_datum(P)))) in
+for w in WS do N:=N+(-1)^#w*coherent(w,(P,type)) od;N
+
+{same as previous, assuming W_S=W}
+set skew_symmetrize_coherent((ParamPol,string)(P,type))=
+let S=[int]:for i:rank(root_datum(P)) do i od in skew_symmetrize_coherent(S,(P,type))
+
+{same as previous, applied to standard or irreducible}
+set skew_symmetrize_coherent([int] S,(Param,string)(p,type))=skew_symmetrize_coherent(S,(virtual(p),type))
+set skew_symmetrize_coherent((Param,string)(p,type))=skew_symmetrize_coherent(virtual(p),type)
+
