@@ -27,6 +27,7 @@ namespace ext_block {
 
 // type defintions
 
+// for correspondence of enumerations and conventional codes, see |descent_code|
 enum DescValue // every even/odd pair is one of associated ascent and descent
 {
   one_complex_ascent,
@@ -82,13 +83,16 @@ class extended_block
   {
     DescValue type;
     BlockEltPair links; // one or two values, depending on |type|
-  block_fields(DescValue t) : type(t),links(UndefBlock,UndefBlock) {}
+    bool epsilon; // whether second Cayley link carries minus sign
+  block_fields(DescValue t)
+  : type(t),links(UndefBlock,UndefBlock),epsilon(false) {}
   };
 
   const Block_base& parent;
   const TwistedWeylGroup& tW;
   std::vector<elt_info> info; // its size defines the size of the block
   std::vector<std::vector<block_fields> > data;  // size |d_rank| * |size()|
+  BlockEltList l_start; // where elements of given length start
 
  public:
 
@@ -100,19 +104,28 @@ class extended_block
   size_t rank() const { return parent.folded_rank(); }
   size_t size() const { return info.size(); }
 
+  ext_gen orbit(weyl::Generator s) const { return parent.orbit(s); }
+
   BlockElt z(BlockElt n) const { assert(n<size()); return info[n].z; }
 
   // Look up element by |x|, |y| coordinates
   BlockElt element(BlockElt z) const; // partial inverse of method |z|
 
   size_t length(BlockElt n) const { return info[n].length; }
+  size_t l(BlockElt y, BlockElt x) const { return length(y)-length(x); }
+  BlockElt length_first(size_t l) const { return l_start[l]; }
 
   BlockElt cross(weyl::Generator s, BlockElt n) const;
+  BlockElt Cayley(weyl::Generator s, BlockElt n) const; // just one or none
+  BlockElt inverse_Cayley(weyl::Generator s, BlockElt n) const; // one or none
 
   BlockEltPair Cayleys(weyl::Generator s, BlockElt n) const;
   BlockEltPair inverse_Cayleys(weyl::Generator s, BlockElt n) const;
 
-  const DescValue& descent_type(weyl::Generator s, BlockElt n) const
+  // whether $i$-th (inverse) Cayley link at |s| from |n| flips sign
+  int epsilon(weyl::Generator s, BlockElt n,unsigned i) const;
+
+  const DescValue descent_type(weyl::Generator s, BlockElt n) const
     { assert(n<size()); assert(s<rank()); return data[s][n].type; }
 
   // print whole block to stream (name chosen to avoid masking by |print|)
@@ -128,7 +141,11 @@ class extended_block
 const char* descent_code(DescValue v); // defined in |block_io|
 inline bool is_descent(DescValue v) { return v%2!=0; }
 bool is_complex(DescValue v);
+bool is_unique_image(DescValue v);
 bool has_double_image(DescValue v);
+bool is_like_nonparity(DescValue v);
+bool is_proper_ascent(DescValue v);
+bool has_defect(DescValue v);
 
 DescValue extended_type(const Block_base& block, BlockElt z, ext_gen p,
 			BlockElt& first_link);
