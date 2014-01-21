@@ -1,4 +1,5 @@
-<basic.rx
+<basic
+<det
 
 { test if an integer is even, or a rational is an integer }
 set is_even (int i)    = bool: i%2=0
@@ -28,24 +29,8 @@ set %(ParamPol P) = [(Split,Param)]: for c@p in P do (c,p) od
 
 { cases *@(vec,ratvec) and *@(ratvec,vec) are now handled by coercion }
 
-{ split, simply connected group of given type }
-set split_form(RootDatum r)=quasisplit_form(inner_class(r,-id_mat(rank(r))))
-set split_form(LieType t)=split_form(simply_connected(t))
-set split_group(string s)= RealForm: split_form(s)
-
-{ Quasisplit form: the quasisplit, but not split, form of G, if it exists }
-set Quasisplit_form(RootDatum r)=quasisplit_form (inner_class (r,"u"))
-set Quasisplit_form(LieType t)= Quasisplit_form(simply_connected(t))
-
-set root_datum(Param p)=RootDatum: real_form(p)
-set root_datum(ParamPol P)=RootDatum: real_form(P)
-
-set print_real_forms(RealForm G)= void:
-  for n@i in form_names(inner_class(G))
-  do prints(i,": ",n)
-  od; prints("To define a real form rf do: set rf=real_forms(G)[i]")
-
-set ss_rank(RootDatum rd)= semisimple_rank(rd)
+set root_datum(Param p)=RootDatum: root_datum(real_form(p))
+set root_datum(ParamPol P)=RootDatum: root_datum(real_form(P))
 
 set is_dominant(RootDatum rd, ratvec v)=bool:is_nonnegative(numer(v)*simple_coroots(rd))
 set is_regular(RootDatum rd,ratvec v)= bool:
@@ -62,6 +47,7 @@ set is_regular(RootDatum rd,ratvec lambda)= bool:
 set is_regular(RealForm G,ratvec lambda)=is_regular(root_datum(G),lambda)
 set is_regular(Param p)=is_regular(real_form(p),infinitesimal_character(p))
 
+set rho(RealForm G)=rho(root_datum(G))
 set rhocheck(RootDatum rd)= ratvec: rho(dual(rd))
 set rhocheck(RealForm G)  = ratvec: rhocheck(root_datum(G))
 
@@ -71,7 +57,7 @@ set intrho (RootDatum r)= vec: ratvectovec(rho(r))
 
 { some data defined by a Param p }
 set integrality_datum(Param p)= RootDatum:
-  integrality_datum(real_form(p),infinitesimal_character(p))
+  integrality_datum(root_datum(p),infinitesimal_character(p))
 
 { extract x,lambda-rho,lambda,nu from p
   lambda-rho =vec,  lambda= ratvec }
@@ -90,26 +76,10 @@ set normparam (RealForm G,int x,ratvec lambda,ratvec nu)=Param:param(G,x,ratvect
 set normparam (KGBElt x,ratvec lambda,ratvec nu)=Param:param(x,ratvectovec(lambda-rho(real_form(x))),nu)
 
 
-{ finite dimensional with highest weight gamma in X^*
-  param(last KGB element,lambdaminusrho=gamma,gamma+rho) so (lambda,nu)=(gamma+rho,gamma+rho)
-  consequently every simple root is in the tau-invariant,
-  and the infinitesimal character is gamma+rho }
-set finite_dimensional(RealForm G,vec gamma) = Param:param(KGB(G,KGB_size(G)-1),gamma,gamma+rho(G))
 
 { get just the parameters from a block, just a shorcut to: (params,)=block(p) }
 set get_block (Param p) = [Param]: let (params,)=block(p) in params
 
-{ trivial representation of G, see finite_dimensional }
-set trivial(RealForm G) = Param: finite_dimensional(G,null(rank(G)))
-
-{ returns [Param] list of parameters in block of trivial }
-set trivial_block(RealForm G) = [Param]: get_block(trivial(G))
-
-{ spherical principal series of split group
-  assumes G is split, otherwise no guarantees
-  specify nu as a vec or ratvec }
-set spherical_principal_series (RealForm G, ratvec nu)= Param:
-  let lambda=null(rank(G)) in param(KGB(G,KGB_size(G)-1),lambda,nu)
 
 { replace non-final parameter with [Param p] of final ones
   uses this feature of ParamPol, but ignores any coefficients }
@@ -150,22 +120,21 @@ set at_s(vec v)=eval(v,s)
 set eval(vec v,int k)= int:
   let sum=0 in  for i:#v downto 0 do sum:= v[i] + k*sum od; sum
 
-{tests for classes of groups}
-
 set fundamental_Cartan(RealForm G)=CartanClass:Cartan_class(G,0)
 set most_split_Cartan(RealForm G)=CartanClass:Cartan_class(G,nr_of_Cartan_classes(G)-1)
 
-set is_equal_rank(RealForm G)=bool:
-let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 
+{properties of groups}
 
-set is_split(RealForm G)=bool:
-let ((a,b,),,,)=Cartan_info(most_split_Cartan(G)) in a+b=0 
+set fiber_part(RealForm G)=fiber_part(Cartan_class(G,0),G)
 
-set is_quasisplit(RealForm G)=bool:form_number(G)=nr_of_real_forms(G)-1
+set rank(RealForm G)=rank(root_datum(G))
 
-set large_fundamental_series(RealForm G)=Param:
-if not(is_quasisplit(G)) then error("group is not quasisplit")  else param(G,0,null(rank(G)), null(rank(G)))  fi
+set semisimple_rank(RealForm G)=semisimple_rank(root_datum(G))
+set rank(RealForm G)=rank(root_datum(G))
 
-set large_discrete_series(RealForm G)=Param:
-if not(is_equal_rank(G)) then error("group is not equal rank") else large_fundamental_series(G) fi
+set ss_rank(RootDatum rd)= semisimple_rank(rd)
+set ss_rank(RealForm G)= semisimple_rank(G)
+
+set dimension(RealForm G)=n_columns(roots(G))+rank(G)
+
 

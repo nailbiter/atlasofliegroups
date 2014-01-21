@@ -1,6 +1,6 @@
-<modules
-<translate {load translate first}
-<weylgroup
+<translate
+<W_orbit
+
 {computing coherent continuation}
 {-------------cayleys as sums of one or two terms----------}
 {nci type I cayley as a sum of one or two terms}

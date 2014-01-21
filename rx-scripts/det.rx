@@ -33,7 +33,9 @@ set gcd (int a,int b) = let (d,,)=Euclid(a,b) in d
 set lcm (int a,int b) = let (,l,)=Euclid(a,b) in l
 set Bezout (int a,int b) = let (,,B)=Euclid(a,b) in B
 
+{this command is no longer needed: builtin command invert does this }
 { invert matrix, returning "numerator" matrix / minimal positive denominator }
+{---
 set inv (mat M) = (mat,int):
 let (diag,R,C) = diagonalize(M), l=1, (n,m)=#M
 then ()=if n!=m then error("attempt to invert a non-square matrix")
@@ -41,3 +43,5 @@ then ()=if n!=m then error("attempt to invert a non-square matrix")
         fi
      ;  for v in diag do l:=lcm(l,v) od
 in (C*diagonal(for v in diag do l\v od)*R,l)
+---}
+

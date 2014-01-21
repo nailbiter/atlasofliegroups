@@ -1,5 +1,3 @@
-
-
 set #(int n)= [int]: for i:n do i od       { [0,1,...,n-1] }
 set #(bool b) = int: if b then 1 else 0 fi { Iverson symbol }
 set #(ratvec v)= int: let (n,)=%v in #n    { length }
@@ -54,6 +52,7 @@ set -(vec v,vec w)= vec:
 set %(vec v,int d) = vec: for x in v do x%d od
 
 set sum (vec v)= let s=0 in for e in v do s+:=e od; s
+set product (vec v)= let s=1 in for e in v do s*:=e od; s
 
 set sum (mat m)= { sum of columns of m }
   let (r,)=#m then sum = null(r) in for col in m do sum+:=col od; sum
@@ -194,6 +193,23 @@ set = (RealForm f, RealForm g) = bool:
   inner_class(f) = inner_class(g) and form_number(f)=form_number(g)
 set != (RealForm f, RealForm g) = bool: not(f=g)
 
+set -(ParamPol P,ParamPol Q) = ParamPol: P+(-1)*Q
+set =(ParamPol P,ParamPol Q) = bool: #(P-Q)=0
+
+{ order of operands in the next function avoids conflicting *@(int,ParamPol) }
+set *(Param p,rat alpha) = let (x,lambda,nu)=%p in param(x,lambda,alpha*nu)
+
+{need some overloads since coercion RealForm->InnerClass or RootDatum is disabled}
+set root_datum(RealForm G)=root_datum(inner_class(G))
+set semisimple_rank(RealForm G)=semisimple_rank(root_datum(G))
+set roots(RealForm G)=roots(root_datum(G))
+set coroots(RealForm G)=coroots(root_datum(G))
+set nr_of_Cartan_classes(RealForm G)=nr_of_Cartan_classes(inner_class(G))
+set nr_of_real_forms(RealForm G)=nr_of_real_forms(inner_class(G))
+set distinguished_involution(RealForm G)=distinguished_involution(inner_class(G))
+set positive_roots(RealForm G)=positive_roots(root_datum(G))
+set simple_roots(RealForm G)=simple_roots(root_datum(G))
+
 set KGB(RealForm rf) = [KGBElt]: for i:KGB_size(rf) do KGB(rf,i) od
 set is_complex(int s,KGBElt x) = status(s,x)%4=0
 set is_real(int s,KGBElt x) = status(s,x)=2
@@ -206,6 +222,7 @@ set status_code(int s,KGBElt x) = ["C-","ic","r ","nc","C+"][status(s,x)]
 set status_codes(KGBElt x) =
   for s:semisimple_rank(real_form(x)) do status_code(s,x) od
 set x(Param p) = KGBElt: let (x,,) =%p in x {so don't have to load misc.rx}
+set status_code(int s,Param p)=status_code(s,x(p))
 set status_codes(Param p)=status_codes(x(p))
 
 set imaginary_type(int s, Param p)=if cross(s,Cayley(s,p))=Cayley(s,p) then 1 else 2 fi
@@ -237,9 +254,9 @@ set singular_roots(RootDatum rd,ratvec v)=[int]:
 let rv=[] in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od;rv
 
 {some necessities now that implicit conversion Param->ParamPol is disabled}
-set virtual(Param p)=null_module(real_form(p))+p
-set *(int n,Param p)=n*virtual(p)
-set -(Param p)=(-1)*p
-set -(ParamPol P,Param p)=P+(-1)*virtual(p)
-set +(Param p,Param q)=virtual(p)+virtual(q)
-set -(Param p,Param q)=virtual(p)+(-1)*virtual(q)
+set virtual(Param p)=ParamPol:null_module(real_form(p))+p
+set *(int n,Param p)=ParamPol:n*virtual(p)
+set -(Param p)=ParamPol:(-1)*p
+set -(ParamPol P,Param p)=ParamPol:P+(-1)*virtual(p)
+set +(Param p,Param q)=ParamPol:virtual(p)+virtual(q)
+set -(Param p,Param q)=ParamPol:virtual(p)+(-1)*virtual(q)

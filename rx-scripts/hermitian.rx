@@ -1,16 +1,7 @@
-<misc.rx
 <kl.rx
 
 { a variable used in this file; set to true for more output from functions }
 set hermitian_debug = false
-
-set -(ParamPol P,ParamPol Q) = ParamPol: P+(-1)*Q
-
-{ test equality of ParamPols }
-set =(ParamPol P,ParamPol Q) = bool: #(P-Q)=0
-
-{ order of operands in the next function avoids conflicting *@(int,ParamPol) }
-set *(Param p,rat alpha) = let (x,lambda,nu)=%p in param(x,lambda,alpha*nu)
 
 {set nu=0 in Param (x,lambda,nu) }
 set make_nu0 (Param p) = p*0
@@ -195,10 +186,10 @@ set is_unitary(ParamPol P)= bool:
 
 set is_unitary (Param p) = bool: is_unitary(hermitian_form_irreducible(p))
 
-set test_spherical_unitary(RealForm G,[ratvec] nus)= void:
+{set test_spherical_unitary(RealForm G,[ratvec] nus)= void:
   for nu in nus do
     prints(nu,", ", is_unitary(spherical_principal_series(G,nu)))
-  od
+  od}
 
 set test_line (Param p) = void:
 ( let (x,lambdaminusrho,nu) = %p

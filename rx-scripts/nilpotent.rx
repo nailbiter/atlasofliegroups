@@ -1,4 +1,4 @@
-<basic.rx { for sum@vec }
+<basic
 
 set max ([int] p) = int: { for dimensioning vector indexable by entries of p }
   let m=0 { assuming no negative entries } in

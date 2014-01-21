@@ -1,4 +1,3 @@
-<basic
 <misc
 <weylgroup
 <array_search  {binary search in sorted arrays}
@@ -6,11 +5,11 @@
 {compute orbit of W(S).v: orbit of v under simple roots of S of root datum rd
 algorithm: keep three lists 
 Wreps=Wrepresentatives: list of elements of W
-orbit: final list or elements of orbit
+orbit: final list of elements of orbit
 todo: intermediate list of pairs (w,u) where w.v=u)
 recursively, set (w,u)=first entry of todo
  apply each simple reflection j from S to u
- if s_j.u is not in orbit (as determined by the order::in_list function) add  s_j.u to orbit and (s_j*w,s_j.u) to todo
+ if s_j.u is not in orbit (as determined by the array_search::in_list function) add  s_j.u to orbit and (s_j*w,s_j.u) to todo
  delete (w,u) from todo
 continue until todo is empty
 returns: (Wrepresentatives, orbit) where orbit is list of elements of orbit, and for each i Wrepresentatives[i].v=orbit[i]}

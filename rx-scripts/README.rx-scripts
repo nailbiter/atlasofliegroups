@@ -1,32 +1,35 @@
 Each file contains definitions of realex commands
 The files have the extension .rx, for example basic.rx
 
-basic             essential basic functions
-misc              more standard useful commands
-groups            defining groups like this: set G=SL(2,R)
-det               matrix functions (determinant, inverse)
 lietypes          lets you say C4 instead of "C4", and so forth
-hermitian         functions related to c-forms and Hermitian forms
-kl                Kazhdan-Lusztig polynomials
-unitary           some unitary parameters
-nilpotent         for parameters related to nilpotent orbits
-modules    	  irreducible modules J(p) and standard modules I(p)
-translate  	  translation principle
-coherent   	  coherent continuation
-sort              functions for sorting parameter lists in various ways
-test              functions for testing the algorithms in many cases
-iterate_deform    algorithm for deforming nu to 0 (not essential - mostly moved into atlas)
-sp4               some stuff tailored to Sp(4,R)
+basic             essential basic functions
+misc              more standard useful commands (=>basic,det)
+groups            defining groups like this: set G=SL(2,R) (=>basic)
+torus		  defining real tori
+generate_groups   run over many groups (=>basic)
+det               matrix functions (determinant, inverse)
 weylgroup 	  basic Weyl group functions, also see W_orbit
-W_orbit    	  compute W-orbits and also generate elements of W
-generate_groups   run over many groups
+sort              functions for sorting parameter lists in various ways (=>misc)
+test              functions for testing the algorithms in many cases (=>groups,hermitian,unitary,nilpotent,lietypes)
+iterate_deform    algorithm for deforming nu to 0 (not essential - mostly moved into atlas) (=>basic)
+sp4               some stuff tailored to Sp(4,R)
+W_orbit    	  compute W-orbits and also generate elements of W (=>misc, weylgroup,arraysearch)
+array_search	  binary search of sorted arrays used by W_orbit
+galois		  galois cohomology (=>groups,generate_groups)
+kl                Kazhdan-Lusztig polynomials (=>misc)
+modules    	  irreducible modules J(p) and standard modules I(p) (=>kl)
+translate  	  translation principle (=>modules)
+coherent   	  coherent continuation (=>translate, weylgroup)
+hermitian         functions related to c-forms and Hermitian forms (=>kl)
+unitary           some unitary parameters
+nilpotent         for parameters related to nilpotent orbits (=>basic)
 my                sample personal rx file
 
 To load basic.rx, give this command in realex:
-<basic
+<basic   (or <basic.rx)
 
-The provided file my.rx loads all of these, so do:
+The provided file my.rx loads everything, so do this:
 
 <my
 
-I recommend editing my.rx to suit your needs.
+We recommend editing my.rx to suit your needs.

@@ -1,5 +1,5 @@
 <modules
-{load this before loading coherent}
+<hermitian
 set translate_debug=false
 
 {--------------formal translation of parameters----------------}

@@ -4,29 +4,41 @@ also see realex.help and functions.help}
 
 {start by loading all other files
 to prevent loading of a file comment it out like this: {<coherent}}
-
 <lietypes
 <basic
 <misc
+<group_operations
 <groups
-<iterate_deform
-<hermitian
-<unitary
-<nilpotent
-<W_orbit
 <generate_groups
+<representations
+<torus		
+<K
+<det
+<weylgroup
+<sort
+<test
+<iterate_deform
+<sp4
+<W_orbit
+<array_search	
+<galois		
+<kl
 <modules
 <translate
 <coherent
+<hermitian
+<unitary
+<nilpotent
 
-{here are some examples of things you might define}
-
+{here are some examples of things you might define, currently commented out}
+{
 set G=Sp(4,R)
-set block=trivial_block(G)
+
 set trivial_parameter=trivial(G)
 set t=trivial_parameter
 set trivial=J(trivial_parameter)
 set ds=large_discrete_series(G)
 set pi=J(ds)
+}
 
 

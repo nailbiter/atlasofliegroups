@@ -1,3 +1,5 @@
+<kl
+
 set std="std"
 set irr="irr"
 set I(Param p)=(Param,string):
@@ -151,6 +153,16 @@ if not has_infinitesimal_character(P) then error("terms have different infinites
 let (,p)=(%P)[0] in infinitesimal_character(p) fi
 
 set infinitesimal_character(ParamPol P, string type)=ratvec:infinitesimal_character(P)
+
+set tau(Param p,string type)=tau(p)
+set in_tau(int s,(Param,string)(p,type))=bool:if is_compact(s,x(p)) or status_code(s,x(p))="C-" or is_non_parity(s,p) then true else false fi
+set in_tau_complement(int s,(Param,string)(p,type))=bool:not(in_tau(s,p))
+set tau_complement(Param p, string type)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau_complement(s,p) then rv:=rv#s fi od;rv
+
+set status_code(int s,(Param,string) (p,type))=status_code(s,p)
+set full_status_code(int s,(Param,string) (p,type))=full_status_code(s,p)
+set status_codes(Param p,string type)=status_codes(p)
+set full_status_codes(Param p,string type)=full_status_codes(p)
 
 {
 {--------------------auxiliary tools---------------------}

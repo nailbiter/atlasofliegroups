@@ -1,4 +1,4 @@
-<misc {for spherical_principal_series}
+{<representations {for spherical_principal_series}}
 
 set merge(vec a, vec b) =
   if #a=0 then b
@@ -67,7 +67,7 @@ set sort_by_reducibility_pairs = ([(Param,bool)]->[(Param,bool)]):
 set sort_by_reducibility = ([Param]->[Param]):
   sort_by((Param p) int: #reducibility_points(p) )
 
-set sort_spherical_by_reducibility (RealForm G,[ratvec] nus) = [ratvec]:
+{set sort_spherical_by_reducibility (RealForm G,[ratvec] nus) = [ratvec]:
   let sorted_spherical=
     sort_by_reducibility(for nu in nus do spherical_principal_series(G,nu) od)
-  in for p in sorted_spherical do nu(p) od { recover nu from parameters }
+  in for p in sorted_spherical do nu(p) od { recover nu from parameters }}

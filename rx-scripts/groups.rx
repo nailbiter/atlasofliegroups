@@ -1,4 +1,5 @@
 <basic.rx
+<matrix
 
 set show (string s) = if s="" then "empty" else s fi
 
@@ -62,7 +63,7 @@ in (for i:r do C_inv[i,i+r]:=1; C_inv[i+r,i]:=1 od
    ; quasisplit_form(inner_class(rd_C,C_inv)))
 
 { complexification of a real group }
-set complexification(RealForm G) = RealForm: complex(G)
+set complexification(RealForm G) = RealForm: complex(root_datum(G))
 
 { some root systems }
 
@@ -163,7 +164,6 @@ n%2=1 then "B"+n\2 else
 set Spin(int n)=simply_connected(SO_lie_type(n))
 set PSO(int n)=adjoint(SO_lie_type(n))
 
-{ real forms }
 
 { type A real forms }
 

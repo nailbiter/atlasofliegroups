@@ -16,7 +16,7 @@ set do_block ( (Param->) f) = { f is function executed for block elements }
   ; i
 )
 
-set block = do_block ( (Param q): prints(q) )
+{set block = do_block ( (Param q): prints(q) )}
 
 { Cartan #0, discrete series parameters; assume $a,b\geq0$ }
 set ds0(int a,int b) = param(x[0],[a-2,b-1],[0,0]/1) { large }

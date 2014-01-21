@@ -63,3 +63,4 @@ for i:#list-1 do if not(list[i]>list[i+1]) then error("list is not strictly decr
 {insert_at(list,v,k) inserts v into position k of list, no assumptions about order}
 set insert_at([[int]] v,[int] w,int k)=[[int]]:(for i:k do v[i] od)#w#(for i:#v-k from k do v[i] od)
 
+

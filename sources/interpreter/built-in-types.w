@@ -2143,14 +2143,6 @@ void inner_class_of_real_form_wrapper(expression_base::level l)
     push_value(new inner_class_value(rf->parent));
 }
 
-void real_form_to_inner_class_coercion()
-{@; inner_class_of_real_form_wrapper(expression_base::single_value); }
-
-void real_form_to_root_datum_coercion()
-{ shared_real_form rf(get<real_form_value>());
-  push_value(new root_datum_value(rf->parent.val.rootDatum()));
-}
-
 @ Here is a function that gives information about the dual component group
 of a real reductive group: it returns the rank~$r$ such that the component
 group is isomorphic to $(\Z/2\Z)^r$.
@@ -4038,8 +4030,6 @@ in these coercions, which we define as |static| variables her as well.
 {
   coercion(str_type,Lie_type_type,"LT",Lie_type_coercion);
   coercion(ic_type,rd_type,"RdIc",inner_class_to_root_datum_coercion);
-  coercion(rf_type,ic_type,"IcRf",real_form_to_inner_class_coercion);
-  coercion(rf_type,rd_type,"RdRf",real_form_to_root_datum_coercion);
   coercion(int_type,split_type,"SpI",int_to_split_coercion);
   coercion(int_int_type,split_type,"Sp(I,I)",pair_to_split_coercion);
 }

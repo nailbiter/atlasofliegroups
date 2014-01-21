@@ -16,10 +16,6 @@ set square_classes(RealForm G)=[[int]]:square_classes(inner_class(G))
 {assume you want all strong real forms, i.e. Cartan 0, this is just print output}
 set print_strong_real(RealForm G)=void:print_strong_real(Cartan_class(G,0))
 
-{real_forms(G): assume Cartan 0, list of real forms [RealForm]}
-set real_forms(RealForm G)=[RealForm]:real_forms(Cartan_class(G,0))
-set real_forms(InnerClass ic)=[RealForm]:real_forms(Cartan_class(ic,0))
-
 {identify SO*(2m) via the information of square_classes(SO(2m,0))}
 set SOstar(int n)=let G=SO(n,0) in  let sc=square_classes(G) in real_forms(G)[sc[1][0]]
 set Spinstar(int n)=let G=Spin(n,0) in  let sc=square_classes(G) in real_forms(SO(n,0))[sc[1][0]]
@@ -69,6 +65,7 @@ strong_real_forms_type(ic,0)=[4,0,0,0,0]
 meaning one split strong real form and 4 compact ones
 }
 set strong_real_forms_same_type(InnerClass ic, int k)=[int]:square_classes(ic)[central_invariant(ic,k)]
+set strong_real_forms_same_type(RealForm G, int k)=[int]:square_classes(G)[central_invariant(inner_class(G),k)]
 set strong_real_forms_same_type(RealForm G)=strong_real_forms_same_type(G,form_number(G))
 
 {H^1(\Gamma,G)=H^1(\theta,G) is the number of strong real forms with given x^2\in Z}
