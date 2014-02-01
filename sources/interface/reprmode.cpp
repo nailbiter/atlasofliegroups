@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cstdio>   // not obviously used, but appears helpful for Windows
 
 #include "reprmode.h"
 #include "realmode.h"

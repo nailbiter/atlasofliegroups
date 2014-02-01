@@ -7,10 +7,9 @@
 
   For copyright and license information see the LICENSE file
 */
+#include <cstdio>   // not obviously used, but appears helpful for Windows
 
 #include "commands.h"
-
-#include <cstdio>   // not obviously used, but appears helpful for Windows
 #include <cstring>
 #include <iostream>
 #include <sstream>

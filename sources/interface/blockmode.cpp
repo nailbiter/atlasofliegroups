@@ -7,6 +7,7 @@
   For copyright and license information see the LICENSE file
 */
 
+#include <cstdio>   // not obviously used, but appears helpful for Windows
 #include <iostream>
 #include <fstream>
 

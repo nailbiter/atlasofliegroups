@@ -11,7 +11,7 @@
 
 #include <fstream>
 #include <string>
-
+#include <cstdio>   // not obviously used, but appears helpful for Windows
 /* the following macro should be set to an absolute path from the atlas
    makefile, but if not we use a relative path from the atlas directory */
 #ifndef MESSAGE_DIR_MACRO

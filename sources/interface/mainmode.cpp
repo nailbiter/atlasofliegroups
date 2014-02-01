@@ -7,10 +7,12 @@
 
   For copyright and license information see the LICENSE file
 */
+#include <cstdio>   // not obviously used, but appears helpful for Windows
 
 #include "mainmode.h"
 #include "commands.h"
 #include "test.h"     // to absorb test commands
+
 
 #include "basic_io.h"
 #include "complexredgp.h"
