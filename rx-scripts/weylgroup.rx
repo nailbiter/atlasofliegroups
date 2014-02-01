@@ -18,6 +18,5 @@ set make_dominant(RootDatum rd, [int] v)=([int],[int]):make_dominant_internal(rd
 
 set make_dominant(RootDatum rd,[rat] v)=([rat],[int]):
 let (num,denom)=%v in let (vector,w)=make_dominant(rd,num) in (vector/denom,w)
-set make_dominant(RealForm G,[rat] v)=([rat],[int]):make_dominant(root_datum(G),v)
 
 set inverse([int] v)=for i:#v downto 0 do v[i] od

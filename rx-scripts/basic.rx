@@ -200,7 +200,7 @@ set =(ParamPol P,ParamPol Q) = bool: #(P-Q)=0
 set *(Param p,rat alpha) = let (x,lambda,nu)=%p in param(x,lambda,alpha*nu)
 
 {need some overloads since coercion RealForm->InnerClass or RootDatum is disabled}
-set root_datum(RealForm G)=root_datum(inner_class(G))
+{set root_datum(RealForm G)=root_datum(inner_class(G))
 set semisimple_rank(RealForm G)=semisimple_rank(root_datum(G))
 set roots(RealForm G)=roots(root_datum(G))
 set coroots(RealForm G)=coroots(root_datum(G))
@@ -208,7 +208,7 @@ set nr_of_Cartan_classes(RealForm G)=nr_of_Cartan_classes(inner_class(G))
 set nr_of_real_forms(RealForm G)=nr_of_real_forms(inner_class(G))
 set distinguished_involution(RealForm G)=distinguished_involution(inner_class(G))
 set positive_roots(RealForm G)=positive_roots(root_datum(G))
-set simple_roots(RealForm G)=simple_roots(root_datum(G))
+set simple_roots(RealForm G)=simple_roots(root_datum(G))}
 
 set KGB(RealForm rf) = [KGBElt]: for i:KGB_size(rf) do KGB(rf,i) od
 set is_complex(int s,KGBElt x) = status(s,x)%4=0

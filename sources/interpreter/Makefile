@@ -18,8 +18,8 @@ INCLUDE_FLAGS := $(ATLAS_DIRS:%=-I$(atlas_sources)/%/)
 # version of CWEBx, see http://www-math.univ-poitiers.fr/~maavl/CWEBx
 # the ++ flags make them expect C++ rather than C
 
-CTANGLE := ../../cweb-x3.51/ctanglex ++
-CWEAVE := ../../cweb-x3.51/cweavex ++ $(INCLUDE_FLAGS)
+CTANGLE := ../../cweb-x3.52/ctanglex ++
+CWEAVE := ../../cweb-x3.52/cweavex ++ $(INCLUDE_FLAGS)
 
 # these are the optional flags for CWEBx, modify them according to your taste
 CWEAVEFLAGS  := -p +mde

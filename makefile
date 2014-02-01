@@ -31,7 +31,7 @@ BINDIR := $(INSTALLDIR)/../bin
 
 version = $(shell perl getversion.pl)
 messagedir := $(INSTALLDIR)/messages/
-cweb_dir = cweb-x3.51
+cweb_dir = cweb-x3.52
 
 # atlas_dirs contains subdirectories of 'atlas/sources' that need compilation
 # realex_dirs are where the object files for realex are situated
