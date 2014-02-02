@@ -1,0 +1,165 @@
+<misc
+<matrix
+<sort
+<lattice
+<K
+{----------------some more general group constructions----------------}
+{real forms}
+
+{real_forms(G): assume Cartan 0, list of real forms [RealForm]}
+set real_forms(RealForm G)=[RealForm]:real_forms(Cartan_class(G,0))
+set real_forms(InnerClass ic)=[RealForm]:real_forms(Cartan_class(ic,0))
+
+{preferred terminology: inner_forms}
+	   
+set inner_forms(CartanClass C)=[RealForm]:real_forms(C)
+set inner_forms(RealForm G)=[RealForm]:real_forms(G)
+set inner_forms(InnerClass ic)=[RealForm]:real_forms(ic)
+
+set print_real_forms(RealForm G)= void:
+  for n@i in form_names(inner_class(G))
+  do prints(i,": ",n)
+  od; prints("To define a real form rf do: set rf=real_forms(G)[i]")
+set print_inner_forms(RealForm G)= void:print_real_forms(G)
+
+{ defining split groups}
+set split_form(RootDatum r)=quasisplit_form(inner_class(r,-id_mat(rank(r))))
+set split_form(RealForm G)=RealForm: split_form(root_datum(G))
+
+{split form of given Lie type is taken to be simply connected (times a split torus)}
+set split_form(LieType t)=split_form(simply_connected(t))
+set split_form(string s)= RealForm: split_form(s)
+
+{quasisplit form in an inner class}
+{this is already defined internally in realex
+quasisplit_form(InnerClass ic), quasisplit_form(RealForm G)}
+
+{quasicompact form in an inner class}
+set quasicompact_form(InnerClass ic)=real_forms(ic)[0]
+set quasicompact_form(RealForm G)=real_forms(G)[0]
+
+{direct product of RootDatum, InnerClass and RealForm}
+
+set *(RootDatum R,RootDatum S)=RootDatum:
+root_datum(block_matrix(simple_roots(R),simple_roots(S)),block_matrix(simple_coroots(R),simple_coroots(S)),rank(R)+rank(S))
+ 
+set *(InnerClass ic1,InnerClass ic2)=InnerClass:
+inner_class(*(root_datum(ic1),root_datum(ic2)),block_matrix(distinguished_involution(ic1),distinguished_involution(ic2)))
+
+set form_number_by_fiber_part(InnerClass ic,vec v)=
+let realforms=real_forms(ic),
+i=0,
+rv=-1 in
+while i<#realforms do if (fiber_part(realforms[i])=v) then (rv:=i,i:=#realforms) else i:=i+1 fi od;rv
+
+set *(RealForm G,RealForm H)=
+let ic=inner_class(G)*inner_class(H) in
+let ((n,,),,,)=Cartan_info(fundamental_Cartan(G)) in
+{fiber part of G has size 2^number of compact factors of fundamental torus}
+let v=[] in
+let ()=for i in fiber_part(G) do for j in fiber_part(H) do v:=v#(i+(2^n)*j) od od in
+real_forms(ic)[form_number_by_fiber_part(ic,sort(v))]
+
+
+{----------------radical, i.e. maximal central torus----------------}
+
+set radical(RootDatum rd)=RootDatum:root_datum([],[],rank(rd)-semisimple_rank(rd))
+
+set radical(InnerClass ic)=RealForm:
+let M=distinguished_involution(ic) in let
+X0=kernel(^(simple_coroots(ic))) in let
+Q=sub_matrix(M,X0) in
+real_form(inner_class(radical(root_datum(ic)),Q),0)
+
+set radical(RealForm G)=radical(inner_class(G))
+set maximal_central_torus(RootDatum rd)=radical(rd)
+set maximal_central_torus(InnerClass ic)=radical(ic)
+set maximal_central_torus(RealForm G)=radical(G)
+
+{----------------derived inner class and real form----------------}
+
+{built-in derived(rd) returns a pair (RootDatum,mat), just want RootDatum}
+set derived_root_datum(RootDatum rd)=let (rv,)=derived(rd) in rv
+
+set derived_action(mat M,RootDatum rd)=mat:
+let (derived_rd,T)=derived(rd) in T*M*right_inverse(T) 
+
+set derived(InnerClass ic)=
+inner_class(derived_root_datum(root_datum(ic)),derived_action(distinguished_involution(ic),root_datum(ic)))
+
+set derived(RealForm G)=
+real_forms(derived(inner_class(G)))[form_number(G)]
+
+{----------------adjoint root datum, inner class and group----------------}
+
+set adjoint(RootDatum rd)=RootDatum:adjoint(Lie_type(derived_root_datum(rd)))
+
+set adjoint(InnerClass ic)=
+let ic=derived(ic) in
+let rd=root_datum(ic) in
+let delta=distinguished_involution(ic) in
+let adjoint_rd=adjoint(rd) in
+let Rad=simple_roots(adjoint_rd) in
+let Rsc=simple_roots(rd) in
+let (Rad_inverse,dad)=invert(Rad) in 
+let (Rsc_inverse,dsc)=invert(Rsc) in 
+let delta_ad=Rad_inverse*Rsc*delta*Rsc_inverse*Rad in 
+let ()=for i:n_rows(delta_ad) do for j:n_columns(delta_ad) do delta_ad[i,j]:=rattoint(delta_ad[i,j]/(dad*dsc)) od od in
+inner_class(adjoint_rd,delta_ad)
+
+set adjoint(RealForm G)=
+let G=derived(G) in real_forms(adjoint(inner_class(G)))[form_number(G)]
+
+{----------------real Levi factors----------------}
+
+set levi(RootDatum rd,[int] S)=
+let (simple_levi_roots,simple_levi_coroots)=([],[]) in 
+let ()=for i in S do 
+(simple_levi_roots#:=simple_roots(rd)[i],
+ simple_levi_coroots#:=simple_coroots(rd)[i]) od 
+in root_datum(simple_levi_roots,simple_levi_coroots,rank(rd)) 
+
+set levi(RealForm G,[int] S)=
+let complex_levi=levi(root_datum(G),S) in 
+let simple_levi_roots=simple_roots(complex_levi) in 
+let levi_theta=sub_matrix(distinguished_involution(G),simple_levi_roots) in
+inner_class(complex_levi,distinguished_involution(G))
+
+
+
+
+
+{----------------tests for classes of groups----------------}
+
+
+set fundamental_Cartan(RealForm G)=CartanClass:Cartan_class(G,0)
+set most_split_Cartan(RealForm G)=CartanClass:Cartan_class(G,nr_of_Cartan_classes(G)-1)
+
+set is_equal_rank(RealForm G)=bool:
+let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 
+
+set is_split(RealForm G)=bool:
+let ((a,b,),,,)=Cartan_info(most_split_Cartan(G)) in a+b=0 
+
+set is_quasisplit(RealForm G)=bool:form_number(G)=nr_of_real_forms(G)-1
+set is_quasicompact(RealForm G)=bool:form_number(G)=0
+
+set is_semisimple(RootDatum rd)=bool:semisimple_rank(rd)=rank(rd)
+set is_semisimple(RealForm G)=bool:is_semisimple(root_datum(G))
+
+set is_simply_connected(RootDatum rd)=bool:is_semisimple(rd) and  abs(det(simple_coroots(rd)))=1 
+
+set is_simply_connected(InnerClass ic)=bool:is_simply_connected(root_datum(ic))
+
+set is_adjoint(RootDatum rd)=bool:is_semisimple(rd) and is_simply_connected(dual(rd))
+set is_adjoint(InnerClass ic)=is_adjoint(root_datum(ic))
+set is_adjoint(RealForm G)=is_adjoint(root_datum(G))
+
+set is_connected_center(RootDatum rd)=is_simply_connected(derived_root_datum(dual(rd)))
+
+{for real groups return information about the topology of G(R)}
+
+set is_simply_connected_real_group(RealForm G)=is_simply_connected(root_datum(K_0(G)))
+
+
+

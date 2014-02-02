@@ -1,0 +1,95 @@
+<misc
+<matrix
+<det
+
+{M is an nxk matrix, columns of M define a Z-module W}
+
+{basis of sublattice: M=SDT
+basis is {a_i*v_i|i=1,...,k} where a_1,...,a_k are the invariant factors of M
+}
+set submodule_basis(mat M)=mat:
+let (S,D,T)=weak_snf(M) in 
+let v=nonzero_diagonal_elements(D) in
+for i:#v do v[i]*Z_invert(S)[i] od
+ 
+{basis of quotient by sublattice
+ only defined if sublattice is a direct factor, <=> all invariant factors are \pm 1
+M=SDT
+take last columns of S, having 0 diagonal entry
+}
+set quotient_module_basis(mat M)=
+let (S,D,T)=weak_snf(M) in 
+let v=nonzero_diagonal_elements(D) in
+let p=product(v) in if abs(p) !=1 then error("sublattice is not a direct factor") else
+let Sinv=Z_invert(S) in 
+for i:n_columns(Sinv)-#v do Sinv[i+#v] od
+fi
+
+{basis of quotient by sublattice, M=SDT
+take last columns of S, having 0 diagonal entry
+ignoring invariant factors: amounts to taking the closure of the 
+sublattice L, i.e. the smallest L' containing L which is a direct factor
+}
+set closure_quotient_module_basis(mat M)=
+let (S,D,T)=weak_snf(M) in 
+let v=nonzero_diagonal_elements(D) in
+let Sinv=Z_invert(S) in 
+for i:n_columns(Sinv)-#v do Sinv[i+#v] od
+
+{M is an nxk matrix whose columns span a submodule W of V=Z^n
+ A is an nxn matrix preserving W
+ sub_matrix(M,W) is the matrix of M on W, using the basis from submodule_basis(M)
+}
+set sub_matrix(mat A,mat M)=
+let P=([vec]:M)#([vec]:kernel(^M)) in 
+let (Pinverse,d)=invert(P) in 
+let Q=minor(Pinverse*A*P,n_columns(M)) in
+for i:n_rows(Q) do for j:n_columns(Q) do Q[i,j]:=rattoint(Q[i,j]/d) od od;Q
+
+{M is an nxk matrix whose columns span a submodule W of V=Z^n
+ A is an nxn matrix preserving W
+ quotient_matrix(M,W) is the matrix of M on V/W, using the basis from quotient_module_basis(M)
+}
+set quotient_matrix(mat M,mat A)=
+let P=([vec]:submodule_basis(M))#([vec]:quotient_module_basis(M)) in 
+let (Pinverse,d)=invert(P) in 
+let Q=minor(Pinverse*A*P,n_columns(A)-n_columns(M),n_columns(M)) in
+for i:n_rows(Q) do for j:n_columns(Q) do Q[i,j]:=rattoint(Q[i,j]/d) od od;Q
+
+{M is an nxk matrix whose columns span a submodule W of V=Z^n
+ projection of v on V/W in basis from quotient_module_basis
+}
+set projection(mat M, vec v)=(mat,[int]):
+{let ()=prints("computing projection with M=", M, "v= ", v) in}
+let sub=[vec]:submodule_basis(M) in
+let quotient=[vec]:closure_quotient_module_basis(M) in
+{let ()=prints("quotient basis:", quotient) in}
+let P=mat:(sub#quotient) in 
+let (Pinverse,d)=invert(P) in
+{let ()=prints("warning: P=", P, "and d=", d)  in}
+{last rows of Pinverse} 
+let w=Pinverse*v in
+let Q = ^for i:#w-n_columns(sub) do (^Pinverse)[n_columns(sub)+i] od in (Q,Q*v)
+{let ()=prints("projection=", Q*v) in (Q,Q*v)}
+{let u=for i:#w-n_columns(sub) do w[n_columns(sub)+i] od in 
+let ()=prints("QV=",Q*v, "u=", u) in u}
+
+{M is an nxk matrix whose columns span a submodule  W of V=Z^n
+ coprojection of v: projection of v on (closure of W)=V/(closure of W)-perp
+ closure of W: contains W, is a direct factor (minimal for these properties)}
+set coprojection(mat M, vec v)=(mat,[int]):
+{let ()=prints("computing coprojection with M=", M, "v= ", v) in}
+let sub=[vec]:submodule_basis(M),
+quotient=[vec]:closure_quotient_module_basis(M) in
+let P=mat:(sub#quotient) in 
+let ()=prints("P=",P) in
+let (Pinverse,d)=invert(P) in
+let ()=prints("warning: P=", P, "and d=", d)  in
+{first rows of Pinverse} 
+let w=Pinverse*v in
+let Q = ^for i:n_columns(sub) do (^Pinverse)[i] od in (Q,Q*v)
+
+{let u=for i:#w-n_columns(sub) do w[n_columns(sub)+i] od in 
+let ()=prints("QV=",Q*v, "u=", u) in u}
+
+

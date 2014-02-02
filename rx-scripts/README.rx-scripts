@@ -4,32 +4,40 @@ The files have the extension .rx, for example basic.rx
 lietypes          lets you say C4 instead of "C4", and so forth
 basic             essential basic functions
 misc              more standard useful commands (=>basic,det)
-groups            defining groups like this: set G=SL(2,R) (=>basic)
+groups            defining groups like this: set G=SL(2,R) (=>basic,matrix)
+group_operations  miscelanneous group stuff (Levis, radical, adjoint...) (=> misc, matrix, sort, lattice, K)
 torus		  defining real tori
 generate_groups   run over many groups (=>basic)
 det               matrix functions (determinant, inverse)
+matrix		  more matrix functions (minors, Smith normal form, right and left inverses...) (=>basic)
 weylgroup 	  basic Weyl group functions, also see W_orbit
-sort              functions for sorting parameter lists in various ways (=>misc)
+sort              functions for sorting parameter lists in various ways (=>representations)
 test              functions for testing the algorithms in many cases (=>groups,hermitian,unitary,nilpotent,lietypes)
 iterate_deform    algorithm for deforming nu to 0 (not essential - mostly moved into atlas) (=>basic)
 sp4               some stuff tailored to Sp(4,R)
-W_orbit    	  compute W-orbits and also generate elements of W (=>misc, weylgroup,arraysearch)
+W_orbit    	  compute W-orbits and also generate elements of W (=>misc,weylgroup,arraysearch)
 array_search	  binary search of sorted arrays used by W_orbit
 galois		  galois cohomology (=>groups,generate_groups)
 kl                Kazhdan-Lusztig polynomials (=>misc)
+lattice		  lattice calculations related to submodules and quotient modules (=>misc, matrix,det)
 modules    	  irreducible modules J(p) and standard modules I(p) (=>kl)
-translate  	  translation principle (=>modules)
-coherent   	  coherent continuation (=>translate, weylgroup)
+translate  	  translation principle (=>modules, hermitian)
+coherent   	  coherent continuation (=>translate, W_orbit)
 hermitian         functions related to c-forms and Hermitian forms (=>kl)
 unitary           some unitary parameters
 nilpotent         for parameters related to nilpotent orbits (=>basic)
-my                sample personal rx file
+representations   some common representations (trivial, spherical principal series,...) (=>misc, group_operations)
+K		  identity component of complexified maximal compact subgroup of G (=>lattice,array_search)
+my                sample personal rx file (=> everything)
 
 To load basic.rx, give this command in realex:
 <basic   (or <basic.rx)
 
-The provided file my.rx loads everything, so do this:
+To reload a file after modifying it do
+<<basic
 
+The provided file my.rx loads everything, so do this:
 <my
+to load everything.
 
 We recommend editing my.rx to suit your needs.

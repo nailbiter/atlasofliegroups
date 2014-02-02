@@ -1,0 +1,18 @@
+set torus_involution(int a,int b,int c)=mat:
+let M=id_mat(a+b+2*c) in
+ (for i:b from a do M[i,i]:=-1 od,
+ for i:c do 
+   M[a+b+2*i,a+b+2*i]:=0;
+   M[a+b+2*i+1,a+b+2*i+1]:=0;
+   M[a+b+2*i+1,a+b+2*i]:=1;
+   M[a+b+2*i,a+b+2*i+1]:=1 od);M
+
+set torus(int a,int b, int c)=RealForm:
+let rd=root_datum([],[],a+b+2*c) then
+theta=torus_involution(a,b,c) then
+ic=inner_class(rd,theta) in
+real_form(ic,0)
+
+set compact_torus(int k)=RealForm:torus(k,0,0)
+set split_torus(int k)=RealForm:torus(0,k,0)
+set complex_torus(int k)=RealForm:torus(0,0,k)
