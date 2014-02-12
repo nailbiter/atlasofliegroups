@@ -176,6 +176,7 @@ set involution (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
   ; theta
 )
 
+
 set imaginary_roots (InnerClass ic, [int] tw) = mat:   { tw is a Weyl word }
   imaginary_roots(ic,involution(ic,tw))
 set real_roots (InnerClass ic, [int] tw) = mat:        { tw is a Weyl word }
@@ -222,6 +223,7 @@ set status_code(int s,KGBElt x) = ["C-","ic","r ","nc","C+"][status(s,x)]
 set status_codes(KGBElt x) =
   for s:semisimple_rank(real_form(x)) do status_code(s,x) od
 set x(Param p) = KGBElt: let (x,,) =%p in x {so don't have to load misc.rx}
+set involution(Param p)=involution(x(p))
 set status_code(int s,Param p)=status_code(s,x(p))
 set status_codes(Param p)=status_codes(x(p))
 

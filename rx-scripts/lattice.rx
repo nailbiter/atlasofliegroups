@@ -82,9 +82,9 @@ set coprojection(mat M, vec v)=(mat,[int]):
 let sub=[vec]:submodule_basis(M),
 quotient=[vec]:closure_quotient_module_basis(M) in
 let P=mat:(sub#quotient) in 
-let ()=prints("P=",P) in
+{let ()=prints("P=",P) in}
 let (Pinverse,d)=invert(P) in
-let ()=prints("warning: P=", P, "and d=", d)  in
+{let ()=prints("warning: P=", P, "and d=", d)  in}
 {first rows of Pinverse} 
 let w=Pinverse*v in
 let Q = ^for i:n_columns(sub) do (^Pinverse)[i] od in (Q,Q*v)

@@ -1,208 +1,99 @@
-<lattice
-<array_search
+{M=list of n m-column vectors, delta=mxm matrix involution}
+set restrict_roots(mat roots,mat delta)=
+if #roots=(0,0) then  (mat:[],[]) else
+let m=n_columns(delta) in 
+let id=id_mat(m) in 
+let M=id+delta in
+let (Q,)= projection(kernel(M),null(m)) in (Q,Q*roots) fi
+
+{throw away noncompact imaginary roots, only keep compact imaginary roots}
+set discard_nci(mat roots, mat coroots, KGBElt x)=
+let rd=root_datum(real_form(x)) in 
+let rv_roots=[], rv_coroots=[] in 
+let t=torus_factor(x) in
+let theta=involution(x) in 
+for alpha@i in roots do  
+{ let ()=prints(t, rhocheck(rd), "alpha: ", alpha, ", ", alpha*(t+rhocheck(rd))) in}
+ if ((theta*alpha != alpha) or 
+      ((theta*alpha=alpha) and rattoint(alpha*(t+rhocheck(rd)))%2=0))   {SHOULD BE 4 not 2???} 
+ then (rv_roots#:=alpha, rv_coroots#:=coroots[i]) fi
+od;(mat:rv_roots,mat:rv_coroots)
+
+{to embed coroots in X_*^{^delta} need to replace alpha^v with
+alpha^v+^delta(\alpha_v) or 
+2*(alpha^v+^delta(\alpha_v))}
+set fix_coroots(mat roots,mat coroots, mat delta)=mat:
+let rv=[] in 
+for alpha@i in roots do 
+ let checkalpha=coroots[i] in 
+{  let ()=prints("alpha:", alpha, "alpha^v=", checkalpha, ", ", ^delta*checkalpha, ", ", alpha*(^delta*checkalpha), ", ", checkalpha+^delta*checkalpha) in}
+  if ^delta*checkalpha=checkalpha then rv#:=checkalpha 
+  elif alpha*(^delta*checkalpha)=0 then rv#:=checkalpha+^delta*checkalpha 
+  elif alpha*(^delta*checkalpha)=-1 then rv#:=2*(checkalpha+^delta*checkalpha) fi od;rv
+
+{write image of roots in L=(X_*)^{^delta} in basis of L; 
+also return the matrix of (I+^delta) which takes X_* to L}
+set inject_coroots(mat coroots,mat delta)=
+if #coroots=(0,0) then  (mat:[],[]) else
+let m=n_columns(delta) in 
+let id=id_mat(m) in 
+let N=id-^delta in
+let (Q,)= coprojection(kernel(N),null(m)) in (Q,Q*coroots) fi
 
 set remove_duplicates([[int]] list)=[[int]]:
 if #list=0 then null(1,0) else
 let rv=[[int]]:[] in
 for v in list do 
- let need=true, i=0 in let()= while i<#rv do if v=rv[i] then  (need:=false, i:=#rv) else i:=i+1 fi od in 
+ let need=true, i=0 in let()= while i<#rv do if (v=rv[i] or v=20*rv[i])  then  (need:=false, i:=#rv) else i:=i+1 fi od in 
  if need then  rv:=rv#v  fi od;rv fi
 
-set imaginary_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
-( let im_roots = [vec]: [],im_coroots=[vec]:[],roots=roots(rd), coroots=coroots(rd) in
-  for alpha@i in roots do if theta*alpha = alpha then
-    (im_roots #:= alpha, im_coroots#:=coroots[i]) 
-  fi od
-; if #im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (im_roots,im_coroots) fi
-)
+{remove roots which are 2*another root}
+set remove_long([[int]] list)=[[int]]:
+if #list=0 then null(1,0) else
+let rv=[[int]]:[] in
+for v in list do 
+ let need=true, i=0 in let ()=while i<#list do if (v=2*list[i]) then (need:=false, i:=#list) else i:=i+1 fi od in
+ if need then  rv:=rv#v  fi od;rv fi
 
-
-set imaginary_roots_and_coroots (RootDatum rd, KGBElt x) = (mat,mat):imaginary_roots_and_coroots (rd,involution(x))
-set imaginary_roots_and_coroots (RealForm G, KGBElt x) = (mat,mat):imaginary_roots_and_coroots (root_datum(G),involution(x))
-
-set compact_roots_and_coroots(RootDatum rd,KGBElt x)=(mat,mat):
-(let (im_roots,im_coroots)=imaginary_roots_and_coroots(rd,involution(x)) in
-let cpt_roots=[vec]:[], cpt_coroots=[vec]:[] in
-let t=torus_factor(x) in
-for alpha@i in im_roots do  
-{let ()=prints("alpha:", alpha, ", ", rattoint(alpha*(t+rhocheck(rd)))) in}
- if rattoint(alpha*(t+rhocheck(rd)))%2=0 then   {SHOULD BE 4 not 2???}
-{let ()=prints("adding ", alpha, ", ", im_coroots[i]) in }
-(cpt_roots#:=alpha,cpt_coroots#:=im_coroots[i])
- fi od
-; if #cpt_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (cpt_roots,cpt_coroots) fi
-)
-set compact_roots_and_coroots (RealForm G, KGBElt x) = (mat,mat):compact_roots_and_coroots (root_datum(G),x)
-
-set is_positive(vec v,RootDatum rd)=v*rhocheck(rd)>0
- 
-{pair of roots <alpha,theta(alpha)>=0-> compact imaginary root alpha+theta(alpha)
-see Groups with Covers Lemma 2.5
-}
-set complex_imaginary_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
-( let cx_im_roots = [[int]]: [],cx_im_coroots=[[int]]:[],roots=roots(rd), coroots=coroots(rd) in
-  for alpha@i in roots do if (theta*alpha)*coroots[i] = 0 then
-    (cx_im_roots #:= alpha, cx_im_coroots#:=coroots[i]) 
-  elif (theta*alpha)*coroots[i] = -1 then
-    (cx_im_roots #:= alpha, cx_im_coroots#:=2*coroots[i]) 
-  fi od
-; if #cx_im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else
- (cx_im_roots,cx_im_coroots)  fi
-)
-
-set all_compact_roots_and_coroots (RootDatum rd, KGBElt x) = (mat,mat):
-let (A,B)=compact_roots_and_coroots (rd,x) in 
-let A=A, B=B in 
-let (C,D)=complex_imaginary_roots_and_coroots (rd,involution(x)) 
-in (([vec]:A)#([vec]:C),(([vec]:B)#([vec]:D)))
-
-set all_compact_roots_and_coroots (RealForm G,KGBElt x) = (mat,mat):
-all_compact_roots_and_coroots (root_datum(G), x)
-
-set all_compact_roots_and_coroots (RealForm G) = (mat,mat):
-all_compact_roots_and_coroots (root_datum(G), KGB(G,0))
-
-
-
-
-set positive_compact_roots_and_coroots(RootDatum rd,KGBElt x)=(mat,mat):
-(let (cpt_roots,cpt_coroots)=all_compact_roots_and_coroots(rd,x) in
- let positive_cpt_roots=[vec]:[],positive_cpt_coroots=[vec]:[] in
- for alpha@i in cpt_roots do if is_positive(alpha,rd)  then
- (positive_cpt_roots#:=alpha,positive_cpt_coroots#:=cpt_coroots[i]) fi od
-; if #positive_cpt_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (positive_cpt_roots,positive_cpt_coroots) fi
-)
-set positive_compact_roots_and_coroots (RootDatum rd, KGBElt x) = (mat,mat):positive_compact_roots_and_coroots (rd,x)
-set positive_compact_roots_and_coroots (RealForm G, KGBElt x) = (mat,mat):positive_compact_roots_and_coroots (root_datum(G),x)
-
-set rhocheck_K(RootDatum rd,KGBElt x)=ratvec:
-let (pos_roots,pos_coroots)=positive_compact_roots_and_coroots(rd,x) in sum(pos_coroots)/2
-set rhocheck_K(RootDatum rd,KGBElt x)=ratvec:rhocheck_K(rd,x)
-set rhocheck_K(RealForm G,KGBElt x)=ratvec:rhocheck_K(root_datum(G),x)
-
-set simple_compact_roots_and_coroots(RootDatum rd,KGBElt x)=(mat,mat):
-(let (pos_roots,pos_coroots)=positive_compact_roots_and_coroots(rd,x) in 
- let simple_cpt_roots=[vec]:[],simple_cpt_coroots=[vec]:[] in
- let rhocheck_K=sum(pos_coroots)/2 in {let ()=prints("rhocheck=", rhocheck_K) in }
- for alpha@i in pos_roots do if alpha*rhocheck_K=1  then
- (simple_cpt_roots#:=alpha,simple_cpt_coroots#:=pos_coroots[i]) fi od
-; if #simple_cpt_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (simple_cpt_roots,simple_cpt_coroots) fi
-)
-set simple_compact_roots_and_coroots(RootDatum rd,KGBElt x)=(mat,mat):simple_compact_roots_and_coroots(rd,x)
-set simple_compact_roots_and_coroots(RealForm G)=(mat,mat):simple_compact_roots_and_coroots(root_datum(G), KGB(G,0))
-
-{root datum is (X,A,Y,B) X=X^*(T), Y=X_*(T)
- new root datum is (quotient of X, image of A, Y^{^delta}, certain averaged elements of B)
- X -> X_K=X/kernel of projection = X/(1-delta)X 
- Y -> Y_K=Y^{^delta}=kernel(1-^delta)
- both of these are true since T has no split factors (otherwise off by finite index)
-}
-set K_simple_compact_roots_and_coroots(RealForm G)=
-let (roots,coroots)=simple_compact_roots_and_coroots (G) in 
-{let ()=prints("start roots: ", roots, " coroots: ", coroots) in}
-let delta=distinguished_involution(G) in 
-let id=id_mat(rank(G)) in 
-{kernel(M)=(1-delta)X; kernel(N)=Y^{^delta}}
-let (M,N)=(id+delta,id-^delta) in 
-{Q1=matrix of map from X to X_K}
-let Q1=let (Q,w)=projection(kernel(M),null(rank(G))) in Q in 
-let K_rank=n_rows(Q1) in
-let K_delta=quotient_matrix(kernel(M),delta) in 
-{K_roots=projection of roots}
-let roots=for v in roots do let (,w)= projection(kernel(M),v) in w od in
-{Q2= matrix of map from Y to Y^{^delta}}
-{let Q2=let v=null(rank(G)) in let (Q,w)= coprojection(kernel(N),v+^delta*v) in Q  in }
-let Q2=let v=null(rank(G)) in let (Q,w)= coprojection(kernel(N),null(rank(G))) in Q  in 
-let U=Q1*(^Q1) in
-let (Uinverse,d)=invert(U) in 
-{let J=Uinverse*(Q1*^Q2)*Z_invert(Q2*^Q2) in}
-let J=left_inverse(^Q1)*right_inverse(Q2) in
-{coroots: 
- compact a -> a
- <a,^delta(a)>=0 -> a+^delta(a)
- <a,^delta(a)>=-1 -> 2(a+^delta(a)) but don't need this,}
-let coroots=for v in coroots do 
-  if ^delta*v=v then let (Q,w)= coprojection(kernel(N),2*v) in w 
-  else let (Q,w)= coprojection(kernel(N),v+^delta*v) in w fi  od in
-{let ()=prints("finish roots:", roots) in }
-let roots=remove_duplicates(roots) in  
-let coroots=remove_duplicates(coroots) in 
-(mat:roots,mat:coroots,Q1,Q2,J,U,d,K_rank,K_delta)
-
-{root datum is (X,A,Y,B) X=X^*(T), Y=X_*(T)
- new root datum is (quotient of X, image of A, Y^{^delta}, certain averaged elements of B)
- X -> X_K=X/kernel of projection = X/(1-delta)X 
- Y -> Y_K=Y^{^delta}=kernel(1-^delta)
- both of these are true since T has no split factors (otherwise off by finite index)
-}
-set K_positive_compact_roots_and_coroots(RealForm G)=
-let (roots,coroots)=positive_compact_roots_and_coroots (root_datum(G), KGB(G,0)) in 
-{let ()=prints("start roots: ", roots, " coroots: ", coroots) in}
-let delta=distinguished_involution(G) in 
-let id=id_mat(rank(G)) in 
-{kernel(M)=(1-delta)X; kernel(N)=Y^{^delta}}
-let (M,N)=(id+delta,id-^delta) in 
-{Q1=matrix of map from X to X_K}
-let Q1=let (Q,w)=projection(kernel(M),null(rank(G))) in Q in 
-let K_rank=n_rows(Q1) in
-let K_delta=quotient_matrix(kernel(M),delta) in 
-{K_roots=projection of roots}
-let roots=for v in roots do let (,w)= projection(kernel(M),v) in w od in
-{Q2= matrix of map from Y to Y^{^delta}}
-{let Q2=let v=null(rank(G)) in let (Q,w)= coprojection(kernel(N),v+^delta*v) in Q  in }
-let Q2=let v=null(rank(G)) in let (Q,w)= coprojection(kernel(N),null(rank(G))) in Q  in 
-let U=Q1*(^Q1) in
-let (Uinverse,d)=invert(U) in 
-{let J=Uinverse*(Q1*^Q2)*Z_invert(Q2*^Q2) in}
-let J=left_inverse(^Q1)*right_inverse(Q2) in
-{coroots: 
- compact a -> a
- <a,^delta(a)>=0 -> a+^delta(a)
- <a,^delta(a)>=-1 -> 2(a+^delta(a)) but don't need this,}
-let coroots=for v in coroots do 
-  if ^delta*v=v then let (Q,w)= coprojection(kernel(N),2*v) in w 
-  else let (Q,w)= coprojection(kernel(N),v+^delta*v) in w fi  od in
-{let ()=prints("finish roots:", roots) in }
-let roots=remove_duplicates(roots) in  
-let coroots=remove_duplicates(coroots) in 
-(mat:roots,mat:coroots,Q1,Q2,J,U,d,K_rank,K_delta)
-
-
+{removed coroots which are (1/2)*another root}
+set remove_short([[int]] list)=[[int]]:
+if #list=0 then null(1,0) else
+let rv=[[int]]:[] in
+for v in list do 
+ let need=true, i=0 in let ()=while i<#list do if (2*v=list[i]) then (need:=false, i:=#list) else i:=i+1 fi od in
+ if need then  rv:=rv#v  fi od;rv fi
 
 set K_0(RealForm G)=RealForm:
-{don't want to read group_operations.rx}
-let is_equal_rank =let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 in
-if is_equal_rank then
- let (roots,coroots)=simple_compact_roots_and_coroots(G) in
- real_form(inner_class(root_datum(roots,coroots,rank(G)),id_mat(rank(G))),0) 
-else
- let (roots,coroots,Q1,Q2,J,U,d,target_rank,target_delta)=K_simple_compact_roots_and_coroots(G) in 
- let coroots =   mat:if n_rows(coroots) >0 then J*coroots else mat:null(target_rank,0) fi  {if no coroots then can't multiply by J} in 
- real_form(inner_class(root_datum(roots,coroots,target_rank),target_delta),0) fi
-
-set K_0_info(RealForm G)=
-{don't want to read group_operations.rx}
-let is_equal_rank =let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 in
-if is_equal_rank then
-  error("never mind") 
-else
- let (roots,coroots,Q1,Q2,J,U,d,target_rank,target_delta)=K_simple_compact_roots_and_coroots(G) in 
- let coroots =   mat:if n_rows(coroots) >0 then J*coroots else mat:null(target_rank,0) fi  {if no coroots then can't multiply by J} in (roots,coroots,Q1,Q2,J,U,d,target_rank,target_delta) fi
+let pos_roots=positive_roots(G) in 
+{let ()=prints("pos roots:", ", ", pos_roots) in}
+let pos_coroots=positive_coroots(G) in 
+{let ()=prints("pos coroots:", ", ", pos_coroots) in}
+let delta=distinguished_involution(G),
+(pos_roots,pos_coroots)=discard_nci(pos_roots,pos_coroots,KGB(G,0)) in
+{let ()=prints("new pos roots:", ", ", pos_roots) in
+let ()=prints("new pos coroots:", ", ", pos_coroots) in}
+let (P,restricted_positive_roots)=restrict_roots(pos_roots,delta) in
+let fix_positive_coroots=fix_coroots(pos_roots,pos_coroots,delta) in 
+let (Q,injected_positive_coroots)=inject_coroots(fix_positive_coroots,delta) in 
+{let ()=prints("restricted positive roots:", restricted_positive_roots) in}
+{let ()=prints("injected positive coroots:", injected_positive_coroots) in}
+let R=mat:remove_duplicates(restricted_positive_roots) in 
+let S=mat:remove_duplicates(injected_positive_coroots) in 
+let R_reduced=mat:remove_long(R) in 
+let S_reduced=mat:remove_short(S) in 
+{let ()=prints("R and S:", R, ", ", S) in }
+{let ()=prints("R_reduced and S_reduced:", R_reduced, ", ", S_reduced) in }
+let J=left_inverse(^P)*right_inverse(Q) in
+{let ()=prints("J: ", J) in}
+let JS_reduced=J*S_reduced in 
+let rho=sum(R_reduced) in
+let checkrho=sum(JS_reduced) in 
+let simple_roots=[] in 
+ let ()= for a in R_reduced do if a*checkrho=2 then simple_roots#:=a fi od in
+let simple_coroots=[] in 
+ let ()= for a in JS_reduced do if a*rho=2 then simple_coroots#:=a fi od in
+ let rd=root_datum(simple_roots,simple_coroots,n_rows(simple_roots)) in  
+ quasicompact_form(inner_class(rd, id_mat (rank(rd))))
+{(mat:simple_roots,mat:simple_coroots,J,R_reduced,S_reduced,^simple_roots*simple_coroots,rd)}
 
 set K(RealForm G)=(RealForm,int):(K_0(G), components_rank(G))
-
-set skip(RealForm G)=bool:
-let is_equal_rank =let ((,a,b),,,)=Cartan_info(fundamental_Cartan(G)) in a+b=0 in
-if is_equal_rank then false else
-let (roots,coroots)=simple_compact_roots_and_coroots (G) in 
-let delta=distinguished_involution(G) in 
-let M=id_mat(rank(G))+delta in
-let N=id_mat(rank(G))-^delta in                                  
-let Q1=let (Q,w)=projection(kernel(M),null(rank(G)))  in Q in 
-let rv=false in
-let roots=for v in roots do 
-  if delta*v=v then let (Q,w)= projection(kernel(M),v) in  
-   let (num,denom)=%((ratvec:w)/2) in if denom !=1 then 
-    rv:=true;w
-    else ratvectovec(w/2) fi
-  else let (Q,w)= projection(kernel(M),v) in w fi  od in rv fi

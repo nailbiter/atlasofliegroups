@@ -159,7 +159,7 @@ set is_connected_center(RootDatum rd)=is_simply_connected(derived_root_datum(dua
 
 {for real groups return information about the topology of G(R)}
 
-set is_simply_connected_real_group(RealForm G)=is_simply_connected(root_datum(K_0(G)))
+{set is_simply_connected_real_group(RealForm G)=is_simply_connected(root_datum(K_0(G)))}
 
 
 

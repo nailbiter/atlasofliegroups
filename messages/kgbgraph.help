@@ -34,7 +34,7 @@ name of 'spin32.dot'. To convert this to a visual graph (assuming
 'dot' is intsalled on the local system and in the users path) exit
 atlas and type:
 
-dot -Tps -ospin32.dot spin32.ps
+dot -Tps -ospin32.ps spin32.dot
 
 This will create a '.ps' file named 'spin32.ps' containing a picture
 of the closure poset. Attempting to generate pictures from extremely

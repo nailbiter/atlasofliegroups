@@ -19,4 +19,13 @@ set make_dominant(RootDatum rd, [int] v)=([int],[int]):make_dominant_internal(rd
 set make_dominant(RootDatum rd,[rat] v)=([rat],[int]):
 let (num,denom)=%v in let (vector,w)=make_dominant(rd,num) in (vector/denom,w)
 
-set inverse([int] v)=for i:#v downto 0 do v[i] od
+set inverse([int] v)=[int]:for i:#v downto 0 do v[i] od
+
+set w_long(RootDatum rd)=[int]:let (,w)=make_dominant(rd,-rho(rd)) in w
+set w_long(RealForm G)=[int]:w_long(root_datum(G))
+
+set w_matrix(RootDatum rd, [int] w)=
+let rv=id_mat(rank(rd)) in for j in reverse(w) do rv*:=simple_reflection(rd,j) od;rv
+
+set w_matrix(RealForm G, [int] w)=w_matrix(root_datum(G),w)
+
