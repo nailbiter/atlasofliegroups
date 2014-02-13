@@ -1,0 +1,901 @@
++: (int,int->int): {+@(int,int)}
++: (rat,rat->rat): {+@(rat,rat)}
++: (vec,vec->vec): (v,w): ((add_ext,a,b): add_ext( if >=@(int,int)(a,b) then (v,w,b) else (w,v,a) fi ))((v,w,l_w): V[I]: for vi@i in v do  if <@(int,int)(i,l_w) then +@(int,int)(vi,w[i]) else vi fi  od ,#@vec(v),#@vec(w))
++: (ratvec,ratvec->ratvec): {+@(ratvec,ratvec)}
++: (Split,Split->Split): {+@(Split,Split)}
++: (ParamPol,Param->ParamPol): {+@(ParamPol,Param)}
++: (ParamPol,(Split,Param)->ParamPol): {+@(ParamPol,(Split,Param))}
++: (ParamPol,[(Split,Param)]->ParamPol): {+@(ParamPol,[(Split,Param)])}
++: (ParamPol,ParamPol->ParamPol): {+@(ParamPol,ParamPol)}
++: (string,int->string): (s,i): #@(string,string)(s,int_format@int(i))
++: (int,string->string): (i,s): #@(string,string)(int_format@int(i),s)
++: (string,string->string): (s,t): #@(string,string)(s,t)
++: (string,(int,int)->string): (s,(x,y)): +@(string,string)(+@(string,int)(+@(string,string)(+@(string,int)(+@(string,string)(s,"("),x),","),y),")")
++: (Split->int): (x): ((r,): r)(%@Split(x))
++: (mat,mat->mat): (M,N):  if !=@((int,int),(int,int))(#@mat(M),#@mat(N)) then error@string(+@(string,(int,int))(+@(string,string)(+@(string,(int,int))("Size mismatch ",#@mat(M)),":"),#@mat(N))) else () fi ;M[V]: for col@j in M do V[I]: for e@i in col do +@(int,int)(e,N[i,j]) od  od 
++: (Param,Param->ParamPol): (p,q): +@(ParamPol,ParamPol)(virtual@Param(p),virtual@Param(q))
++: ((ParamPol,string),(ParamPol,string)->ParamPol,string): ((P,typeP),(Q,typeQ)):  if =@(string,string)(typeP,typeQ) then (+@(ParamPol,ParamPol)(P,Q),typeP) elif  if =@(string,string)(typeP,std) then =@(string,string)(typeQ,irr) else false fi  then (+@(ParamPol,ParamPol)(P,character_formula@ParamPol(Q)),typeP) elif  if =@(string,string)(typeP,irr) then =@(string,string)(typeQ,std) else false fi  then (+@(ParamPol,ParamPol)(P,composition_series@ParamPol(Q)),typeP) else error@string("incorrect type(s)") fi 
++: ((Param,string),(Param,string)->ParamPol,string): ((p,typep),(q,typeq)): +@((ParamPol,string),(ParamPol,string))(virtual@(Param,string)(p,typep),virtual@(Param,string)(q,typeq))
++: ((ParamPol,string),(Param,string)->ParamPol,string): ((P,typeP),(q,typeq)): +@((ParamPol,string),(ParamPol,string))((P,typeP),(virtual@Param(q),typeq))
+-: (int,int->int): {-@(int,int)}
+-: (int->int): {-@int}
+-: (rat,rat->rat): {-@(rat,rat)}
+-: (rat->rat): {-@rat}
+-: (vec,vec->vec): (v,w):  if !=@(int,int)(#@vec(v),#@vec(w)) then error@string(+@(string,int)(+@(string,string)(+@(string,int)("Size mismatch ",#@vec(v)),":"),#@vec(w))) else () fi ;V[I]: for e@i in v do -@(int,int)(e,w[i]) od 
+-: (ratvec,ratvec->ratvec): {-@(ratvec,ratvec)}
+-: (Split,Split->Split): {-@(Split,Split)}
+-: (Split->Split): {-@Split}
+-: (vec->vec): (w): V[I]: for e in w do -@int(e) od 
+-: (mat->mat): (m): M[V]: for c in m do V[I]: for e in c do -@int(e) od  od 
+-: (ratvec->ratvec): (v): ((n,d): /@(vec,int)(-@vec(n),d))(%@ratvec(v))
+-: (ParamPol,(Split,Param)->ParamPol): (a,(c,p)): +@(ParamPol,(Split,Param))(a,(-@Split(c),p))
+-: (mat,mat->mat): (M,N):  if !=@((int,int),(int,int))(#@mat(M),#@mat(N)) then error@string(+@(string,(int,int))(+@(string,string)(+@(string,(int,int))("Size mismatch ",#@mat(M)),":"),#@mat(N))) else () fi ;M[V]: for col@j in M do V[I]: for e@i in col do -@(int,int)(e,N[i,j]) od  od 
+-: (ParamPol,ParamPol->ParamPol): (P,Q): +@(ParamPol,ParamPol)(P,*@(int,ParamPol)(-@int(1),Q))
+-: (Param->ParamPol): (p): *@(int,Param)(-@int(1),p)
+-: (ParamPol,Param->ParamPol): (P,p): +@(ParamPol,ParamPol)(P,*@(int,ParamPol)(-@int(1),virtual@Param(p)))
+-: (Param,Param->ParamPol): (p,q): +@(ParamPol,ParamPol)(virtual@Param(p),*@(int,ParamPol)(-@int(1),virtual@Param(q)))
+-: (ParamPol,string->ParamPol,string): (P,type): (*@(int,ParamPol)(-@int(1),P),type)
+-: (Param,string->ParamPol,string): (p,type): -@(ParamPol,string)(virtual@(Param,string)(p,type))
+-: ((ParamPol,string),(ParamPol,string)->ParamPol,string): ((P,typeP),(Q,typeQ)): +@((ParamPol,string),(ParamPol,string))((P,typeP),(*@(int,ParamPol)(-@int(1),Q),typeQ))
+-: ((Param,string),(ParamPol,string)->ParamPol,string): ((p,typep),(Q,typeQ)): +@((ParamPol,string),(ParamPol,string))(virtual@(Param,string)(p,typep),(*@(int,ParamPol)(-@int(1),Q),typeQ))
+-: ((Param,string),(Param,string)->ParamPol,string): ((p,typep),(q,typeq)): +@((ParamPol,string),(ParamPol,string))(virtual@(Param,string)(p,typep),-@(ParamPol,string)(virtual@(Param,string)(q,typeq)))
+*: (int,int->int): {*@(int,int)}
+*: (rat,rat->rat): {*@(rat,rat)}
+*: (vec,vec->int): {*@(vec,vec)}
+*: (mat,vec->vec): {*@(mat,vec)}
+*: (mat,ratvec->ratvec): {*@(mat,ratvec)}
+*: (mat,mat->mat): {*@(mat,mat)}
+*: (vec,mat->vec): {*@(vec,mat)}
+*: (Split,Split->Split): {*@(Split,Split)}
+*: (int,ParamPol->ParamPol): {*@(int,ParamPol)}
+*: (Split,ParamPol->ParamPol): {*@(Split,ParamPol)}
+*: (string,int->string): (s,n): ((r): voided: for i: n from 0 do voided:r:=#@(string,string)(r,s) od ;r)("")
+*: (int,vec->vec): (c,v): V[I]: for e in v do *@(int,int)(c,e) od 
+*: (int,mat->mat): (c,m): M[V]: for col in m do V[I]: for e in col do *@(int,int)(c,e) od  od 
+*: (int,ratvec->ratvec): (m,v): ((n,d): /@(vec,int)(*@(int,vec)(m,n),d))(%@ratvec(v))
+*: (rat,ratvec->ratvec): (r,v): (((n,d),(nv,dv)): /@(vec,int)(*@(int,vec)(n,nv),*@(int,int)(d,dv)))(%@rat(r),%@ratvec(v))
+*: (ratvec,vec->rat): (r,v): ((n,d): /@(int,int)(*@(vec,vec)(n,v),d))(%@ratvec(r))
+*: (Param,rat->Param): (p,alpha): ((x,lambda,nu): param@(KGBElt,vec,ratvec)(x,lambda,*@(rat,ratvec)(alpha,nu)))(%@Param(p))
+*: (ratvec,ratvec->rat): (v,w): ((a,b): ((c,d): /@(int,int)(*@(vec,vec)(a,c),*@(int,int)(b,d)))(%@ratvec(w)))(%@ratvec(v))
+*: (int,Param->ParamPol): (n,p): *@(int,ParamPol)(n,virtual@Param(p))
+*: (RealForm,RealForm->RealForm): (G,H): ((ic): (((n,,),,,): ((v): ((): real_forms@InnerClass(ic)[form_number_by_fiber_part@(InnerClass,vec)(ic,sort@vec(V[I]:v))])(voided: for i in fiber_part@RealForm(G) do voided: for j in fiber_part@RealForm(H) do voided:v:=#(v,+@(int,int)(i,*@(int,int)(^@(int,int)(2,n),j))) od  od ))([]))(Cartan_info@CartanClass(fundamental_Cartan@RealForm(G))))(*@(InnerClass,InnerClass)(inner_class@RealForm(G),inner_class@RealForm(H)))
+*: (InnerClass,InnerClass->InnerClass): (ic1,ic2): inner_class@(RootDatum,mat)(*@(RootDatum,RootDatum)(root_datum@InnerClass(ic1),root_datum@InnerClass(ic2)),block_matrix@(mat,mat)(distinguished_involution@InnerClass(ic1),distinguished_involution@InnerClass(ic2)))
+*: (RootDatum,RootDatum->RootDatum): (R,S): root_datum@([vec],[vec],int)([V]M:block_matrix@(mat,mat)(simple_roots@RootDatum(R),simple_roots@RootDatum(S)),[V]M:block_matrix@(mat,mat)(simple_coroots@RootDatum(R),simple_coroots@RootDatum(S)),+@(int,int)(rank@RootDatum(R),rank@RootDatum(S)))
+*: (Split,(ParamPol,string)->ParamPol,string): (w,(P,type)): (*@(Split,ParamPol)(w,P),type)
+*: (Split,(Param,string)->ParamPol,string): (w,(p,type)): (*@(Split,ParamPol)(w,virtual@Param(p)),type)
+\: (int,int->int): {\@(int,int)}
+%: (int,int->int): {%@(int,int)}
+%: (rat->int,int): {%@rat}
+%: (ratvec->vec,int): {%@ratvec}
+%: (LieType->[LieType]): {%@LieType}
+%: (Param->KGBElt,vec,ratvec): {%@Param}
+%: (Split->int,int): {%@Split}
+%: (vec,int->vec): (v,d): V[I]: for x in v do %@(int,int)(x,d) od 
+%: (ParamPol->[(Split,Param)]): (P):  for c@p in P do (c,p) od 
+\%: (int,int->int,int): {\%@(int,int)}
+^: (int,int->int): {^@(int,int)}
+^: (rat,int->rat): {^@(rat,int)}
+^: (vec->mat): {^@vec}
+^: (mat->mat): {^@mat}
+^: (mat,int->mat): (m,n):  if >@(int,int)(n,0) then matrix_power(m,n) elif =@(int,int)(n,0) then id_mat@int(n_rows@mat(m)) else error@string(+@(string,int)("Negative matrix power ",n)) fi 
+^: (Split->int): (x): ((,y): y)(%@Split(x))
+^: (Split,int->Split): (x,n):  if >@(int,int)(n,0) then split_power@(Split,int)(x,n) elif =@(int,int)(n,0) then Sp(I,I):(1,0) elif ((a,b): =@(int,int)(+@(int,int)(abs@int(a),abs@int(b)),1))(%@Split(x)) then  if =@(int,int)(%@(int,int)(n,2),0) then SpI:1 else x fi  else error@string(+@(string,string)(+@(string,int)("Negative power ",n)," of split integer")) fi 
+/: (int,int->rat): {/@(int,int)}
+/: (rat,rat->rat): {/@(rat,rat)}
+/: (rat->rat): {/@rat}
+/: (vec,int->ratvec): {/@(vec,int)}
+/: (ratvec,int->ratvec): (v,m): ((n,d): /@(vec,int)(n,*@(int,int)(m,d)))(%@ratvec(v))
+=: (int,int->bool): {=@(int,int)}
+=: (rat,rat->bool): {=@(rat,rat)}
+=: (bool,bool->bool): {=@(bool,bool)}
+=: (string,string->bool): {=@(string,string)}
+=: (vec,vec->bool): {=@(vec,vec)}
+=: (mat,mat->bool): {=@(mat,mat)}
+=: (RealForm,RealForm->bool): (f,g):  if =@(InnerClass,InnerClass)(inner_class@RealForm(f),inner_class@RealForm(g)) then =@(int,int)(form_number@RealForm(f),form_number@RealForm(g)) else false fi 
+=: (InnerClass,InnerClass->bool): {=@(InnerClass,InnerClass)}
+=: (KGBElt,KGBElt->bool): {=@(KGBElt,KGBElt)}
+=: (Param,Param->bool): {=@(Param,Param)}
+=: (ratvec,ratvec->bool): (v,w): (((n,d),(m,e)): =@(vec,vec)(*@(int,vec)(e,n),*@(int,vec)(d,m)))(%@ratvec(v),%@ratvec(w))
+=: ((int,int),(int,int)->bool): ((x0,y0),(x1,y1)):  if =@(int,int)(x0,x1) then =@(int,int)(y0,y1) else false fi 
+=: (Split,Split->bool): (x,y): =@((int,int),(int,int))(%@Split(x),%@Split(y))
+=: (ParamPol,ParamPol->bool): (P,Q): =@(int,int)(#@ParamPol(-@(ParamPol,ParamPol)(P,Q)),0)
+=: ((Param,string),(Param,string)->bool): ((p,typep),(q,typeq)):  if !=@(string,string)(typep,typeq) then prints("cannot compare standards and irreducibles; to compare in the Grothendieckgroup do virtual(I(p))=virtual(J(q))");false else =@(Param,Param)(p,q) fi 
+=: ((ParamPol,string),(ParamPol,string)->bool): ((P,typeP),(Q,typeQ)):  if  if  if =@(string,string)(typeP,irr) then =@(string,string)(typeQ,irr) else false fi  then true elif =@(string,string)(typeP,std) then =@(string,string)(typeQ,std) else false fi  then =@(ParamPol,ParamPol)(P,Q) elif  if =@(string,string)(typeP,irr) then =@(string,string)(typeQ,std) else false fi  then =@(ParamPol,ParamPol)(character_formula@ParamPol(P),Q) elif  if =@(string,string)(typeQ,irr) then =@(string,string)(typeP,std) else false fi  then =@(ParamPol,ParamPol)(character_formula@ParamPol(Q),P) else error@string("Incorrect type(s)") fi 
+=: ((ParamPol,string),(Param,string)->bool): ((P,typeP),(q,typeq)): =@((ParamPol,string),(ParamPol,string))((P,typeP),virtual@(Param,string)(q,typeq))
+!=: (int,int->bool): {!=@(int,int)}
+!=: (rat,rat->bool): {!=@(rat,rat)}
+!=: (bool,bool->bool): {!=@(bool,bool)}
+!=: (vec,vec->bool): {!=@(vec,vec)}
+!=: (mat,mat->bool): {!=@(mat,mat)}
+!=: (string,string->bool): (p):  if =@(string,string)(p) then false else true fi 
+!=: ((int,int),(int,int)->bool): ((x0,y0),(x1,y1)):  if !=@(int,int)(x0,x1) then true else !=@(int,int)(y0,y1) fi 
+!=: (Split,Split->bool): (x,y): !=@((int,int),(int,int))(%@Split(x),%@Split(y))
+!=: (RealForm,RealForm->bool): (f,g):  if =@(RealForm,RealForm)(f,g) then false else true fi 
+!=: (InnerClass,InnerClass->bool): (x,y):  if =@(InnerClass,InnerClass)(x,y) then false else true fi 
+<: (int,int->bool): {<@(int,int)}
+<: (rat,rat->bool): {<@(rat,rat)}
+<: (string,string->bool): (x,y): >@(string,string)(y,x)
+<: ([int],[int]->bool): (v,w): less(v,w)
+<=: (int,int->bool): {<=@(int,int)}
+<=: (rat,rat->bool): {<=@(rat,rat)}
+<=: (string,string->bool): {<=@(string,string)}
+>: (int,int->bool): {>@(int,int)}
+>: (rat,rat->bool): (r,s): ((a,b): ((c,d): >@(int,int)(-@(int,int)(*@(int,int)(a,d),*@(int,int)(b,c)),0))(%@rat(s)))(%@rat(r))
+>: (string,string->bool): (p):  if <=@(string,string)(p) then false else true fi 
+>: ([int],[int]->bool): (v,w): greater(v,w)
+>=: (int,int->bool): {>=@(int,int)}
+>=: (rat,rat->bool): (r,s): ((a,b): ((c,d): >=@(int,int)(-@(int,int)(*@(int,int)(a,d),*@(int,int)(b,c)),0))(%@rat(s)))(%@rat(r))
+>=: (string,string->bool): (x,y): <=@(string,string)(y,x)
+#: (string,string->string): {#@(string,string)}
+#: (string->int): {#@string}
+#: (vec->int): {#@vec}
+#: (mat->int,int): {#@mat}
+#: (vec,int->vec): {#@(vec,int)}
+#: (int,vec->vec): {#@(int,vec)}
+#: (vec,vec->vec): {#@(vec,vec)}
+#: (LieType->int): {#@LieType}
+#: (ParamPol->int): {#@ParamPol}
+#: (int->[int]): (n):  for i: n from 0 do i od 
+#: (bool->int): (b):  if b then 1 else 0 fi 
+#: (ratvec->int): (v): ((n,): #@vec(n))(%@ratvec(v))
+#: (Split,int->int): (w,t): ((a,b): +@(int,int)(a,*@(int,int)(t,b)))(%@Split(w))
+#: (Split,rat->rat): (w,t): ((a,b): +@(rat,rat)(QI:a,*@(rat,rat)(t,QI:b)))(%@Split(w))
+#: (ParamPol,int->ParamPol): (P,t): +@(ParamPol,[(Split,Param)])(null_module@RealForm(real_form@ParamPol(P)), for w@q in P do (SpI:#@(Split,int)(w,t),q) od )
+A1: string: "A1"
+A2: string: "A2"
+A3: string: "A3"
+A4: string: "A4"
+A5: string: "A5"
+A6: string: "A6"
+A7: string: "A7"
+A8: string: "A8"
+B2: string: "B2"
+B3: string: "B3"
+B4: string: "B4"
+B5: string: "B5"
+B6: string: "B6"
+B7: string: "B7"
+B8: string: "B8"
+C2: string: "C2"
+C3: string: "C3"
+C4: string: "C4"
+C5: string: "C5"
+C6: string: "C6"
+C7: string: "C7"
+C8: string: "C8"
+D2: string: "D2"
+D3: string: "D3"
+D4: string: "D4"
+D5: string: "D5"
+D6: string: "D6"
+D7: string: "D7"
+D8: string: "D8"
+E6: string: "E6"
+E7: string: "E7"
+E8: string: "E8"
+F4: string: "F4"
+G2: string: "G2"
+abs: (int->int): (k):  if <@(int,int)(k,0) then -@int(k) else k fi 
+adapted_basis: (mat->mat,vec): {adapted_basis@mat}
+addone: ([int],int->[int]): (v,k): ((rv): rv)( if >=@(int,int)(k,#(v)) then [I]V:null@int(#(v)) elif =@(int,int)(v[-@(int,int)(-@(int,int)(#(v),k),1)],0) then voided:v[-@(int,int)(-@(int,int)(#(v),k),1)]:=1;v else voided:v[-@(int,int)(-@(int,int)(#(v),k),1)]:=0;addone(v,+@(int,int)(k,1)) fi )
+adjoint: (InnerClass->InnerClass): (ic): ((ic): ((rd): ((delta): ((adjoint_rd): ((Rad): ((Rsc): ((Rad_inverse,dad): ((Rsc_inverse,dsc): ((delta_ad): ((): inner_class@(RootDatum,mat)(adjoint_rd,delta_ad))(voided: for i: n_rows@mat(delta_ad) from 0 do voided: for j: n_columns@mat(delta_ad) from 0 do voided:delta_ad[(i,j)]:=rattoint@rat(/@(int,int)(delta_ad[i,j],*@(int,int)(dad,dsc))) od  od ))(*@(mat,mat)(*@(mat,mat)(*@(mat,mat)(*@(mat,mat)(Rad_inverse,Rsc),delta),Rsc_inverse),Rad)))(invert@mat(Rsc)))(invert@mat(Rad)))(simple_roots@RootDatum(rd)))(simple_roots@RootDatum(adjoint_rd)))(adjoint@RootDatum(rd)))(distinguished_involution@InnerClass(ic)))(root_datum@InnerClass(ic)))(derived@InnerClass(ic))
+adjoint: (LieType->RootDatum): {adjoint@LieType}
+adjoint: (RealForm->RealForm): (G): ((G): real_forms@InnerClass(adjoint@InnerClass(inner_class@RealForm(G)))[form_number@RealForm(G)])(derived@RealForm(G))
+adjoint: (RootDatum->RootDatum): (rd): adjoint@LieType(Lie_type@RootDatum(derived_root_datum@RootDatum(rd)))
+ads: (int,int->Param): (a,b): param@(KGBElt,vec,ratvec)(x[3],V[I]:[-@(int,int)(a,2),-@(int,int)(b,1)],/@(vec,int)(V[I]:[0,0],1))
+all_inner_classes: (string->[string]): (type_and_rank): ((type,rank):  if  if  if =@(string,string)(type,"A") then !=@(string,string)(rank,"1") else false fi  then true elif =@(string,string)(type,"D") then true elif =@(string,string)(type,"E") then =@(string,string)(rank,"6") else false fi  then ["e","u"] else ["e"] fi )(type_and_rank[0],type_and_rank[1])
+all_simple_adjoint_rank: (int->[RealForm]): (rank): all_simple@(string,int)("ad",rank)
+all_simple_given_isogeny_and_rank: (string,int->[RealForm]): (isogeny,rank): ((rootsystems): ((rv): voided: for rs in rootsystems do ((inner_classes): voided: for ic in inner_classes do  if =@(string,string)(isogeny,"sc") then voided:rv:=#(rv,real_forms@CartanClass(Cartan_class@(InnerClass,int)(inner_class@(RootDatum,string)(simply_connected@LieType(Lie_type@string(rs)),ic),0))) elif =@(string,string)(isogeny,"ad") then voided:rv:=#(rv,real_forms@CartanClass(Cartan_class@(InnerClass,int)(inner_class@(RootDatum,string)(adjoint@LieType(Lie_type@string(rs)),ic),0))) else () fi  od )(all_inner_classes@string(rs)) od ;rv)([]))(all_simple_root_systems_given_rank@int(rank))
+all_simple_root_systems_given_rank: (int->[string]): (rank):  if  if >@(int,int)(rank,8) then true else =@(int,int)(rank,5) fi  then [+@(string,int)("A",rank),+@(string,int)("B",rank),+@(string,int)("C",rank),+@(string,int)("D",rank)] elif >@(int,int)(rank,5) then [+@(string,int)("A",rank),+@(string,int)("B",rank),+@(string,int)("C",rank),+@(string,int)("D",rank),+@(string,int)("E",rank)] else ((types_of_given_rank):  for type in types_of_given_rank[-@(int,int)(rank,1)] do +@(string,int)(type,rank) od )([["A"],["A","B","G"],["A","B","C"],["A","B","C","D","F"]]) fi 
+all_simple_simply_connected_rank: (int->[RealForm]): (rank): all_simple@(string,int)("sc",rank)
+all_simple: (string,int,int->[RealForm]): (isogeny,rank1,rank2): ((rv): voided: for rank: +@(int,int)(-@(int,int)(rank2,rank1),1) from rank1 do voided:rv:=#(rv,all_simple@(string,int)(isogeny,rank)) od ;rv)([])
+all_simple: (string,int->[RealForm]): (isogeny,rank): all_simple_given_isogeny_and_rank@(string,int)(isogeny,rank)
+all_unitary: ([Param]->[(Param,bool)]): (parameters):  for p in parameters do (p,true) od 
+analyse: (ParamPol->): (P): prints("Mixed terms:");voided: for w@p in P do  if mixed@Split(w) then prints("(",prettyPrint@Split(w),")*",p,", ",infinitesimal_character@Param(p)) else () fi  od 
+ann_mod: (mat,int->mat): {ann_mod@(mat,int)}
+array_prints: ([string]->): (A): voided: for a in A do prints(a) od 
+ascii: (int->string): {ascii@int}
+ascii: (string->int): {ascii@string}
+at_s: (vec->Split): (v): eval@(vec,Split)(v,s)
+Bezout: (int,int->int,int): (a,b): ((,,B): B)(Euclid@(int,int)(a,b))
+block_matrix: (mat,mat->mat): (A,B): ((X): ((Y): M[V]:#(X,Y))( for i: n_columns@mat(B) from 0 do #@(vec,vec)(null@int(n_rows@mat(A)),B[i]) od ))( for i: n_columns@mat(A) from 0 do #@(vec,vec)(A[i],null@int(n_rows@mat(B))) od )
+block: (Param->[Param],int): {block@Param}
+block_repeat: (mat,int->mat): (m,n): ((r,c): ((result): voided: for k: n from 0 do voided: for i: r from 0 do voided: for j: c from 0 do voided:result[(+@(int,int)(*@(int,int)(k,r),i),+@(int,int)(*@(int,int)(k,c),j))]:=m[i,j] od  od  od ;result)(null@(int,int)(*@(int,int)(n,r),*@(int,int)(n,c))))(#@mat(m))
+block_sizes: (InnerClass->mat): {block_sizes@InnerClass}
+by_field: ((int->RealForm),(int->RealForm),(int->RealForm)->(string->(int->RealForm))): (f_R,f_C,f_H): (K):  if =@(string,string)(K,R) then f_R elif =@(string,string)(K,C) then f_C elif =@(string,string)(K,H) then f_H else error@string(+@(string,string)("unknown field ",K)) fi 
+c1: (int,rat->Param): (c,y):  if <@(rat,rat)(y,QI:0) then voided:y:=-@rat(y) else () fi ; if >=@(rat,rat)(y,/@(int,int)(c,2)) then param@(KGBElt,vec,ratvec)(x[9],V[I]:[-@(int,int)(c,1),0],Qv[Q]:[/@(rat,rat)(y,QI:2),/@(rat,rat)(y,QI:2)]) else param@(KGBElt,vec,ratvec)(x[4],V[I]:[-@(int,int)(c,3),0],Qv[Q]:[/@(rat,rat)(y,QI:2),-@rat(/@(rat,rat)(y,QI:2))]) fi 
+c2a: (int,int,rat->Param): (a,b,y):  if <@(rat,rat)(y,QI:0) then voided:y:=-@rat(y) else () fi ; if >=@(rat,rat)(y,QI:b) then param@(KGBElt,vec,ratvec)(x[7],V[I]:[%@(int,int)(a,2),-@(int,int)(b,1)],Qv[Q]:[y,QI:0]) else param@(KGBElt,vec,ratvec)(x[5],V[I]:[-@(int,int)(b,2),%@(int,int)(-@(int,int)(a,1),2)],Qv[Q]:[/@(int,int)(0,1),y]) fi 
+c2b: (int,int,rat->Param): (a,b,y):  if <@(rat,rat)(y,QI:0) then voided:y:=-@rat(y) else () fi ; if >=@(rat,rat)(y,QI:b) then param@(KGBElt,vec,ratvec)(x[8],V[I]:[%@(int,int)(a,2),-@(int,int)(b,1)],Qv[Q]:[y,QI:0]) else param@(KGBElt,vec,ratvec)(x[6],V[I]:[-@(int,int)(b,2),%@(int,int)(-@(int,int)(a,1),2)],Qv[Q]:[/@(int,int)(0,1),y]) fi 
+c3: (int,int,rat,rat->Param): (a,b,nu0,nu1):  if <@(rat,rat)(nu0,QI:0) then voided:nu0:=-@rat(nu0) else () fi ; if <@(rat,rat)(nu1,QI:0) then voided:nu1:=-@rat(nu1) else () fi ; if >=@(rat,rat)(nu0,nu1) then param@(KGBElt,vec,ratvec)(x[10],V[I]:[%@(int,int)(a,2),%@(int,int)(-@(int,int)(b,1),2)],Qv[Q]:[nu0,nu1]) else param@(KGBElt,vec,ratvec)(x[10],V[I]:[%@(int,int)(-@(int,int)(b,1),2),%@(int,int)(a,2)],Qv[Q]:[nu1,nu0]) fi 
+Cartan_class: (InnerClass,int->CartanClass): {Cartan_class@(InnerClass,int)}
+Cartan_class: (KGBElt->CartanClass): {Cartan_class@KGBElt}
+Cartan_class: (RealForm,int->CartanClass): {Cartan_class@(RealForm,int)}
+Cartan_dispatch: (int,int,int,int,bool->int): (type,r,min,d,lower):  if =@(int,int)(d,0) then 2 elif =@(int,int)(type,4) then  if  if <@(int,int)(min,-@(int,int)(r,3)) then =@(int,int)(d,1) else =@(int,int)(min,-@(int,int)(r,3)) fi  then -@int(1) else 0 fi  elif =@(int,int)(type,5) then  if =@(int,int)(d, if <@(int,int)(min,2) then 2 else 1 fi ) then -@int(1) else 0 fi  elif =@(int,int)(d,2) then 0 elif <@(int,int)(type,4) then  if  if =@(int,int)(type, if lower then 2 else 3 fi ) then =@(int,int)(min,-@(int,int)(r,2)) else false fi  then -@int(2) else -@int(1) fi  elif =@(int,int)(type,6) then  if  if lower then =@(int,int)(min,1) else false fi  then -@int(2) else -@int(1) fi  elif lower then -@int(1) else -@int(3) fi 
+Cartan_entry: (int,int,int,int->int): (type,r,i,j):  if =@(int,int)(type,0) then 0 else ((min,d):  if >@(int,int)(d,2) then 0 else Cartan_dispatch@(int,int,int,int,bool)(type,r,min,d,<@(int,int)(i,j)) fi )( if <@(int,int)(i,j) then (i,-@(int,int)(j,i)) else (j,-@(int,int)(i,j)) fi ) fi 
+Cartan_info: (CartanClass->(int,int,int),vec,(int,int),(LieType,LieType,LieType)): {Cartan_info@CartanClass}
+Cartan_matrix: (int,int->mat): (type,r): M[V]: for j: r from 0 do V[I]: for i: r from 0 do Cartan_entry@(int,int,int,int)(type,r,i,j) od  od 
+Cartan_matrix: (LieType->mat): {Cartan_matrix@LieType}
+Cartan_matrix: (RootDatum->mat): {Cartan_matrix@RootDatum}
+Cartan_matrix_type: (mat->LieType,vec): {Cartan_matrix_type@mat}
+Cartan_order: (RealForm->mat): {Cartan_order@RealForm}
+Cayley: (int,KGBElt->KGBElt): {Cayley@(int,KGBElt)}
+Cayley: (int,Param->Param): {Cayley@(int,Param)}
+ceil: (rat->int): (a): -@int(\@(int,int)(%@rat(-@rat(a))))
+ceil: ([rat]->[int]): (v):  for a in v do ceil@rat(a) od 
+central_invariant: (InnerClass,int->int): (ic,k): central_invariant@RealForm(real_forms@InnerClass(ic)[k])
+central_invariant: (RealForm->int): (G): find@([[int]],int)(square_classes@RealForm(G),form_number@RealForm(G))
+c_form_irreducible_long: (Param->ParamPol,[(Param,Split,ParamPol)]): (p): ((block,kl,polys,stops,indices,cumulation): ((klpolys,P,on_p,standards): voided: for i : #@vec(indices) downto 0 do ((ev,q):  if !=@(Split,Split)(ev,SpI:0) then ((form_on_standard,factor): voided:P:=+@(ParamPol,ParamPol)(P,*@(Split,ParamPol)(factor,form_on_standard));voided:standards:=#(standards,(q,factor,form_on_standard)))(c_form_std@Param(q),*@(Split,Split)(ev,orientation_nr_term@(int,Param)(on_p,q))) else () fi )(at_s@vec(klpolys[i]),block[indices[i]]) od ;(P,standards))(signed_KL_col@(int,mat,[vec],vec,vec,mat)(-@(int,int)(#(block),1),kl,polys,stops,indices,cumulation),null_module@RealForm(real_form@Param(p)),orientation_nr@Param(p),[]))(partial_KL_block@Param(p))
+c_form_irreducible: (Param->ParamPol): (p): ((on_p,P): voided: for ev@q in KL_sum_at_s@Param(p) do voided:P:=+@(ParamPol,ParamPol)(P,*@(Split,ParamPol)(*@(Split,Split)(ev,orientation_nr_term@(int,Param)(on_p,q)),full_deform@Param(q))) od ;P)(orientation_nr@Param(p),null_module@RealForm(real_form@Param(p)))
+c_form_std: (Param->ParamPol): (p):  if hermitian_debug then prints("computing c-form on standard module: ",p) else () fi ;full_deform@Param(p)
+cf: (Param->(ratvec->Param)): (p): (v): translate_to@(Param,ratvec)(p,v)
+character_formula: (Param->ParamPol): (p):  if is_regular@Param(p) then regular_character_formula@Param(p) else singular_character_formula@Param(p) fi 
+character_formula: (ParamPol->ParamPol): (P): ((N): voided: for (coeff,p) in %@ParamPol(P) do voided:N:=+@(ParamPol,ParamPol)(N,*@(Split,ParamPol)(coeff,character_formula@Param(p))) od ;N)(null_module@RealForm(real_form@ParamPol(P)))
+character_formula: (ParamPol,string->ParamPol,string): (P,type):  if =@(string,string)(type,irr) then ((N): voided: for (coeff,p) in %@ParamPol(P) do voided:N:=+@(ParamPol,ParamPol)(N,*@(Split,ParamPol)(coeff,character_formula@Param(p))) od ;(N,std))(null_module@RealForm(real_form@ParamPol(P))) else error@string("Character formula not defined for sum of irreducible modules") fi 
+character_formula: (Param,string->ParamPol,string): (p,type):  if =@(string,string)(type,irr) then (character_formula@Param(p),std) else error@string("Character formula not defined for standard modules") fi 
+classify_involution: (mat->int,int,int): {classify_involution@mat}
+closure_quotient_module_basis: (mat->[vec]): (M): ((S,D,T): ((v): ((Sinv):  for i: -@(int,int)(n_columns@mat(Sinv),#@vec(v)) from 0 do Sinv[+@(int,int)(i,#@vec(v))] od )(Z_invert@mat(S)))(nonzero_diagonal_elements@mat(D)))(weak_snf@mat(M))
+coherent_family: (ParamPol,string->(ratvec->ParamPol,string)): (P,type): (v): coherent_family@((ParamPol,string),ratvec)((P,type),v)
+coherent_family: ((ParamPol,string),ratvec->ParamPol,string): ((P,type),v):  if is_dominant@(RootDatum,ratvec)(root_datum@ParamPol(P),v) then translate_to@((ParamPol,string),ratvec)((P,type),v) else ((v_dominant,w): coherent@([int],(ParamPol,string))(w,translate_to@((ParamPol,string),ratvec)((P,type),Qv[Q]:v_dominant)))(make_dominant@(RootDatum,[rat])(root_datum@ParamPol(P),[Q]Qv:v)) fi 
+coherent_family: ((Param,string),ratvec->ParamPol,string): ((p,type),v): coherent_family@((ParamPol,string),ratvec)((virtual@Param(p),type),v)
+coherent_family: (Param,string->(ratvec->ParamPol,string)): (p,type): (v): coherent_family@((Param,string),ratvec)((p,type),v)
+coherent: (int,(ParamPol,string)->ParamPol,string): (k,(P,type)):  if =@(string,string)(type,std) then (coherent_std@(int,ParamPol)(k,P),type) elif =@(string,string)(type,irr) then (composition_series@ParamPol(coherent_std@(int,ParamPol)(k,character_formula@ParamPol(P))),type) else error@string("incorrect type") fi 
+coherent: ([int],(ParamPol,string)->ParamPol,string): (v,(P,type)):  if =@(string,string)(type,std) then (coherent_std@(vec,ParamPol)(V[I]:v,P),type) elif =@(string,string)(type,irr) then (composition_series@ParamPol(coherent_std@(vec,ParamPol)(V[I]:v,character_formula@ParamPol(P))),type) else error@string("incorrect type") fi 
+coherent: (int,(Param,string)->ParamPol,string): (k,(p,type)):  if =@(string,string)(type,std) then (coherent_std@(int,Param)(k,p),type) elif =@(string,string)(type,irr) then (composition_series@ParamPol(coherent_std@(int,ParamPol)(k,character_formula@Param(p))),type) else error@string("incorrect type") fi 
+coherent: ([int],(Param,string)->ParamPol,string): (v,(p,type)):  if =@(string,string)(type,std) then (coherent_std@(vec,Param)(V[I]:v,p),type) elif =@(string,string)(type,irr) then (composition_series@ParamPol(coherent_std@(vec,ParamPol)(V[I]:v,character_formula@Param(p))),type) else error@string("incorrect type") fi 
+coherent_irr: (int,Param->ParamPol): (k,p): composition_series@ParamPol(coherent_std@(int,ParamPol)(k,character_formula@Param(p)))
+coherent_irr: ([int],Param->ParamPol): (v,p): composition_series@ParamPol(coherent_std@(vec,ParamPol)(V[I]:v,character_formula@Param(p)))
+coherent_irr: (int,ParamPol->ParamPol): (k,P): composition_series@ParamPol(coherent_std@(int,ParamPol)(k,character_formula@ParamPol(P)))
+coherent_irr: ([int],ParamPol->ParamPol): (v,P): composition_series@ParamPol(coherent_std@(vec,ParamPol)(V[I]:v,character_formula@ParamPol(P)))
+coherent_std: (int,Param->ParamPol): (k,p): ((x,,): ((type): ((N):  if =@(int,int)(type,1) then -@(ParamPol,ParamPol)(N,virtual@Param(p)) elif =@(int,int)(type,3) then -@(ParamPol,ParamPol)(+@(ParamPol,ParamPol)(N,nci_Cayley@(int,Param)(k,p)),virtual@Param(cross@(int,Param)(k,p))) else +@(ParamPol,Param)(N,cross@(int,Param)(k,p)) fi )(null_module@RealForm(real_form@Param(p))))(status@(int,KGBElt)(k,x)))(%@Param(p))
+coherent_std: (int,ParamPol->ParamPol): (k,P): ((N): voided: for (coeff,p) in %@ParamPol(P) do voided:N:=+@(ParamPol,ParamPol)(N,*@(Split,ParamPol)(coeff,coherent_std@(int,Param)(k,p))) od ;N)(null_module@RealForm(real_form@ParamPol(P)))
+coherent_std: (vec,Param->ParamPol): (v,p): ((N): voided: for k : #@vec(v) downto 0 do voided:N:=coherent_std@(int,ParamPol)(v[k],N) od ;N)(+@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),p))
+coherent_std: (vec,ParamPol->ParamPol): (v,P): ((N): voided: for k : #@vec(v) downto 0 do voided:N:=coherent_std@(int,ParamPol)(v[k],N) od ;N)(P)
+compact_torus: (int->RealForm): (k): torus@(int,int,int)(k,0,0)
+complexification: (RealForm->RealForm): (G): complex@RootDatum(root_datum@InnerClass(IcRf:G))
+complex: (RootDatum->RealForm): (rd): ((r): ((C_inv,rd_C): voided: for i: r from 0 do voided:C_inv[(i,+@(int,int)(i,r))]:=1;voided:C_inv[(+@(int,int)(i,r),i)]:=1 od ;quasisplit_form@InnerClass(inner_class@(RootDatum,mat)(rd_C,C_inv)))(null@(int,int)(*@(int,int)(2,r),*@(int,int)(2,r)),root_datum@([vec],[vec],int)([V]M:block_repeat@(mat,int)(simple_roots@RootDatum(rd),2),[V]M:block_repeat@(mat,int)(simple_coroots@RootDatum(rd),2),*@(int,int)(2,r))))(rank@RootDatum(rd))
+complex_torus: (int->RealForm): (k): torus@(int,int,int)(0,0,k)
+components_rank: (RealForm->int): {components_rank@RealForm}
+composition_series: (Param->ParamPol): (p):  if is_regular@Param(p) then regular_composition_series@Param(p) else singular_composition_series@Param(p) fi 
+composition_series: (ParamPol->ParamPol): (P): ((N): voided: for (coeff,p) in %@ParamPol(P) do voided:N:=+@(ParamPol,ParamPol)(N,*@(Split,ParamPol)(coeff,composition_series@Param(p))) od ;N)(null_module@RealForm(real_form@ParamPol(P)))
+composition_series: (ParamPol,string->ParamPol,string): (P,type):  if =@(string,string)(type,std) then ((N): voided: for (coeff,p) in %@ParamPol(P) do voided:N:=+@(ParamPol,ParamPol)(N,*@(Split,ParamPol)(coeff,composition_series@Param(p))) od ;(N,irr))(null_module@RealForm(real_form@ParamPol(P))) else error@string("Composition series not defined for sum of irreducible modules") fi 
+composition_series: (Param,string->ParamPol,string): (p,type):  if =@(string,string)(type,std) then (composition_series@Param(p),irr) else error@string("Composition series not defined for irreducible modules") fi 
+convert_cform_hermitian: (ParamPol->ParamPol): (P):  if =@(int,int)(#@ParamPol(P),0) then P else ((a_mu): +@(ParamPol,[(Split,Param)])(null_module@RealForm(real_form@ParamPol(P)), for w@p in P do (*@(Split,Split)(^@(Split,int)(s,rattoint@rat(-@(rat,rat)(mu@Param(p),a_mu))),w),p) od ))(mu@Param( for w@p in P do p od [0])) fi 
+coprojection: (mat,vec->mat,[int]): (M,v): ((sub,quotient): ((P): ((Pinverse,d): ((w): ((Q): (Q,[I]V:*@(mat,vec)(Q,v)))(^@mat(M[V]: for i: n_columns@mat(M[V]:sub) from 0 do ^@mat(Pinverse)[i] od )))(*@(mat,vec)(Pinverse,v)))(invert@mat(P)))(M[V]:#(sub,quotient)))([V]M:submodule_basis@mat(M),closure_quotient_module_basis@mat(M))
+coroot_radical: (RootDatum->mat): {coroot_radical@RootDatum}
+coroots: (RootDatum->mat): {coroots@RootDatum}
+count_Cartans: (RealForm->int): {count_Cartans@RealForm}
+cross: (int,KGBElt->KGBElt): {cross@(int,KGBElt)}
+cross: (int,Param->Param): {cross@(int,Param)}
+cross: (vec,Param->Param): (v,p): ((N): voided: for k : #@vec(v) downto 0 do voided:N:=cross@(int,Param)(v[k],N) od ;N)(p)
+C: string: "C"
+cut: ([int]->[int]): (a):  for i: -@(int,int)(#(a),1) from 1 do a[i] od 
+D4_spherical_unitary: [ratvec]: [[ 0, 0, 0, 0 ]/1,[ 7, 2, 2, 0 ]/8,[ 3, 2, 2, 0 ]/4,[ 7, 3, 3, 1 ]/8,[  7,  3,  3, -1 ]/8,[ 3, 2, 1, 0 ]/4,[ 1, 1, 0, 0 ]/2,[ 7, 5, 3, 1 ]/8,[  3,  2,  2, -1 ]/4,[ 3, 3, 1, 0 ]/4,[ 4, 1, 1, 0 ]/4,[ 7, 3, 1, 1 ]/8,[  3,  2,  1, -1 ]/4,[ 3, 1, 1, 0 ]/4,[ 15,  9,  7,  1 ]/8,[ 13, 11,  5, -3 ]/8,[ 8, 4, 1, 0 ]/4,[ 4, 3, 1, 0 ]/4,[  2,  2,  2, -1 ]/4,[ 7, 1, 1, 1 ]/8,[  5,  3,  3, -3 ]/8,[ 3, 2, 1, 0 ]/1,[ 2, 1, 1, 0 ]/1,[ 3, 3, 1, 1 ]/2,[ 1, 1, 1, 1 ]/2,[  3,  3,  1, -1 ]/2,[  1,  1,  1, -1 ]/2,[ 2, 1, 0, 0 ]/1,[ 1, 1, 0, 0 ]/1,[ 1, 0, 0, 0 ]/1,[ 7, 7, 1, 1 ]/8,[  7,  7,  1, -1 ]/8,[ 4, 1, 0, 0 ]/4]
+deformation: (Param->Param,ParamPol): (p): (lower@Param(p),deform@Param(p))
+deform: (Param->ParamPol): {deform@Param}
+denom: (rat->int): (a): ((,d): d)(%@rat(a))
+denom: (ratvec->int): (a): ((,d): d)(%@ratvec(a))
+derived_action: (mat,RootDatum->mat): (M,rd): ((derived_rd,T): *@(mat,mat)(*@(mat,mat)(T,M),right_inverse@mat(T)))(derived@RootDatum(rd))
+derived: (InnerClass->InnerClass): (ic): inner_class@(RootDatum,mat)(derived_root_datum@RootDatum(root_datum@InnerClass(ic)),derived_action@(mat,RootDatum)(distinguished_involution@InnerClass(ic),root_datum@InnerClass(ic)))
+derived: (RealForm->RealForm): (G): real_forms@InnerClass(derived@InnerClass(inner_class@RealForm(G)))[form_number@RealForm(G)]
+derived: (RootDatum->RootDatum,mat): {derived@RootDatum}
+derived_root_datum: (RootDatum->RootDatum): (rd): ((rv,): rv)(derived@RootDatum(rd))
+det: (mat->int): (M): (((diag,,),(n,m)):  if !=@(int,int)(n,m) then error@string("Determinant of non-square matrix") elif <@(int,int)(#@vec(diag),n) then 0 else ((p): voided: for d in diag do voided:p:=*@(int,int)(p,d) od ;p)(1) fi )(diagonalize@mat(M),#@mat(M))
+diagonalize: (mat->vec,mat,mat): {diagonalize@mat}
+diagonal: (vec->mat): {diagonal@vec}
+dimension: (RealForm->int): (G): +@(int,int)(n_columns@mat(roots@RootDatum(RdRf:G)),rank@RealForm(G))
+discard_nci: (mat,mat,KGBElt->mat,mat): (roots,coroots,x): ((rd): ((rv_roots,rv_coroots): ((t): ((theta): voided: for alpha@i in roots do  if  if !=@(vec,vec)(*@(mat,vec)(theta,alpha),alpha) then true elif =@(vec,vec)(*@(mat,vec)(theta,alpha),alpha) then =@(int,int)(%@(int,int)(rattoint@rat(*@(ratvec,ratvec)(QvV:alpha,+@(ratvec,ratvec)(t,rhocheck@RootDatum(rd)))),2),0) else false fi  then voided:(rv_roots:=#(rv_roots,alpha),rv_coroots:=#(rv_coroots,coroots[i])) else () fi  od ;(M[V]:rv_roots,M[V]:rv_coroots))(involution@KGBElt(x)))(torus_factor@KGBElt(x)))([],[]))(root_datum@InnerClass(IcRf:real_form@KGBElt(x)))
+distinguished_involution: (InnerClass->mat): {distinguished_involution@InnerClass}
+do_block: ((Param->)->(Param->int)): (f): (p): ((b,i): voided: for q in b do f(q) od ;i)(block@Param(p))
+dominant: (Param->Param): {dominant@Param}
+ds0: (int,int->Param): (a,b): param@(KGBElt,vec,ratvec)(x[0],V[I]:[-@(int,int)(a,2),-@(int,int)(b,1)],/@(vec,int)(V[I]:[0,0],1))
+ds1: (int,int->Param): (a,b): param@(KGBElt,vec,ratvec)(x[1],V[I]:[-@(int,int)(a,2),-@(int,int)(b,1)],/@(vec,int)(V[I]:[0,0],1))
+dual_form_names: (InnerClass->[string]): {dual_form_names@InnerClass}
+dual: (InnerClass->InnerClass): {dual@InnerClass}
+dual_integral: (InnerClass,ratvec->InnerClass): (ic,gamma): inner_class@(RootDatum,mat)(dual@RootDatum(integrality_datum@(RootDatum,ratvec)(RdIc:ic,gamma)),-@mat(^@mat(distinguished_involution@InnerClass(ic))))
+dual_KL: (RealForm,DualRealForm->mat,[vec],vec): {dual_KL@(RealForm,DualRealForm)}
+dual_nilpotent_orbits: (RealForm->[[int]]): (G): dual_nilpotent_orbits@RootDatum(root_datum@InnerClass(IcRf:G))
+dual_nilpotent_orbits: (RootDatum->[[int]]): (rd): nilpotent_orbits@RootDatum(dual@RootDatum(rd))
+dual_occurrence_matrix: (InnerClass->mat): {dual_occurrence_matrix@InnerClass}
+dual_quasisplit_form: (InnerClass->DualRealForm): {dual_quasisplit_form@InnerClass}
+dual_real_form: (InnerClass,int->DualRealForm): {dual_real_form@(InnerClass,int)}
+dual_real_forms: (CartanClass->[DualRealForm]): {dual_real_forms@CartanClass}
+dual: (RootDatum->RootDatum): {dual@RootDatum}
+E6_C4: RealForm: connected split real group with Lie algebra 'e6(R)'
+E6_c: RealForm: compact connected real group with Lie algebra 'e6'
+E6_D5T: RealForm: connected real group with Lie algebra 'e6(so(10).u(1))'
+E6_F4: RealForm: connected real group with Lie algebra 'e6(f4)'
+E6_h: RealForm: connected real group with Lie algebra 'e6(so(10).u(1))'
+E6_ic_e: InnerClass: Complex reductive group of type E6, with involution defining
+E6_ic_s: InnerClass: Complex reductive group of type E6, with involution defining
+E6_q: RealForm: connected quasisplit real group with Lie algebra 'e6(su(6).su(2))'
+E6_s: RealForm: connected split real group with Lie algebra 'e6(R)'
+E7_A7: RealForm: connected split real group with Lie algebra 'e7(R)'
+E7_c: RealForm: compact connected real group with Lie algebra 'e7'
+E7_D6A1: RealForm: connected real group with Lie algebra 'e7(so(12).su(2))'
+E7_E6T: RealForm: connected real group with Lie algebra 'e7(e6.u(1))'
+E7_h: RealForm: connected real group with Lie algebra 'e7(e6.u(1))'
+E7_ic_e: InnerClass: Complex reductive group of type E7, with involution defining
+E7_ic: InnerClass: Complex reductive group of type E7, with involution defining
+E7_q: RealForm: connected real group with Lie algebra 'e7(so(12).su(2))'
+E7_spherical_unitary: [ratvec]: [[ 0, 0, 0, 0, 0, 0, 0 ]/1,[ 0, 0, 5, 0, 0, 0, 0 ]/12,[ 0, 9, 0, 0, 7, 0, 0 ]/36,[ 0, 2, 0, 0, 0, 0, 3 ]/6,[ 1, 0, 0, 0, 0, 0, 0 ]/2,[ 0, 0, 1, 0, 0, 0, 0 ]/3,[ 0, 0, 0, 1, 0, 0, 0 ]/4,[ 0, 3, 0, 0, 2, 0, 0 ]/12,[ 0, 1, 0, 0, 0, 1, 0 ]/4,[ 0, 0, 0, 0, 1, 0, 0 ]/3,[ 0, 1, 0, 0, 0, 0, 2 ]/4,[ 0, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 1, 0, 0, 0, 0, 0 ]/2,[ 0, 2, 0, 0, 0, 0, 1 ]/4,[ 0, 5, 0, 0, 0, 2, 6 ]/18,[ 0, 3, 0, 0, 1, 2, 0 ]/12,[ 0, 3, 0, 0, 7, 0, 0 ]/24,[ 0, 3, 0, 2, 2, 0, 0 ]/18,[ 0, 0, 2, 1, 0, 0, 0 ]/8,[ 3, 0, 1, 0, 0, 0, 0 ]/6,[ 0, 5, 0, 0, 0, 2, 0 ]/12,[ 0, 3, 0, 0, 1, 0, 4 ]/12,[ 0, 1, 0, 0, 1, 2, 0 ]/8,[ 0, 3, 0, 2, 0, 3, 0 ]/18,[ 0, 0, 0, 1, 1, 0, 0 ]/6,[ 0, 3, 3, 0, 2, 0, 0 ]/18,[ 4, 0, 0, 1, 0, 0, 0 ]/8,[ 0, 3, 0, 0, 1, 0, 0 ]/8,[ 0, 1, 0, 0, 1, 0, 4 ]/8,[ 0, 3, 0, 2, 0, 0, 6 ]/18,[ 0, 1, 1, 0, 0, 1, 0 ]/6,[ 0, 0, 3, 0, 2, 0, 0 ]/12,[ 6, 3, 0, 0, 2, 0, 0 ]/18,[ 0, 1, 0, 0, 1, 0, 0 ]/4,[ 0, 3, 0, 2, 0, 0, 0 ]/12,[ 0, 1, 1, 0, 0, 0, 2 ]/6,[ 0, 0, 0, 2, 0, 3, 0 ]/12,[ 2, 1, 0, 0, 0, 1, 0 ]/6,[ 3, 0, 0, 0, 1, 0, 0 ]/6,[ 0, 1, 1, 0, 0, 0, 0 ]/4,[ 2, 1, 0, 0, 0, 0, 2 ]/6,[ 0, 1, 0, 0, 0, 1, 3 ]/6,[ 2, 1, 0, 0, 0, 0, 0 ]/4,[ 0, 0, 0, 1, 0, 0, 3 ]/6,[ 0, 0, 1, 0, 0, 1, 0 ]/4,[ 1, 0, 0, 0, 0, 0, 0 ]/1,[ 0, 1, 0, 0, 0, 0, 0 ]/1,[ 0, 0, 0, 0, 0, 1, 0 ]/1,[ 0, 1, 0, 0, 0, 0, 1 ]/2,[ 0, 1, 0, 0, 0, 0, 3 ]/4,[ 1, 0, 0, 0, 0, 0, 1 ]/2,[ 0, 0, 1, 0, 0, 0, 0 ]/2,[ 0, 0, 0, 0, 1, 0, 0 ]/2,[ 0, 0, 0, 0, 1, 0, 2 ]/4,[ 0, 0, 1, 0, 0, 0, 2 ]/4,[ 0, 1, 0, 0, 0, 1, 0 ]/3,[ 0, 0, 0, 1, 0, 0, 0 ]/3,[ 2, 0, 0, 0, 0, 1, 0 ]/4,[ 9, 5, 0, 0, 0, 5, 9 ]/30,[ 0, 3, 0, 0, 1, 0, 6 ]/12,[ 0, 3, 0, 0, 1, 0, 2 ]/8,[  0,  0,  0,  7,  0,  3, 12 ]/36,[  0,  7,  0,  0,  3,  4, 12 ]/36,[ 0, 7, 0, 0, 3, 4, 0 ]/24,[ 0, 3, 0, 2, 0, 0, 9 ]/18,[ 0, 1, 0, 1, 0, 1, 3 ]/9,[ 0, 0, 0, 7, 0, 3, 0 ]/24,[ 0, 3, 0, 2, 0, 0, 3 ]/12,[ 0, 1, 0, 1, 0, 1, 0 ]/6,[ 0, 0, 0, 2, 3, 0, 6 ]/18,[ 0, 2, 3, 0, 0, 2, 6 ]/18,[ 0, 0, 0, 1, 0, 1, 4 ]/8,[ 0, 5, 0, 0, 0, 2, 9 ]/18,[ 3, 1, 0, 0, 0, 1, 3 ]/9,[ 0, 2, 3, 0, 0, 2, 0 ]/12,[ 0, 0, 1, 0, 0, 1, 3 ]/6,[ 0, 1, 1, 0, 0, 0, 3 ]/6,[ 0, 5, 0, 0, 0, 2, 3 ]/12,[ 0, 0, 0, 2, 3, 0, 0 ]/12,[ 0, 0, 1, 0, 1, 0, 2 ]/6,[ 3, 1, 0, 0, 0, 1, 0 ]/6,[ 1, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 1, 0, 0, 0, 0 ]/1,[ 0, 0, 0, 0, 1, 0, 0 ]/1,[ 1, 1, 0, 0, 0, 0, 0 ]/2,[ 0, 1, 0, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 0 ]/2,[ 3, 0, 0, 0, 0, 1, 0 ]/4,[ 0, 0, 0, 1, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 2 ]/4,[ 3, 0, 0, 0, 0, 1, 2 ]/6,[ 2, 1, 0, 0, 0, 0, 1 ]/4,[ 2, 1, 0, 0, 0, 0, 3 ]/6,[ 0, 0, 0, 1, 0, 0, 1 ]/3,[ 0, 0, 0, 1, 0, 0, 4 ]/6,[ 0, 0, 1, 0, 0, 1, 0 ]/3,[ 2, 0, 0, 0, 1, 0, 0 ]/4,[ 0, 1, 0, 0, 1, 0, 1 ]/4,[ 0, 1, 0, 0, 1, 0, 3 ]/6,[ 0, 0, 1, 0, 1, 0, 0 ]/4,[ 0, 1, 1, 0, 0, 0, 1 ]/4,[ 2, 0, 0, 0, 1, 0, 2 ]/6,[ 0, 0, 0, 1, 0, 1, 0 ]/4,[  0, 10,  0,  7,  0,  7, 18 ]/60,[ 3, 5, 0, 0, 0, 5, 9 ]/24,[  0,  4,  0,  7,  0,  7, 12 ]/48,[ 9, 5, 0, 0, 0, 5, 3 ]/24,[ 9, 2, 0, 0, 0, 5, 6 ]/24,[ 3, 5, 0, 0, 0, 5, 3 ]/18,[ 3, 2, 0, 0, 0, 5, 6 ]/18,[ 0, 4, 0, 7, 0, 7, 0 ]/36,[ 0, 3, 0, 2, 3, 0, 9 ]/24,[ 0, 5, 0, 2, 0, 2, 9 ]/24,[ 9, 2, 0, 0, 0, 5, 0 ]/18,[ 0, 1, 1, 0, 0, 2, 3 ]/9,[ 3, 2, 0, 0, 0, 5, 0 ]/12,[ 0, 3, 0, 2, 3, 0, 3 ]/18,[ 0, 5, 0, 2, 0, 2, 3 ]/18,[ 0, 0, 2, 1, 0, 1, 4 ]/12,[ 0, 5, 3, 0, 0, 2, 9 ]/24,[ 0, 0, 1, 0, 3, 0, 5 ]/12,[ 3, 0, 0, 0, 1, 1, 2 ]/8,[ 0, 1, 1, 0, 0, 2, 0 ]/6,[  0,  4,  0,  3,  0,  7, 12 ]/36,[ 0, 5, 0, 0, 3, 2, 9 ]/24,[ 0, 1, 1, 0, 1, 0, 3 ]/8,[ 4, 0, 0, 1, 0, 1, 4 ]/12,[ 6, 5, 0, 0, 0, 2, 9 ]/24,[ 0, 5, 3, 0, 0, 2, 3 ]/18,[ 0, 0, 1, 0, 1, 0, 5 ]/8,[ 3, 0, 1, 0, 0, 1, 3 ]/9,[ 1, 0, 0, 0, 1, 1, 2 ]/6,[ 0, 0, 2, 0, 3, 2, 6 ]/18,[ 0, 4, 0, 3, 0, 7, 0 ]/24,[ 0, 5, 0, 0, 3, 2, 3 ]/18,[ 0, 2, 0, 0, 3, 2, 6 ]/18,[ 0, 0, 2, 1, 0, 1, 0 ]/8,[ 0, 1, 1, 0, 1, 0, 1 ]/6,[ 6, 5, 0, 0, 0, 2, 3 ]/18,[ 3, 1, 0, 0, 0, 1, 3 ]/8,[ 3, 0, 0, 1, 0, 0, 4 ]/9,[ 0, 0, 0, 2, 3, 0, 8 ]/18,[ 2, 1, 0, 0, 1, 0, 3 ]/8,[ 0, 2, 0, 0, 3, 2, 0 ]/12,[ 4, 0, 0, 1, 0, 1, 0 ]/8,[ 2, 0, 0, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 1 ]/2,[ 1, 1, 0, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 0, 1, 0, 0 ]/2,[ 0, 0, 1, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 1, 0, 0, 1 ]/2,[ 2, 0, 0, 1, 0, 0, 0 ]/4,[ 1, 1, 0, 0, 0, 1, 1 ]/4,[ 1, 1, 0, 0, 0, 1, 3 ]/6,[ 3, 1, 0, 0, 0, 1, 1 ]/6,[ 0, 2, 0, 0, 1, 0, 0 ]/4,[ 0, 0, 0, 1, 1, 0, 0 ]/4,[ 0, 3, 0, 2, 0, 0, 5 ]/12,[ 0, 0, 0, 5, 0, 0, 2 ]/12,[ 3, 0, 1, 0, 0, 1, 0 ]/6,[ 1, 0, 0, 0, 1, 1, 0 ]/4,[ 3, 0, 0, 0, 1, 1, 0 ]/6,[ 3, 0, 0, 1, 0, 0, 1 ]/6,[ 0, 0, 1, 0, 1, 0, 1 ]/4,[ 0, 0, 1, 0, 3, 0, 1 ]/8,[ 0, 0, 0, 2, 3, 0, 2 ]/12,[ 0, 0, 2, 0, 3, 2, 0 ]/12,[ 2, 1, 0, 0, 1, 0, 1 ]/6,[  0, 10,  0,  7,  0,  7,  6 ]/48,[  0,  6,  0,  7,  0,  3, 18 ]/48,[ 0, 5, 0, 2, 3, 2, 9 ]/30,[ 4, 0, 1, 0, 3, 0, 5 ]/16,[ 0, 5, 2, 0, 0, 4, 9 ]/24,[  0,  0,  7,  0,  9,  4, 15 ]/48,[ 3, 1, 1, 0, 0, 2, 3 ]/12,[ 0, 6, 0, 7, 0, 3, 6 ]/36,[ 0, 5, 0, 2, 3, 2, 3 ]/24,[  0,  4,  6,  3,  0,  7, 12 ]/48,[ 0, 5, 3, 0, 3, 2, 9 ]/30,[ 0, 2, 0, 2, 3, 2, 6 ]/24,[ 6, 0, 0, 1, 0, 3, 4 ]/16,[ 4, 0, 1, 0, 1, 0, 5 ]/12,[  0,  0,  7,  0,  3,  4, 15 ]/36,[ 3, 1, 0, 0, 1, 1, 3 ]/10,[ 0, 5, 2, 0, 0, 4, 3 ]/18,[  0, 10,  0,  3,  0,  7, 18 ]/48,[ 2, 0, 0, 1, 0, 3, 4 ]/12,[ 3, 1, 1, 0, 0, 2, 0 ]/9,[ 12,  4,  0,  3,  0,  7, 12 ]/48,[ 6, 5, 0, 0, 3, 2, 9 ]/30,[ 0, 4, 6, 3, 0, 7, 0 ]/36,[ 0, 5, 3, 0, 3, 2, 3 ]/24,[ 0, 2, 0, 2, 3, 2, 0 ]/18,[ 0, 2, 3, 0, 3, 2, 6 ]/24,[ 0, 0, 1, 1, 0, 1, 4 ]/9,[ 9, 0, 2, 0, 0, 5, 6 ]/24,[ 1, 1, 0, 0, 1, 1, 3 ]/8,[ 6, 0, 0, 2, 3, 0, 8 ]/24,[ 3, 1, 0, 0, 1, 1, 1 ]/8,[  0, 10,  0,  3,  0,  7,  6 ]/36,[ 0, 2, 0, 1, 0, 1, 6 ]/12,[  0,  0,  4,  3,  0,  7, 12 ]/36,[ 6, 0, 0, 1, 0, 3, 0 ]/12,[ 6, 0, 2, 0, 3, 2, 6 ]/24,[ 12,  4,  0,  3,  0,  7,  0 ]/36,[ 6, 5, 0, 0, 3, 2, 3 ]/24,[ 6, 2, 0, 0, 3, 2, 6 ]/24,[ 0, 2, 3, 0, 3, 2, 0 ]/18,[ 4, 0, 1, 0, 3, 0, 1 ]/12,[ 0, 0, 7, 0, 9, 4, 3 ]/36,[ 0, 3, 2, 0, 0, 2, 9 ]/18,[ 3, 0, 2, 0, 0, 5, 6 ]/18,[ 1, 1, 0, 0, 1, 1, 1 ]/6,[ 2, 0, 0, 1, 0, 3, 0 ]/8,[ 0, 2, 0, 1, 0, 1, 2 ]/8,[ 6, 2, 0, 0, 3, 2, 0 ]/18,[ 2, 0, 0, 1, 1, 0, 0 ]/6,[ 6, 0, 0, 5, 0, 0, 2 ]/18,[ 0, 0, 0, 5, 3, 0, 2 ]/18,[ 4, 0, 1, 0, 1, 0, 1 ]/8,[ 0, 0, 7, 0, 3, 4, 3 ]/24,[ 0, 0, 1, 1, 0, 1, 1 ]/6,[ 0, 3, 2, 0, 0, 2, 3 ]/12,[ 6, 0, 0, 2, 3, 0, 2 ]/18,[ 0, 0, 4, 3, 0, 7, 0 ]/24,[ 1, 0, 0, 0, 0, 1, 0 ]/1,[ 0, 0, 0, 1, 0, 0, 0 ]/1,[ 1, 0, 1, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 1, 0, 0, 0 ]/2,[ 0, 1, 1, 0, 0, 0, 1 ]/2,[ 0, 0, 1, 0, 1, 0, 0 ]/2,[ 0, 0, 0, 1, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 1, 0, 1 ]/2,[ 1, 1, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 1, 0, 0, 3, 0 ]/4,[ 1, 0, 1, 0, 0, 1, 0 ]/3,[ 0, 0, 1, 0, 1, 0, 1 ]/3,[ 1, 0, 0, 1, 0, 0, 1 ]/3,[ 1, 2, 0, 0, 0, 1, 0 ]/4,[ 3, 2, 0, 0, 0, 1, 0 ]/6,[ 0, 0, 0, 1, 0, 2, 0 ]/4,[ 1, 0, 0, 1, 0, 1, 0 ]/4,[ 3, 0, 0, 1, 0, 1, 0 ]/6,[ 0, 3, 0, 1, 0, 0, 1 ]/6,[ 0, 3, 1, 0, 0, 1, 0 ]/6,[ 3, 0, 2, 0, 0, 5, 0 ]/12,[ 9, 0, 2, 0, 0, 5, 0 ]/18,[ 2, 2, 0, 0, 1, 0, 0 ]/6,[ 6, 3, 0, 2, 0, 0, 5 ]/18,[ 0, 3, 0, 2, 3, 0, 5 ]/18,[ 6, 0, 2, 0, 3, 2, 0 ]/18,[ 18,  0,  7,  0,  9, 10, 15 ]/72,[ 6, 5, 2, 0, 0, 4, 9 ]/30,[  0, 10,  6,  3,  0,  7, 18 ]/60,[ 6, 2, 0, 1, 0, 3, 6 ]/20,[ 12,  0,  7,  0,  9,  4, 15 ]/60,[ 12,  0,  7,  0,  3,  4, 15 ]/48,[ 2, 2, 0, 1, 0, 3, 6 ]/16,[ 6, 5, 2, 0, 0, 4, 3 ]/24,[ 12, 10,  0,  3,  0,  7, 18 ]/60,[  0, 10,  6,  3,  0,  7,  6 ]/48,[ 0, 2, 2, 1, 0, 1, 6 ]/16,[ 6, 2, 0, 1, 0, 3, 2 ]/16,[ 3, 0, 1, 1, 0, 1, 4 ]/12,[ 9, 3, 2, 0, 0, 5, 9 ]/30,[ 0, 0, 2, 2, 3, 2, 8 ]/24,[ 2, 2, 0, 1, 0, 3, 2 ]/12,[ 9, 0, 2, 0, 3, 5, 6 ]/30,[ 12, 10,  0,  3,  0,  7,  6 ]/48,[ 4, 2, 0, 1, 0, 1, 6 ]/16,[ 12,  0,  4,  3,  0,  7, 12 ]/48,[ 0, 2, 2, 1, 0, 1, 2 ]/12,[ 3, 0, 0, 1, 1, 1, 0 ]/8,[ 9, 0, 0, 2, 0, 3, 8 ]/24,[ 9, 0, 0, 5, 0, 3, 2 ]/24,[ 12,  0,  7,  0,  9,  4,  3 ]/48,[ 3, 3, 2, 0, 0, 5, 9 ]/24,[ 6, 3, 2, 0, 0, 2, 9 ]/24,[ 9, 3, 2, 0, 0, 5, 3 ]/24,[ 6, 0, 0, 5, 3, 0, 2 ]/24,[ 0, 3, 2, 0, 3, 2, 9 ]/24,[ 3, 0, 2, 0, 3, 5, 6 ]/24,[ 4, 2, 0, 1, 0, 1, 2 ]/12,[ 1, 0, 0, 1, 1, 1, 0 ]/6,[ 3, 0, 0, 2, 0, 3, 8 ]/18,[ 3, 0, 0, 5, 0, 3, 2 ]/18,[ 0, 2, 1, 0, 3, 0, 3 ]/12,[ 12,  0,  7,  0,  3,  4,  3 ]/36,[ 3, 3, 2, 0, 0, 5, 3 ]/18,[ 3, 0, 1, 1, 0, 1, 1 ]/9,[ 6, 3, 2, 0, 0, 2, 3 ]/18,[ 6, 3, 0, 2, 3, 0, 5 ]/24,[ 0, 0, 2, 2, 3, 2, 2 ]/18,[ 0, 3, 2, 0, 3, 2, 3 ]/18,[ 12,  0,  4,  3,  0,  7,  0 ]/36,[ 0, 0, 2, 3, 0, 2, 0 ]/12,[ 3, 2, 0, 0, 1, 1, 0 ]/8,[ 9, 0, 0, 2, 0, 3, 2 ]/18,[ 0, 4, 1, 0, 3, 0, 1 ]/12,[ 0, 2, 1, 0, 1, 0, 3 ]/8,[ 0, 0, 3, 4, 9, 0, 7 ]/36,[ 9, 0, 2, 0, 3, 5, 0 ]/24,[ 0, 1, 3, 0, 0, 0, 1 ]/4,[ 3, 0, 0, 0, 1, 0, 3 ]/4,[ 2, 1, 0, 0, 1, 0, 0 ]/3,[ 0, 0, 0, 1, 0, 2, 1 ]/4,[ 1, 1, 0, 0, 1, 0, 1 ]/3,[ 2, 1, 0, 0, 1, 0, 1 ]/4,[ 1, 2, 0, 0, 1, 0, 0 ]/4,[ 1, 0, 0, 1, 0, 1, 0 ]/3,[ 2, 0, 0, 1, 0, 1, 0 ]/4,[ 0, 1, 1, 0, 0, 1, 1 ]/3,[ 0, 2, 1, 0, 0, 1, 0 ]/4,[ 0, 2, 1, 0, 0, 3, 0 ]/6,[ 1, 1, 0, 0, 0, 2, 1 ]/4,[ 1, 0, 1, 0, 1, 0, 1 ]/4,[ 3, 3, 1, 0, 0, 1, 0 ]/9,[ 1, 2, 0, 0, 1, 1, 0 ]/6,[ 3, 0, 0, 2, 0, 3, 2 ]/12,[ 3, 3, 0, 1, 0, 0, 1 ]/9,[ 0, 0, 3, 4, 3, 0, 7 ]/24,[ 3, 0, 2, 0, 3, 5, 0 ]/18,[ 18,  0,  7,  0,  3, 10, 15 ]/60,[ 6, 0, 1, 0, 3, 2, 5 ]/20,[  6,  0,  7,  0,  9, 10, 15 ]/60,[ 6, 0, 1, 0, 1, 2, 5 ]/16,[  6,  0,  7,  0,  3, 10, 15 ]/48,[ 9, 0, 2, 5, 0, 5, 2 ]/30,[ 2, 0, 1, 0, 3, 2, 5 ]/16,[ 9, 0, 0, 2, 3, 3, 8 ]/30,[ 9, 0, 0, 5, 3, 3, 2 ]/30,[ 6, 0, 2, 2, 3, 2, 8 ]/30,[ 9, 3, 2, 0, 3, 5, 9 ]/36,[ 18,  0,  7,  0,  9, 10,  3 ]/60,[ 2, 0, 1, 0, 1, 2, 5 ]/12,[ 3, 0, 2, 5, 0, 5, 2 ]/24,[ 3, 0, 0, 2, 3, 3, 8 ]/24,[ 3, 0, 0, 5, 3, 3, 2 ]/24,[ 4, 2, 1, 0, 3, 0, 3 ]/16,[ 3, 3, 2, 0, 3, 5, 9 ]/30,[  0,  6,  4,  3,  0,  7, 18 ]/48,[ 6, 3, 2, 0, 3, 2, 9 ]/30,[ 9, 3, 2, 0, 3, 5, 3 ]/30,[ 9, 0, 2, 3, 0, 5, 0 ]/24,[  0,  0,  3, 10,  9,  0,  7 ]/48,[ 18,  0,  7,  0,  3, 10,  3 ]/48,[ 4, 4, 1, 0, 3, 0, 1 ]/16,[ 6, 0, 1, 0, 3, 2, 1 ]/16,[  6,  0,  7,  0,  9, 10,  3 ]/48,[ 0, 0, 2, 3, 3, 2, 0 ]/18,[ 4, 2, 1, 0, 1, 0, 3 ]/12,[ 0, 0, 2, 5, 0, 2, 2 ]/18,[ 9, 0, 0, 2, 3, 3, 2 ]/24,[ 12,  0,  3,  4,  9,  0,  7 ]/48,[ 0, 0, 7, 4, 9, 4, 7 ]/48,[ 3, 3, 2, 0, 3, 5, 3 ]/24,[ 0, 6, 4, 3, 0, 7, 6 ]/36,[ 6, 0, 2, 2, 3, 2, 2 ]/24,[ 6, 3, 2, 0, 3, 2, 3 ]/24,[ 3, 0, 0, 1, 0, 1, 0 ]/4,[ 3, 0, 2, 3, 0, 5, 0 ]/18,[ 6, 0, 2, 3, 0, 2, 0 ]/18,[ 9, 3, 0, 2, 0, 3, 5 ]/24,[ 0, 0, 1, 2, 3, 0, 1 ]/12,[  0,  0,  3, 10,  3,  0,  7 ]/36,[ 6, 0, 1, 0, 1, 2, 1 ]/12,[  6,  0,  7,  0,  3, 10,  3 ]/36,[ 2, 0, 1, 0, 3, 2, 1 ]/12,[ 12,  0,  3,  4,  3,  0,  7 ]/36,[ 0, 0, 7, 4, 3, 4, 7 ]/36,[ 0, 3, 2, 2, 0, 2, 5 ]/18,[ 3, 0, 0, 2, 3, 3, 2 ]/18,[ 9, 6, 2, 0, 0, 5, 0 ]/24,[ 3, 3, 0, 2, 0, 3, 5 ]/18,[ 0, 0, 1, 2, 1, 0, 1 ]/8,[ 2, 0, 1, 0, 1, 2, 1 ]/8,[ 0, 6, 2, 0, 3, 2, 0 ]/18,[ 1, 0, 1, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 1, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 1, 1 ]/1,[ 0, 0, 1, 0, 0, 1, 0 ]/1,[ 0, 0, 0, 1, 0, 0, 1 ]/1,[ 2, 0, 2, 0, 0, 1, 0 ]/4,[ 3, 0, 0, 1, 0, 0, 2 ]/4,[ 3, 1, 0, 0, 0, 1, 2 ]/4,[ 1, 1, 0, 1, 0, 0, 1 ]/3,[ 1, 1, 2, 0, 0, 0, 1 ]/4,[ 1, 0, 2, 0, 1, 0, 0 ]/4,[ 1, 0, 0, 1, 0, 1, 1 ]/3,[ 2, 0, 0, 1, 0, 0, 3 ]/4,[ 1, 0, 1, 0, 1, 1, 0 ]/4,[ 0, 1, 1, 0, 1, 0, 2 ]/4,[ 1, 1, 0, 1, 0, 0, 2 ]/4,[ 0, 0, 1, 1, 0, 1, 1 ]/4,[ 0, 0, 1, 0, 1, 3, 1 ]/6,[ 1, 0, 0, 1, 1, 0, 1 ]/4,[ 1, 3, 0, 1, 0, 0, 1 ]/6,[ 1, 1, 1, 0, 0, 1, 1 ]/4,[ 1, 3, 1, 0, 0, 1, 0 ]/6,[ 3, 6, 2, 0, 0, 5, 0 ]/18,[ 0, 4, 1, 0, 1, 0, 1 ]/8,[ 0, 6, 0, 2, 3, 0, 2 ]/18,[ 18,  0,  7, 10,  9, 10,  7 ]/84,[ 9, 0, 2, 5, 3, 5, 2 ]/36,[ 9, 0, 2, 3, 3, 5, 0 ]/30,[ 9, 0, 2, 2, 0, 5, 8 ]/30,[ 12,  0,  3, 10,  9,  0,  7 ]/60,[ 3, 0, 2, 5, 3, 5, 2 ]/30,[ 12,  6,  4,  3,  0,  7, 18 ]/60,[ 4, 0, 1, 2, 3, 0, 1 ]/16,[ 3, 0, 2, 3, 3, 5, 0 ]/24,[ 6, 0, 2, 3, 3, 2, 0 ]/24,[ 12,  0,  3, 10,  3,  0,  7 ]/48,[ 3, 0, 2, 2, 0, 5, 8 ]/24,[ 6, 0, 2, 5, 0, 2, 2 ]/24,[ 9, 3, 0, 2, 3, 3, 5 ]/30,[ 0, 6, 7, 0, 9, 4, 9 ]/48,[ 0, 0, 2, 5, 3, 2, 2 ]/24,[ 12,  0,  7,  4,  9,  4,  7 ]/60,[ 12,  6,  4,  3,  0,  7,  6 ]/48,[ 4, 0, 1, 2, 1, 0, 1 ]/12,[ 0, 6, 7, 0, 3, 4, 9 ]/36,[ 9, 0, 2, 2, 0, 5, 2 ]/24,[ 12,  0,  7,  4,  3,  4,  7 ]/48,[ 6, 3, 2, 2, 0, 2, 5 ]/24,[ 3, 3, 0, 2, 3, 3, 5 ]/24,[ 0, 3, 2, 2, 3, 2, 5 ]/24,[ 4, 4, 1, 0, 1, 0, 1 ]/12,[ 6, 6, 2, 0, 3, 2, 0 ]/24,[ 0, 3, 1, 1, 0, 1, 1 ]/9,[ 3, 0, 2, 2, 0, 5, 2 ]/18,[ 6, 6, 0, 2, 3, 0, 2 ]/24,[ 2, 2, 0, 0, 1, 0, 1 ]/4,[ 2, 0, 0, 1, 1, 0, 1 ]/4,[ 2, 0, 1, 1, 0, 1, 1 ]/6,[ 2, 0, 2, 3, 0, 2, 0 ]/12,[ 1, 1, 2, 0, 0, 1, 0 ]/4,[ 2, 1, 0, 1, 0, 1, 0 ]/4,[ 2, 1, 1, 0, 0, 0, 3 ]/4,[ 1, 0, 2, 0, 1, 0, 1 ]/4,[ 0, 0, 2, 1, 0, 1, 0 ]/4,[ 1, 0, 0, 1, 1, 0, 2 ]/4,[ 2, 1, 0, 0, 1, 1, 1 ]/4,[ 5, 5, 0, 0, 2, 0, 5 ]/12,[ 5, 2, 0, 0, 5, 0, 2 ]/12,[ 5, 0, 0, 2, 3, 2, 0 ]/12,[ 1, 0, 0, 1, 0, 4, 0 ]/6,[ 5, 0, 2, 0, 3, 2, 0 ]/12,[ 1, 1, 0, 1, 0, 1, 1 ]/4,[ 0, 0, 5, 0, 2, 3, 2 ]/12,[ 3, 0, 0, 1, 3, 0, 1 ]/8,[ 5, 0, 0, 2, 3, 0, 2 ]/12,[ 5, 3, 0, 2, 0, 0, 5 ]/12,[ 1, 0, 0, 1, 0, 3, 1 ]/6,[ 0, 3, 1, 0, 1, 0, 1 ]/6,[ 18,  0,  7, 10,  3, 10,  7 ]/72,[  6,  0,  7, 10,  9, 10,  7 ]/72,[ 9, 0, 2, 2, 3, 5, 8 ]/36,[ 6, 0, 1, 2, 3, 2, 1 ]/20,[  6,  0,  7, 10,  3, 10,  7 ]/60,[ 6, 2, 1, 0, 3, 2, 3 ]/20,[ 3, 0, 2, 2, 3, 5, 8 ]/30,[  0,  0,  7, 10,  9,  4,  7 ]/60,[ 12,  6,  7,  0,  9,  4,  9 ]/60,[ 6, 0, 2, 5, 3, 2, 2 ]/30,[ 6, 0, 1, 2, 1, 2, 1 ]/16,[ 2, 0, 1, 2, 3, 2, 1 ]/16,[ 0, 0, 7, 6, 9, 4, 3 ]/48,[ 6, 2, 1, 0, 1, 2, 3 ]/16,[  0,  0,  7, 10,  3,  4,  7 ]/48,[ 9, 3, 2, 2, 0, 5, 5 ]/30,[ 12,  6,  7,  0,  3,  4,  9 ]/48,[ 2, 2, 1, 0, 3, 2, 3 ]/16,[ 9, 0, 2, 2, 3, 5, 2 ]/30,[ 6, 3, 2, 2, 3, 2, 5 ]/30,[ 2, 0, 1, 2, 1, 2, 1 ]/12,[ 0, 0, 7, 6, 3, 4, 3 ]/36,[  0, 12,  7,  0,  9,  4,  3 ]/48,[ 9, 6, 2, 0, 3, 5, 0 ]/30,[ 2, 2, 1, 0, 1, 2, 3 ]/12,[ 3, 3, 2, 2, 0, 5, 5 ]/24,[ 3, 3, 1, 1, 0, 1, 1 ]/12,[ 3, 0, 2, 2, 3, 5, 2 ]/24,[ 5, 1, 0, 0, 1, 0, 3 ]/6,[ 2, 1, 1, 0, 1, 1, 1 ]/6,[ 9, 6, 0, 2, 0, 3, 2 ]/24,[  0, 12,  3,  4,  9,  0,  7 ]/48,[  0, 12,  7,  0,  3,  4,  3 ]/36,[ 3, 6, 2, 0, 3, 5, 0 ]/24,[ 10,  0,  4,  3,  0,  7,  0 ]/24,[ 5, 3, 2, 0, 0, 2, 3 ]/12,[ 1, 0, 1, 1, 1, 0, 2 ]/6,[ 7, 0, 7, 0, 3, 4, 3 ]/24,[ 1, 0, 1, 0, 1, 4, 1 ]/8,[ 1, 0, 1, 2, 1, 0, 1 ]/8,[ 3, 6, 0, 2, 0, 3, 2 ]/18,[  0, 12,  3,  4,  3,  0,  7 ]/36,[ 0, 0, 0, 1, 0, 1, 0 ]/1,[ 1, 0, 0, 1, 0, 1, 0 ]/2,[ 1, 2, 1, 0, 0, 1, 1 ]/4,[ 2, 1, 3, 0, 0, 0, 3 ]/6,[ 0, 1, 1, 0, 2, 0, 1 ]/4,[ 1, 1, 0, 0, 2, 1, 0 ]/4,[ 1, 1, 0, 1, 0, 2, 0 ]/4,[ 4, 0, 0, 1, 0, 1, 4 ]/6,[ 2, 0, 0, 1, 0, 2, 3 ]/6,[ 1, 1, 1, 0, 1, 0, 2 ]/4,[ 2, 1, 2, 0, 1, 0, 1 ]/6,[ 1, 1, 1, 0, 0, 2, 1 ]/4,[ 2, 0, 3, 2, 0, 5, 0 ]/12,[ 5, 0, 0, 5, 0, 2, 0 ]/12,[ 0, 1, 1, 1, 0, 1, 1 ]/4,[ 1, 1, 0, 0, 1, 3, 1 ]/6,[ 1, 1, 0, 1, 0, 2, 2 ]/6,[ 0, 0, 1, 1, 0, 3, 1 ]/6,[ 0, 0, 2, 3, 2, 0, 5 ]/12,[ 8, 3, 0, 2, 3, 0, 5 ]/18,[ 1, 2, 1, 0, 1, 1, 0 ]/6,[ 0, 3, 1, 0, 1, 3, 1 ]/9,[ 1, 4, 1, 0, 1, 0, 1 ]/8,[ 1, 3, 0, 1, 0, 3, 1 ]/9,[ 18,  0,  7,  6,  9, 10,  3 ]/72,[ 18,  0,  3, 10,  9,  6,  7 ]/72,[ 18,  6,  7,  0,  9, 10,  9 ]/72,[ 12,  0,  7, 10,  9,  4,  7 ]/72,[ 18,  0,  7,  6,  3, 10,  3 ]/60,[  6,  0,  7,  6,  9, 10,  3 ]/60,[ 12,  0,  7,  6,  9,  4,  3 ]/60,[ 18,  0,  3, 10,  3,  6,  7 ]/60,[ 18,  6,  7,  0,  3, 10,  9 ]/60,[ 12,  0,  7, 10,  3,  4,  7 ]/60,[  6,  0,  3, 10,  9,  6,  7 ]/60,[  6,  6,  7,  0,  9, 10,  9 ]/60,[ 18,  0,  7,  4,  9, 10,  7 ]/72,[ 9, 3, 2, 2, 3, 5, 5 ]/36,[ 10,  2,  0,  0,  2,  3,  0 ]/12,[ 14, 10,  0,  0,  7,  0,  3 ]/24,[  6,  0,  7,  6,  3, 10,  3 ]/48,[ 12,  0,  7,  6,  3,  4,  3 ]/48,[ 12, 12,  7,  0,  9,  4,  3 ]/60,[  6,  0,  3, 10,  3,  6,  7 ]/48,[  6,  6,  7,  0,  3, 10,  9 ]/48,[ 18,  0,  7,  4,  3, 10,  7 ]/60,[ 9, 6, 0, 2, 3, 3, 2 ]/30,[ 12, 12,  3,  4,  9,  0,  7 ]/60,[ 18,  0,  3,  4,  9,  6,  7 ]/60,[  6,  0,  7,  4,  9, 10,  7 ]/60,[ 3, 3, 2, 2, 3, 5, 5 ]/30,[ 6, 4, 1, 0, 1, 2, 1 ]/16,[ 12, 12,  7,  0,  3,  4,  3 ]/48,[ 12, 12,  3,  4,  3,  0,  7 ]/48,[ 18,  0,  3,  4,  3,  6,  7 ]/48,[  6,  0,  7,  4,  3, 10,  7 ]/48,[ 3, 6, 0, 2, 3, 3, 2 ]/24,[ 6, 0, 3, 4, 9, 6, 7 ]/48,[ 0, 6, 2, 2, 3, 2, 2 ]/24,[ 4, 1, 0, 1, 0, 1, 2 ]/6,[ 7, 5, 0, 0, 2, 3, 0 ]/12,[ 4, 0, 0, 1, 1, 0, 3 ]/6,[ 4, 2, 0, 1, 0, 1, 2 ]/8,[ 1, 1, 1, 1, 0, 1, 2 ]/6,[ 2, 4, 1, 0, 1, 2, 1 ]/12,[ 6, 0, 3, 4, 3, 6, 7 ]/36,[ 2, 0, 4, 1, 0, 1, 0 ]/8,[ 3, 5, 2, 0, 0, 5, 2 ]/12,[ 3, 1, 1, 0, 0, 1, 4 ]/6,[ 0, 1, 1, 0, 1, 4, 2 ]/8,[ 3, 5, 2, 0, 0, 2, 5 ]/12,[ 2, 1, 0, 1, 1, 1, 1 ]/6,[ 3, 4, 0, 1, 3, 0, 1 ]/12,[ 1, 1, 1, 0, 2, 0, 2 ]/6,[ 3, 3, 2, 0, 2, 0, 5 ]/12,[ 3, 0, 4, 3, 7, 0, 7 ]/24,[ 3, 2, 1, 0, 1, 0, 3 ]/8,[ 1, 0, 0, 1, 1, 4, 1 ]/8,[ 1, 0, 0, 1, 0, 1, 1 ]/2,[ 3, 1, 2, 0, 0, 1, 2 ]/6,[ 1, 1, 3, 1, 0, 0, 1 ]/6,[ 3, 0, 2, 0, 1, 0, 3 ]/6,[ 5, 0, 0, 2, 3, 2, 5 ]/12,[ 2, 0, 0, 5, 0, 5, 2 ]/12,[ 3, 0, 0, 1, 1, 0, 4 ]/6,[ 4, 1, 0, 0, 1, 1, 3 ]/6,[ 5, 5, 0, 0, 2, 3, 2 ]/12,[ 1, 1, 3, 0, 1, 0, 1 ]/6,[ 1, 0, 3, 1, 0, 1, 0 ]/6,[ 0, 2, 2, 3, 0, 2, 5 ]/12,[ 2, 2, 0, 3, 2, 0, 5 ]/12,[ 0, 0, 5, 3, 2, 3, 5 ]/18,[ 1, 4, 0, 1, 1, 0, 1 ]/8,[ 2, 0, 3, 2, 0, 3, 2 ]/12,[ 7, 0, 3, 4, 3, 0, 7 ]/24,[ 18, 12,  7,  0,  9, 10,  3 ]/72,[ 18, 12,  7,  0,  3, 10,  3 ]/60,[ 6, 4, 1, 0, 3, 2, 1 ]/20,[  6, 12,  7,  0,  9, 10,  3 ]/60,[ 9, 6, 2, 2, 0, 5, 2 ]/30,[  0, 12,  7,  4,  9,  4,  7 ]/60,[ 6, 6, 2, 2, 3, 2, 2 ]/30,[ 3, 1, 0, 1, 1, 1, 1 ]/6,[  6, 12,  7,  0,  3, 10,  3 ]/48,[ 2, 4, 1, 0, 3, 2, 1 ]/16,[ 3, 6, 2, 2, 0, 5, 2 ]/24,[  0, 12,  7,  4,  3,  4,  7 ]/48,[ 5, 2, 0, 3, 2, 0, 2 ]/12,[ 4, 1, 1, 0, 1, 0, 6 ]/8,[  4,  7,  3,  0,  7,  0, 10 ]/24,[ 2, 3, 1, 0, 1, 0, 4 ]/8,[ 11,  0,  7,  4,  3,  4,  7 ]/36,[ 2, 3, 1, 1, 0, 1, 1 ]/9,[ 1, 3, 1, 1, 1, 0, 2 ]/9,[ 1, 4, 1, 0, 1, 4, 1 ]/12,[ 2, 1, 2, 0, 1, 1, 1 ]/6,[ 3, 1, 1, 0, 1, 0, 4 ]/6,[ 1, 1, 3, 0, 1, 0, 2 ]/6,[ 3, 3, 1, 0, 0, 4, 1 ]/8,[ 0, 1, 3, 1, 0, 1, 1 ]/6,[  0,  7,  7,  0,  3,  4, 10 ]/24,[ 3, 3, 0, 1, 0, 1, 3 ]/8,[ 1, 2, 1, 0, 1, 1, 2 ]/6,[ 5, 3, 0, 2, 0, 2, 3 ]/12,[ 5, 6, 2, 0, 3, 2, 0 ]/18,[ 5, 3, 3, 2, 0, 3, 5 ]/18,[ 2, 0, 0, 1, 0, 1, 0 ]/2,[ 2, 1, 1, 0, 0, 0, 1 ]/2,[ 2, 0, 1, 0, 1, 0, 0 ]/2,[ 3, 0, 0, 1, 0, 3, 0 ]/4,[ 1, 1, 1, 0, 1, 0, 1 ]/3,[ 2, 5, 3, 2, 0, 0, 5 ]/12,[ 1, 2, 3, 0, 0, 1, 1 ]/6,[ 0, 1, 3, 0, 2, 0, 1 ]/6,[ 1, 0, 0, 1, 3, 1, 1 ]/6,[ 1, 0, 3, 1, 0, 1, 1 ]/6,[ 5, 0, 3, 2, 3, 5, 0 ]/18,[ 0, 1, 1, 0, 3, 1, 1 ]/6,[ 3, 3, 0, 1, 0, 3, 1 ]/8,[ 7, 4, 0, 3, 7, 0, 7 ]/24,[ 5, 6, 0, 2, 3, 0, 2 ]/18,[ 12, 12,  7,  4,  9,  4,  7 ]/72,[ 12, 12,  7,  4,  3,  4,  7 ]/60,[ 5, 1, 1, 0, 0, 2, 5 ]/8,[ 1, 2, 1, 1, 0, 2, 1 ]/6,[ 2, 1, 0, 1, 1, 4, 1 ]/9,[ 1, 0, 1, 2, 1, 4, 1 ]/12,[ 2, 2, 4, 0, 1, 0, 1 ]/8,[ 3, 1, 3, 0, 1, 0, 4 ]/8,[ 1, 1, 2, 1, 0, 2, 0 ]/6,[ 7, 2, 0, 2, 5, 2, 2 ]/18,[ 8, 3, 2, 0, 3, 2, 3 ]/18,[ 3, 3, 5, 0, 2, 3, 5 ]/18,[ 7, 0, 2, 2, 3, 2, 2 ]/18,[ 1, 0, 1, 1, 1, 3, 2 ]/9,[ 1, 4, 0, 1, 1, 4, 1 ]/12,[ 1, 2, 1, 0, 2, 1, 1 ]/6,[ 0, 2, 2, 3, 0, 5, 2 ]/12,[ 1, 1, 1, 1, 0, 2, 2 ]/6,[ 1, 1, 0, 3, 0, 3, 1 ]/8,[ 13,  4,  0,  3, 13,  0,  7 ]/36,[ 1, 0, 2, 1, 1, 2, 1 ]/8,[ 1, 0, 1, 0, 0, 1, 0 ]/1,[ 1, 0, 0, 1, 0, 0, 1 ]/1,[ 1, 0, 0, 1, 0, 2, 0 ]/2,[ 0, 1, 1, 0, 1, 0, 2 ]/2,[ 1, 0, 0, 1, 0, 1, 2 ]/2,[ 1, 1, 1, 0, 0, 1, 1 ]/2,[ 0, 0, 1, 1, 0, 1, 1 ]/2,[ 1, 1, 0, 0, 1, 1, 1 ]/2,[ 5, 5, 0, 2, 0, 3, 2 ]/12,[ 1, 1, 2, 0, 2, 1, 0 ]/6,[ 1, 1, 0, 1, 3, 0, 1 ]/6,[ 2, 5, 3, 0, 2, 0, 5 ]/12,[ 5, 3, 0, 2, 0, 5, 2 ]/12,[ 7, 7, 0, 3, 4, 3, 7 ]/24,[ 5, 5, 0, 3, 2, 0, 8 ]/18,[ 0, 0, 2, 3, 2, 6, 5 ]/18,[ 2, 2, 3, 0, 2, 3, 2 ]/12,[ 5, 3, 0, 2, 0, 6, 5 ]/18,[ 0, 6, 5, 0, 2, 3, 2 ]/18,[ 9, 6, 2, 2, 3, 5, 2 ]/36,[ 5, 1, 0, 1, 1, 1, 3 ]/8,[ 7, 3, 1, 0, 0, 4, 5 ]/12,[ 3, 6, 2, 2, 3, 5, 2 ]/30,[ 2, 4, 2, 0, 1, 0, 3 ]/8,[ 4, 2, 0, 2, 1, 0, 1 ]/8,[ 3, 2, 1, 0, 1, 4, 3 ]/12,[ 7, 0, 7, 6, 3, 4, 3 ]/36,[ 10, 10,  0,  4,  3,  0,  7 ]/24,[ 4, 1, 2, 0, 1, 1, 3 ]/8,[ 4, 0, 3, 1, 0, 1, 4 ]/9,[ 2, 2, 0, 5, 0, 3, 2 ]/12,[ 8, 3, 0, 2, 3, 2, 3 ]/18,[ 5, 3, 3, 2, 0, 5, 3 ]/18,[ 1, 1, 1, 0, 2, 3, 2 ]/9,[ 5, 0, 3, 2, 3, 3, 2 ]/18,[ 7, 3, 2, 2, 0, 2, 5 ]/18,[  3, 12,  4,  3,  7,  0,  7 ]/36,[  7, 12,  7,  0,  3,  4,  3 ]/36,[ 5, 2, 6, 0, 5, 0, 2 ]/18,[ 3, 2, 2, 0, 3, 2, 5 ]/12,[ 3, 7, 4, 3, 0, 7, 7 ]/24,[ 1, 1, 4, 1, 0, 1, 1 ]/8,[ 5, 5, 3, 0, 2, 3, 5 ]/18,[ 2, 6, 3, 2, 0, 3, 2 ]/18,[  7, 12,  3,  4,  3,  0,  7 ]/36,[ 4, 1, 3, 0, 0, 0, 1 ]/4,[ 1, 1, 1, 1, 0, 1, 1 ]/4,[ 2, 5, 9, 2, 0, 0, 5 ]/18,[ 5, 5, 6, 0, 2, 0, 5 ]/18,[ 5, 0, 6, 2, 3, 2, 0 ]/18,[ 1, 1, 0, 1, 4, 1, 1 ]/8,[ 18, 12,  7,  4,  9, 10,  7 ]/84,[ 18, 12,  7,  4,  3, 10,  7 ]/72,[ 18, 12,  3,  4,  9,  6,  7 ]/72,[  6, 12,  7,  4,  9, 10,  7 ]/72,[ 13,  5,  0,  0,  2,  3,  6 ]/18,[ 1, 2, 3, 1, 0, 2, 1 ]/8,[ 18, 12,  3,  4,  3,  6,  7 ]/60,[  6, 12,  7,  4,  3, 10,  7 ]/60,[  6, 12,  3,  4,  9,  6,  7 ]/60,[ 4, 1, 1, 0, 1, 4, 6 ]/12,[  4, 11,  7,  0,  7,  4, 14 ]/36,[ 2, 3, 1, 0, 1, 4, 4 ]/12,[ 8, 3, 3, 2, 3, 3, 5 ]/24,[ 13,  6,  7,  0,  3,  4,  9 ]/36,[ 1, 3, 1, 1, 1, 3, 2 ]/12,[  6, 12,  3,  4,  3,  6,  7 ]/48,[ 1, 2, 3, 0, 2, 1, 1 ]/8,[ 5, 3, 0, 5, 0, 8, 2 ]/18,[ 5, 7, 2, 0, 2, 2, 7 ]/18,[ 3, 5, 2, 3, 0, 2, 8 ]/18,[ 2, 1, 3, 1, 1, 1, 1 ]/9,[ 3, 3, 4, 1, 0, 3, 1 ]/12,[ 5, 2, 3, 0, 5, 3, 2 ]/18,[ 3, 3, 2, 3, 2, 0, 8 ]/18,[ 3, 3, 2, 0, 2, 6, 5 ]/18,[ 3, 0, 2, 1, 3, 2, 1 ]/12,[ 2, 0, 5, 2, 2, 3, 4 ]/18,[  7,  4,  4,  3, 11,  0, 11 ]/36,[ 5, 3, 2, 2, 2, 0, 7 ]/18,[ 1, 0, 2, 1, 1, 6, 1 ]/12,[  3,  0,  4,  3,  7, 12,  7 ]/36,[  7,  0,  3,  4,  3, 12,  7 ]/36,[ 2, 5, 9, 0, 2, 0, 5 ]/18,[  7,  3,  3,  4,  0, 10,  7 ]/24,[ 8, 3, 0, 2, 3, 5, 5 ]/18,[ 2, 3, 3, 2, 0, 2, 5 ]/12,[ 1, 3, 2, 1, 0, 1, 3 ]/8,[ 2, 2, 0, 3, 2, 6, 5 ]/18,[ 2, 2, 3, 0, 2, 9, 2 ]/18,[ 1, 1, 1, 0, 1, 1, 1 ]/3,[ 2, 4, 6, 0, 1, 0, 3 ]/12,[ 8, 5, 0, 3, 2, 3, 2 ]/18,[ 4, 1, 1, 1, 0, 2, 5 ]/9,[  4,  7,  3,  0,  7, 12, 10 ]/36,[ 5, 7, 2, 0, 2, 5, 4 ]/18,[ 3, 3, 4, 1, 0, 1, 3 ]/12,[ 4, 2, 4, 1, 0, 1, 2 ]/12,[ 8, 3, 3, 2, 3, 5, 3 ]/24,[ 16,  6,  4,  3,  0,  7,  6 ]/36,[ 3, 3, 5, 3, 2, 3, 8 ]/24,[ 10,  3,  2,  2,  3,  2,  5 ]/24,[ 11, 12,  7,  4,  3,  4,  7 ]/48,[ 7, 2, 0, 5, 2, 2, 2 ]/18,[ 1, 1, 1, 2, 0, 4, 1 ]/8,[ 3, 1, 1, 0, 2, 2, 3 ]/8,[ 11,  3,  0,  2,  0,  5,  8 ]/18,[  6,  2,  2,  3,  0,  2, 11 ]/18,[ 7, 5, 0, 2, 2, 2, 5 ]/18,[ 2, 2, 3, 3, 2, 3, 5 ]/18,[ 2, 2, 5, 0, 4, 3, 4 ]/18,[ 2, 2, 2, 3, 4, 0, 7 ]/18,[  3,  0, 10,  3,  7,  6,  7 ]/36,[  7,  4,  0,  3,  7, 12,  7 ]/36,[ 1, 4, 2, 1, 1, 2, 1 ]/12,[ 5, 8, 3, 2, 0, 3, 5 ]/18,[ 1, 1, 3, 1, 3, 0, 1 ]/9,[ 1, 1, 1, 0, 4, 2, 1 ]/8,[ 1, 0, 3, 1, 3, 1, 1 ]/9,[ 5, 3, 1, 0, 2, 4, 3 ]/12,[ 2, 5, 3, 5, 0, 3, 5 ]/18,[ 3, 5, 2, 3, 0, 8, 2 ]/18,[ 2, 3, 3, 5, 0, 5, 5 ]/18,[ 12,  7,  7,  0,  3,  4, 22 ]/36,[  6, 13,  7,  0,  3,  4, 16 ]/36,[ 1, 1, 4, 3, 0, 3, 1 ]/12,[ 5, 5, 3, 3, 2, 3, 8 ]/24,[ 5, 3, 5, 2, 2, 3, 7 ]/24,[ 5, 6, 3, 2, 3, 3, 2 ]/24,[ 7, 6, 2, 2, 3, 2, 2 ]/24,[  3, 12,  4,  3,  7, 12,  7 ]/48,[  7, 12,  3,  4,  3, 12,  7 ]/48,[ 3, 3, 1, 0, 4, 4, 1 ]/12,[ 2, 0, 6, 5, 0, 5, 2 ]/18,[  9,  2,  2,  0,  3,  2, 11 ]/18,[ 2, 4, 2, 3, 2, 2, 7 ]/18,[  9, 13,  4,  3,  0, 13,  7 ]/36,[ 2, 3, 9, 2, 0, 2, 5 ]/18,[ 5, 3, 6, 2, 0, 2, 3 ]/18,[ 4, 2, 3, 2, 2, 5, 2 ]/18,[ 5, 5, 6, 0, 2, 3, 2 ]/18,[ 3, 3, 0, 1, 4, 3, 1 ]/12,[ 13, 13,  0,  3,  4,  9,  7 ]/36,[ 1, 0, 0, 1, 0, 1, 0 ]/1,[ 3, 0, 0, 1, 0, 3, 4 ]/4,[ 1, 1, 1, 0, 1, 1, 2 ]/3,[ 2, 2, 6, 5, 0, 3, 2 ]/18,[ 2, 2, 2, 5, 0, 7, 4 ]/18,[  9, 13,  4,  3,  0,  7, 13 ]/36,[ 7, 5, 3, 2, 2, 5, 5 ]/24,[ 1, 4, 2, 1, 1, 6, 1 ]/16,[ 13,  9,  3,  4,  0, 16,  7 ]/36,[ 5, 3, 6, 2, 0, 5, 2 ]/18,[ 3, 5, 2, 0, 6, 5, 2 ]/18,[ 5, 3, 3, 2, 3, 2, 8 ]/18,[ 1, 1, 1, 1, 3, 2, 2 ]/9,[ 3, 2, 2, 3, 3, 2, 8 ]/18,[  7, 11,  4,  3,  4,  7, 11 ]/36,[ 1, 1, 4, 1, 4, 1, 1 ]/12,[ 1, 3, 6, 1, 0, 1, 3 ]/12,[ 4, 0, 2, 1, 0, 1, 0 ]/4,[ 5, 5, 6, 2, 0, 3, 2 ]/18,[ 5, 0, 6, 2, 3, 2, 5 ]/18,[ 1, 1, 1, 0, 1, 1, 3 ]/3,[ 2, 5, 9, 5, 0, 3, 5 ]/24,[ 10, 10, 12,  4,  3,  0,  7 ]/36,[ 3, 3, 1, 2, 0, 6, 1 ]/12,[  8,  3,  3,  2,  0,  2, 11 ]/18,[  3,  7,  4,  9,  0, 13,  7 ]/36,[ 8, 3, 6, 2, 3, 2, 3 ]/24,[ 7, 2, 3, 2, 5, 5, 2 ]/24,[ 2, 2, 5, 3, 4, 3, 7 ]/24,[ 2, 2, 3, 3, 2, 9, 5 ]/24,[ 3, 3, 2, 3, 2, 6, 8 ]/24,[ 3, 4, 2, 1, 3, 2, 1 ]/16,[ 2, 6, 5, 2, 2, 3, 4 ]/24,[ 4, 1, 1, 1, 0, 1, 1 ]/4,[ 5, 5, 0, 2, 6, 3, 2 ]/18,[ 5, 2, 2, 2, 3, 4, 7 ]/18,[ 7, 4, 6, 3, 7, 6, 7 ]/36,[ 2, 5, 3, 2, 6, 0, 5 ]/18,[ 5, 3, 0, 2, 6, 5, 2 ]/18,[ 4, 1, 1, 0, 2, 0, 1 ]/4,[ 11,  3,  6,  2,  0,  5,  8 ]/24,[  8,  3,  9,  2,  0,  2, 11 ]/24,[ 2, 3, 9, 5, 0, 5, 5 ]/24,[  7,  3,  3, 10,  0, 16,  7 ]/36,[  5,  7,  2,  3,  2,  2, 10 ]/24,[ 7, 2, 6, 2, 5, 2, 2 ]/24,[ 3, 3, 4, 1, 4, 3, 1 ]/16,[ 13,  4,  6,  3, 13,  6,  7 ]/48,[  7,  4,  4,  3, 11, 12, 11 ]/48,[ 5, 3, 2, 2, 2, 6, 7 ]/24,[  3, 12, 10,  3,  7,  6,  7 ]/48,[ 5, 8, 9, 2, 0, 3, 5 ]/24,[  7,  7, 12,  3,  4,  3,  7 ]/36,[ 1, 1, 1, 1, 4, 1, 1 ]/8,[ 1, 0, 0, 1, 0, 1, 1 ]/1,[ 5, 3, 6, 5, 0, 8, 2 ]/24,[ 6, 1, 3, 1, 0, 1, 1 ]/6,[ 2, 2, 2, 3, 4, 6, 7 ]/24,[  7,  4, 10,  3, 11,  6, 11 ]/48,[  7,  4,  6,  3,  7, 18,  7 ]/48,[ 2, 5, 9, 2, 6, 0, 5 ]/24,[ 1, 3, 2, 1, 4, 1, 3 ]/12,[  7, 13,  6,  3,  4,  3, 13 ]/36,[  3,  7,  4,  3, 12,  7,  7 ]/36,[ 6, 1, 3, 0, 2, 0, 1 ]/6,[ 7, 7, 7, 3, 4, 3, 7 ]/24,[ 2, 1, 1, 0, 1, 0, 2 ]/2,[ 2, 0, 1, 1, 0, 1, 1 ]/2,[ 2, 1, 1, 0, 1, 1, 0 ]/2,[ 1, 1, 1, 0, 1, 1, 1 ]/2,[ 3, 1, 1, 0, 2, 1, 1 ]/4,[ 1, 1, 2, 0, 1, 3, 1 ]/4,[ 8, 3, 6, 2, 3, 5, 5 ]/24,[  9,  2,  2,  3,  3,  2, 14 ]/24,[ 2, 1, 0, 1, 1, 3, 1 ]/4,[ 1, 2, 1, 0, 2, 1, 3 ]/4,[  7,  3,  3,  4, 12, 10,  7 ]/36,[ 2, 3, 3, 2, 6, 2, 5 ]/18,[ 5, 2, 2, 3, 2, 3, 2 ]/12,[ 1, 1, 1, 2, 0, 1, 3 ]/4,[ 13,  9,  3, 10,  0, 22,  7 ]/48,[ 5, 8, 3, 2, 6, 3, 5 ]/24,[ 5, 5, 6, 2, 6, 3, 2 ]/24,[ 5, 3, 6, 2, 6, 5, 2 ]/24,[ 5, 3, 9, 2, 3, 2, 8 ]/24,[ 7, 5, 6, 2, 2, 2, 5 ]/24,[ 1, 1, 1, 3, 1, 1, 1 ]/6,[ 1, 1, 0, 2, 1, 1, 3 ]/4,[ 1, 3, 6, 1, 4, 1, 3 ]/16,[ 13, 13, 12,  3,  4,  9,  7 ]/48,[ 5, 8, 9, 2, 6, 3, 5 ]/30,[  9, 13,  4,  3, 12, 13,  7 ]/48,[ 2, 3, 9, 2, 6, 2, 5 ]/24,[  7, 13, 18,  3,  4,  3, 13 ]/48,[ 13,  9,  3,  4, 12, 16,  7 ]/48,[ 4, 1, 1, 0, 1, 4, 6 ]/6,[ 1, 1, 1, 3, 1, 1, 5 ]/6,[ 5, 2, 2, 3, 2, 5, 5 ]/12,[ 4, 1, 3, 0, 1, 3, 0 ]/4,[ 5, 2, 2, 3, 2, 5, 7 ]/12,[ 1, 1, 2, 2, 1, 3, 3 ]/6,[  2,  5,  5,  0,  5,  2, 12 ]/12,[ 1, 1, 1, 3, 1, 1, 6 ]/6,[ 1, 1, 1, 0, 1, 0, 1 ]/1,[ 1, 0, 1, 1, 0, 1, 0 ]/1,[  5,  2,  2,  3,  2,  5, 12 ]/12,[ 4, 1, 3, 0, 1, 2, 2 ]/4,[ 1, 1, 1, 2, 1, 3, 1 ]/4,[ 2, 1, 1, 0, 1, 2, 2 ]/2,[ 3, 1, 1, 2, 1, 1, 3 ]/4,[ 4, 1, 1, 2, 1, 1, 2 ]/4,[ 1, 1, 1, 0, 1, 1, 1 ]/1,[ 6, 1, 3, 2, 1, 3, 2 ]/6,[ 2, 1, 2, 1, 1, 1, 1 ]/2,[ 1, 1, 1, 1, 1, 1, 1 ]/1]
+E7_s: RealForm: connected split real group with Lie algebra 'e7(R)'
+E8_c: (->RealForm): (): real_form@(InnerClass,int)(E8_ic(),0)
+E8_ic: (->InnerClass): ():  if first then ic:=inner_class@(RootDatum,string)(simply_connected@LieType(LT:"E8"),"e") next voided:first:=false else ic fi 
+E8_q: (->RealForm): (): real_form@(InnerClass,int)(E8_ic(),1)
+E8_s: (->RealForm): (): real_form@(InnerClass,int)(E8_ic(),2)
+echelon: (mat->mat,[int]): {echelon@mat}
+eigen_lattice: (mat,int->mat): {eigen_lattice@(mat,int)}
+error: (string->*): {error@string}
+Euclid: (int,int->int,int,(int,int)): (a,b): ((M): voided: while !=@(int,int)(*@(int,int)(M[0,0],M[0,1]),0) do voided:M:=*@(mat,mat)(M,M[V]:[V[I]:[1,-@int(\@(int,int)(M[0,0],M[0,1]))],V[I]:[0,1]]); if !=@(int,int)(M[0,0],0) then voided:M:=*@(mat,mat)(M,M[V]:[V[I]:[1,0],V[I]:[-@int(\@(int,int)(M[0,1],M[0,0])),1]]) else () fi  od ; if =@(int,int)(M[0,0],0) then (M[0,1],-@int(M[1,0]),(\@(int,int)(-@(int,int)(M[0,1],M[1,1]),a),\@(int,int)(M[1,1],b))) else (M[0,0],M[1,1],(\@(int,int)(-@(int,int)(M[0,0],M[1,0]),a),\@(int,int)(M[1,0],b))) fi )(M[V]:[V[I]:[a,0],V[I]:[b,b]])
+eval: (vec,int->int): (v,k): ((sum): voided: for i : #@vec(v) downto 0 do voided:sum:=+@(int,int)(v[i],*@(int,int)(k,sum)) od ;sum)(0)
+eval: (vec,Split->Split): (v,w): ((sum): voided: for i : #@vec(v) downto 0 do voided:sum:=+@(Split,Split)(SpI:v[i],*@(Split,Split)(w,sum)) od ;sum)(SpI:0)
+extract_submatrix: (mat,vec,int->mat,int): (M,v,init): ((k): ((rv): (rv,k))(M[V]: for vj@j in v do  if =@(int,int)(vj,init) then voided:k:=j else () fi ;V[I]: for vi in v do M[vi,vj] od  od ))(-@int(1))
+F4_spherical_unitary: [ratvec]: [[ 0, 0, 0, 0 ]/1,[ 0, 0, 0, 1 ]/2,[ 0, 0, 1, 0 ]/3,[ 0, 1, 0, 0 ]/4,[ 1, 0, 0, 0 ]/2,[ 0, 0, 2, 1 ]/6,[ 4, 1, 3, 3 ]/24,[ 0, 1, 0, 2 ]/6,[ 0, 0, 1, 0 ]/2,[ 3, 0, 0, 2 ]/8,[ 0, 0, 0, 1 ]/1,[ 1, 0, 0, 0 ]/1,[ 2, 4, 1, 2 ]/24,[ 2, 0, 1, 2 ]/8,[ 0, 1, 0, 0 ]/2,[ 1, 1, 0, 0 ]/4,[ 1, 0, 1, 0 ]/3,[ 1, 0, 0, 1 ]/2,[ 0, 0, 1, 0 ]/1,[ 1, 1, 0, 4 ]/8,[ 1, 0, 1, 1 ]/4,[ 0, 1, 0, 2 ]/4,[ 1, 0, 1, 0 ]/2,[ 1, 0, 0, 2 ]/2,[ 1, 1, 1, 2 ]/8,[ 5, 1, 4, 0 ]/16,[ 1, 1, 0, 1 ]/4,[ 3, 0, 2, 1 ]/8,[ 0, 1, 0, 1 ]/2,[ 1, 0, 1, 1 ]/3,[ 3, 0, 1, 0 ]/4,[ 3, 1, 2, 2 ]/12,[ 2, 1, 2, 0 ]/8,[ 3, 0, 2, 3 ]/8,[ 1, 1, 0, 2 ]/4,[ 1, 1, 0, 1 ]/3,[ 4, 1, 2, 1 ]/12,[ 1, 2, 1, 1 ]/8,[ 1, 0, 2, 2 ]/4,[ 1, 0, 1, 0 ]/1,[ 0, 0, 1, 1 ]/1,[ 4, 3, 2, 2 ]/16,[ 2, 3, 2, 2 ]/12,[ 5, 2, 2, 5 ]/16,[  7,  3,  4, 10 ]/24,[ 5, 2, 3, 2 ]/12,[ 6, 1, 2, 7 ]/16,[ 3, 1, 1, 1 ]/6,[ 1, 2, 1, 2 ]/6,[ 1, 1, 4, 2 ]/8,[ 1, 1, 3, 1 ]/6,[ 2, 1, 2, 5 ]/8,[ 1, 2, 2, 3 ]/8,[ 1, 1, 0, 2 ]/2,[ 2, 1, 0, 1 ]/2,[ 1, 0, 1, 1 ]/1,[ 1, 1, 2, 4 ]/4,[ 3, 1, 2, 2 ]/4,[ 1, 1, 1, 1 ]/1]
+fiber_part: (CartanClass,RealForm->[int]): {fiber_part@(CartanClass,RealForm)}
+fiber_part: (RealForm->[int]): (G): fiber_part@(CartanClass,RealForm)(Cartan_class@(InnerClass,int)(IcRf:G,0),G)
+filter_units: (mat,vec->mat,vec): {filter_units@(mat,vec)}
+find: ([[int]],int->int): (vecs,k): ((rv): ((i): voided: while <@(int,int)(i,#(vecs)) do  if match@([int],int)(vecs[i],k) then voided:rv:=i;voided:i:=#(vecs) else () fi ;voided:i:=+@(int,int)(i,1) od ;rv)(0))(-@int(1))
+finite_dimensional: (RealForm,vec->Param): (G,gamma): normparam@(KGBElt,ratvec,ratvec)(KGB@(RealForm,int)(G,-@(int,int)(KGB_size@RealForm(G),1)),+@(ratvec,ratvec)(QvV:gamma,rho@RealForm(G)),+@(ratvec,ratvec)(QvV:gamma,rho@RealForm(G)))
+fix_coroots: (mat,mat,mat->mat): (roots,coroots,delta): ((rv): voided: for alpha@i in roots do ((checkalpha):  if =@(vec,vec)(*@(mat,vec)(^@mat(delta),checkalpha),checkalpha) then voided:rv:=#(rv,checkalpha) elif =@(int,int)(*@(vec,vec)(alpha,*@(mat,vec)(^@mat(delta),checkalpha)),0) then voided:rv:=#(rv,+@(vec,vec)(checkalpha,*@(mat,vec)(^@mat(delta),checkalpha))) elif =@(int,int)(*@(vec,vec)(alpha,*@(mat,vec)(^@mat(delta),checkalpha)),-@int(1)) then voided:rv:=#(rv,*@(int,vec)(2,+@(vec,vec)(checkalpha,*@(mat,vec)(^@mat(delta),checkalpha)))) else () fi )(coroots[i]) od ;M[V]:rv)([])
+floor: (rat->int): (a): \@(int,int)(%@rat(a))
+floor: ([rat]->[int]): (v):  for a in v do floor@rat(a) od 
+form_names: (InnerClass->[string]): {form_names@InnerClass}
+form_number_by_fiber_part: (InnerClass,vec->int): (ic,v): ((realforms,i,rv): voided: while <@(int,int)(i,#(realforms)) do  if =@(vec,vec)(V[I]:fiber_part@RealForm(realforms[i]),v) then voided:(rv:=i,i:=#(realforms)) else voided:i:=+@(int,int)(i,1) fi  od ;rv)(real_forms@InnerClass(ic),0,-@int(1))
+form_number: (RealForm->int): {form_number@RealForm}
+full_deform: (Param->ParamPol): {full_deform@Param}
+full_status_code: (int,Param->string): (s,p):  if is_real@(int,KGBElt)(s,x@Param(p)) then  if is_parity@(int,Param)(s,p) then "rn" else ["r1","r2"][-@(int,int)(real_type@(int,Param)(s,p),1)] fi  elif is_noncompact@(int,KGBElt)(s,x@Param(p)) then ["i1","i2"][-@(int,int)(imaginary_type@(int,Param)(s,p),1)] else status_code@(int,KGBElt)(s,x@Param(p)) fi 
+full_status_code: (int,(Param,string)->string): (s,(p,type)): full_status_code@(int,Param)(s,p)
+full_status_codes: (Param->[string]): (p):  for s: semisimple_rank@RootDatum(RdRf:real_form@Param(p)) from 0 do full_status_code@(int,Param)(s,p) od 
+full_status_codes: (Param,string->[string]): (p,type): full_status_codes@Param(p)
+fundamental_Cartan: (RealForm->CartanClass): (G): Cartan_class@(InnerClass,int)(IcRf:G,0)
+fundamental_coweight: (RootDatum,int->ratvec): {fundamental_coweight@(RootDatum,int)}
+fundamental_weight: (RootDatum,int->ratvec): {fundamental_weight@(RootDatum,int)}
+gcd: (int,int->int): (a,b): ((d,,): d)(Euclid@(int,int)(a,b))
+generate_all_binary: (int->[vec]): (n): ((v): ((rv): ((): rv)(voided: for i: -@(int,int)(^@(int,int)(2,n),1) from 0 do voided:v:=V[I]:addone([I]V:v,0);voided:rv:=#(rv,v) od ))([v]))(null@int(n))
+generate_all_subsets: ([int]->[[int]]): (S): ((b):  for x in b do ((rv): voided: for i: #@vec(x) from 0 do  if =@(int,int)(x[i],1) then voided:rv:=#(rv,S[i]) else voided:rv:=rv fi  od ;rv)([]) od )(generate_all_binary@int(#(S)))
+generate_W: (RealForm->[[int]]): (G): generate_W@RootDatum(root_datum@InnerClass(IcRf:G))
+generate_W: (RootDatum->[[int]]): (rd): W_orbit_W_elements@(RootDatum,[int],[int])(rd, for i: rank@RootDatum(rd) from 0 do i od ,[I]V:ratvectovec@ratvec(*@(int,ratvec)(2,rho@RootDatum(rd))))
+get_block: (Param->[Param]): (p): ((params,): params)(block@Param(p))
+get_singular_index: (Param->int): (p): ((,init,,,,indices,): get_singular_index@(vec,int)(indices,init))(KL_block@Param(p))
+get_singular_index: (vec,int->int): (indices,init): ((k): voided: for vi@i in indices do  if =@(int,int)(vi,init) then voided:k:=i else () fi  od ;k)(-@int(1))
+get_type: (LieType->int): (t): ((code,n):  if =@(int,int)(code,ascii@string("T")) then 0 elif =@(int,int)(n,1) then -@(int,int)(code,ascii@string("A")) elif ((f): ((): =@(int,int)(n,1))(voided: while  if >@(int,int)(n,0) then =@(string,string)(str@LieType(f[-@(int,int)(n,1)]),"T1") else false fi  do voided:n:=-@(int,int)(n,1) od ))(%@LieType(t)) then -@(int,int)(code,ascii@string("A")) else error@string("Non-simple Lie type") fi )(ascii@string(str@LieType(t)),#@LieType(t))
+get_type: (RealForm->int): (G): get_type@RootDatum(root_datum@InnerClass(IcRf:G))
+get_type: (RootDatum->int): (rd): get_type@LieType(Lie_type@RootDatum(rd))
+GL_C: (int->RealForm): (n): complex@RootDatum(GL@int(n))
+GL_H: (int->RealForm): (n): error@string("gl(n,H) is not yet implemented")
+GL: (int->RootDatum): (n): ((r): root_datum@([vec],[vec],int)(r,r,n))(GL_roots@int(n))
+GL: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(GL@int(n), if >@(int,int)(n,1) then "ss" else "s" fi )),(n): complex@RootDatum(GL@int(n)),(n): error@string("gl(n,H) is not yet implemented")))(K))(n)
+Global variables:
+GL_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(GL@int(n), if >@(int,int)(n,1) then "ss" else "s" fi ))
+GL_roots: (int->[vec]): (n):  for i: -@(int,int)(n,1) from 0 do V[I]: for j: n from 0 do  if =@(int,int)(j,i) then 1 elif =@(int,int)(j,+@(int,int)(i,1)) then -@int(1) else 0 fi  od  od 
+greater: ([int],[int]->bool): (v,w):  if !=@(int,int)(#(v),#(w)) then error@string("can't compare vectors of unequal length") elif =@(vec,vec)(V[I]:v,V[I]:w) then false elif >@(int,int)(v[0],w[0]) then true elif <@(int,int)(v[0],w[0]) then false else greater(cut@[int](v),cut@[int](w)) fi 
+GSp_C: (int->RealForm): (n): complex@RootDatum(GSp@int(n))
+GSp_H: (int->RealForm): (n): error@string("PSp(n,H) is not yet implemented")
+GSp: (int->RootDatum): (n):  if =@(int,int)(%@(int,int)(n,2),1) then error@string("Odd symplectic datum") else ((type): root_datum@(LieType,mat)(Lie_type@string(type),quotient_basis@(LieType,[ratvec])(Lie_type@string(type),[Qv[Q]:[/@(int,int)(1,2),/@(int,int)(1,2)]])))( if =@(int,int)(\@(int,int)(n,2),1) then "A1.T1" else +@(string,string)(+@(string,string)("C",int_format@int(\@(int,int)(n,2))),"T1") fi ) fi 
+GSp: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(GSp@int(n),"ss")),(n): complex@RootDatum(GSp@int(n)),(n): error@string("PSp(n,H) is not yet implemented")))(K))(n)
+GSp_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(GSp@int(n),"ss"))
+H1: (RealForm->int): (G): #(strong_real_forms_same_type@RealForm(G))
+has_infinitesimal_character: (ParamPol->bool): (P): ((Q): ((,q0): ((ic0): ((rv,i): voided: while <@(int,int)(i,#(Q)) do ((,q):  if  if =@(ratvec,ratvec)(ic0,infinitesimal_character@Param(q)) then false else true fi  then voided:(rv:=false,i:=#(Q)) else voided:i:=+@(int,int)(i,1) fi )(Q[i]) od ;rv)(true,0))(infinitesimal_character@Param(q0)))(Q[0]))(%@ParamPol(P))
+has_nu0: (Param->bool): (p): ((nu): =@(ratvec,ratvec)(nu,null_wt@int(#@ratvec(nu))))(nu@Param(p))
+hds: (int,int->Param): (a,b): param@(KGBElt,vec,ratvec)(x[2],V[I]:[-@(int,int)(a,2),-@(int,int)(b,1)],/@(vec,int)(V[I]:[0,0],1))
+hermitian_debug: bool: false
+hermitian_form_irreducible: (Param->ParamPol): (p):  if hermitian_debug then prints("Computing Hermitian form on irreducible: ",p) else () fi ;convert_cform_hermitian@ParamPol(c_form_irreducible@Param(p))
+H: string: "H"
+id_mat: (int->mat): {id_mat@int}
+imaginary_coroots: (InnerClass,[int]->mat): (ic,tw): imaginary_coroots@(RootDatum,mat)(RdIc:ic,involution@(InnerClass,[int])(ic,tw))
+imaginary_coroots: (RootDatum,mat->mat): (rd,theta): ((ic): voided: for alpha in coroots@RootDatum(rd) do  if =@(vec,vec)(*@(vec,mat)(alpha,theta),alpha) then voided:ic:=#(ic,alpha) else () fi  od ; if =@(int,int)(#(ic),0) then null@(int,int)(rank@RootDatum(rd),0) else M[V]:ic fi )([])
+imaginary_roots: (InnerClass,[int]->mat): (ic,tw): imaginary_roots@(RootDatum,mat)(RdIc:ic,involution@(InnerClass,[int])(ic,tw))
+imaginary_roots: (RootDatum,mat->mat): (rd,theta): ((ir): voided: for alpha in roots@RootDatum(rd) do  if =@(vec,vec)(*@(mat,vec)(theta,alpha),alpha) then voided:ir:=#(ir,alpha) else () fi  od ; if =@(int,int)(#(ir),0) then null@(int,int)(rank@RootDatum(rd),0) else M[V]:ir fi )([])
+imaginary_type: (int,Param->int): (s,p):  if =@(Param,Param)(cross@(int,Param)(s,Cayley@(int,Param)(s,p)),Cayley@(int,Param)(s,p)) then 1 else 2 fi 
+infinitesimal_character: (ParamPol->ratvec): (P):  if  if has_infinitesimal_character@ParamPol(P) then false else true fi  then error@string("terms have different infinitesimal characters") else ((,p): infinitesimal_character@Param(p))(%@ParamPol(P)[0]) fi 
+infinitesimal_character: (ParamPol,string->ratvec): (P,type): infinitesimal_character@ParamPol(P)
+infinitesimal_character: (Param->ratvec): {infinitesimal_character@Param}
+infinitesimal_character: (Param,string->ratvec): (p,type): infinitesimal_character@Param(p)
+inject_coroots: (mat,mat->mat,mat): (coroots,delta):  if =@((int,int),(int,int))(#@mat(coroots),(0,0)) then (M[V]:[],M[V]:[]) else ((m): ((id): ((N): ((Q,): (Q,*@(mat,mat)(Q,coroots)))(coprojection@(mat,vec)(kernel@mat(N),null@int(m))))(-@(mat,mat)(id,^@mat(delta))))(id_mat@int(m)))(n_columns@mat(delta)) fi 
+in_list: ([[int]],[int]->bool,int): (list,v): voided: for i: -@(int,int)(#(list),1) from 0 do  if  if <@([int],[int])(list[i],list[+@(int,int)(i,1)]) then false else true fi  then error@string("list is not strictly decreasing") else () fi  od ;in_list(list,v,0)
+in_list: ([[int]],[int],int->bool,int): (list,v,loc):  if =@(int,int)(#(list),0) then (false,loc) else ((k):  if =@(vec,vec)(V[I]:v,V[I]:list[-@(int,int)(k,1)]) then (true,-@(int,int)(+@(int,int)(loc,k),1)) elif <@([int],[int])(v,list[-@(int,int)(k,1)]) then in_list( for i: -@(int,int)(k,1) from 0 do list[i] od ,v,loc) else in_list( for i: -@(int,int)(#(list),k) from k do list[i] od ,v,+@(int,int)(loc,k)) fi )(\@(int,int)(+@(int,int)(#(list),1),2)) fi 
+in_list_reverse: ([[int]],[int]->bool,int): (list,v): voided: for i: -@(int,int)(#(list),1) from 0 do  if  if >@([int],[int])(list[i],list[+@(int,int)(i,1)]) then false else true fi  then error@string("list is not strictly decreasing") else () fi  od ;in_list_reverse(list,v,0)
+in_list_reverse: ([[int]],[int],int->bool,int): (list,v,loc):  if =@(int,int)(#(list),0) then (false,loc) else ((k):  if =@(vec,vec)(V[I]:v,V[I]:list[-@(int,int)(k,1)]) then (true,-@(int,int)(+@(int,int)(loc,k),1)) elif >@([int],[int])(v,list[-@(int,int)(k,1)]) then in_list_reverse( for i: -@(int,int)(k,1) from 0 do list[i] od ,v,loc) else in_list_reverse( for i: -@(int,int)(#(list),k) from k do list[i] od ,v,+@(int,int)(loc,k)) fi )(\@(int,int)(+@(int,int)(#(list),1),2)) fi 
+inner_class: (LieType,[ratvec],string->InnerClass): {inner_class@(LieType,[ratvec],string)}
+inner class of type 'c', with 3 real forms and 2 dual real forms
+inner class of type 'c', with 3 real forms and 3 dual real forms
+inner class of type 'c', with 4 real forms and 4 dual real forms
+inner class of type 'c', with 4 real forms and 4 dual real forms
+inner class of type 's', with 2 real forms and 3 dual real forms
+inner_class: (RealForm->InnerClass): {inner_class@RealForm}
+inner_class: (RootDatum,mat->InnerClass): {inner_class@(RootDatum,mat)}
+inner_class: (RootDatum,string->InnerClass): {inner_class@(RootDatum,string)}
+inner_forms: (CartanClass->[RealForm]): (C): real_forms@CartanClass(C)
+inner_forms: (InnerClass->[RealForm]): (ic): real_forms@InnerClass(ic)
+inner_forms: (RealForm->[RealForm]): (G): real_forms@RealForm(G)
+insert_at: ([[int]],[int],int->[[int]]): (v,w,k): #(#( for i: k from 0 do v[i] od ,w), for i: -@(int,int)(#(v),k) from k do v[i] od )
+in_tau_complement: (int,Param->bool): (s,p):  if in_tau@(int,Param)(s,p) then false else true fi 
+in_tau_complement: (int,(Param,string)->bool): (s,(p,type)):  if in_tau@(int,Param)(s,p) then false else true fi 
+in_tau: (int,Param->bool): (s,p):  if  if is_compact@(int,KGBElt)(s,x@Param(p)) then true elif =@(string,string)(status_code@(int,KGBElt)(s,x@Param(p)),"C-") then true else is_non_parity@(int,Param)(s,p) fi  then true else false fi 
+in_tau: (int,(Param,string)->bool): (s,(p,type)):  if  if is_compact@(int,KGBElt)(s,x@Param(p)) then true elif =@(string,string)(status_code@(int,KGBElt)(s,x@Param(p)),"C-") then true else is_non_parity@(int,Param)(s,p) fi  then true else false fi 
+integrality_datum: (Param->RootDatum): (p): integrality_datum@(RootDatum,ratvec)(root_datum@Param(p),infinitesimal_character@Param(p))
+integrality_datum: (RootDatum,ratvec->RootDatum): {integrality_datum@(RootDatum,ratvec)}
+integrality_points: (RootDatum,ratvec->[rat]): {integrality_points@(RootDatum,ratvec)}
+int_format: (int->string): {int_format@int}
+intrho: (RealForm->vec): (G): ratvectovec@ratvec(rho@RealForm(G))
+intrho: (RootDatum->vec): (r): ratvectovec@ratvec(rho@RootDatum(r))
+inv_Cayley: (int,KGBElt->KGBElt): {inv_Cayley@(int,KGBElt)}
+inv_Cayley: (int,Param->Param): {inv_Cayley@(int,Param)}
+inverse: ([int]->[int]): (v):  for i : #(v) downto 0 do v[i] od 
+invert: (mat->mat,int): {invert@mat}
+inv_fact: (mat->vec): {inv_fact@mat}
+involution: (CartanClass->mat): {involution@CartanClass}
+involution: (InnerClass,[int]->mat): (ic,tw): ((rd,theta): voided: for i : #(tw) downto 0 do voided:theta:=*@(mat,mat)(simple_reflection@(RootDatum,int)(rd,tw[i]),theta) od ;theta)(root_datum@InnerClass(ic),distinguished_involution@InnerClass(ic))
+involution: (KGBElt->mat): {involution@KGBElt}
+involution: (LieType,mat,string->mat): {involution@(LieType,mat,string)}
+involution: (LieType,string->mat): {involution@(LieType,string)}
+involution: (Param->mat): (p): involution@KGBElt(x@Param(p))
+inv_standardisation: (vec->vec): (v): V[I]: for (,org_i) in ms( for a@i in v do (a,i) od ,#@vec(v)) do org_i od 
+I: (Param->Param,string): (p):  if  if is_standard@Param(p) then false else true fi  then error@string("parameter is not standard") else (p,std) fi 
+irreducible_is_nonzero: (Param->bool): (p): ((rv,gamma): voided: for i in tau@Param(p) do  if =@(rat,rat)(*@(ratvec,ratvec)(QvV:simple_roots@RootDatum(root_datum@Param(p))[i],gamma),QI:0) then voided:rv:=false else () fi  od ;rv)(true,infinitesimal_character@Param(p))
+irreducible_is_zero: (Param->bool): (p):  if irreducible_is_nonzero@Param(p) then false else true fi 
+irr: string: "irr"
+is_adjoint: (InnerClass->bool): (ic): is_adjoint@RootDatum(root_datum@InnerClass(ic))
+is_adjoint: (RealForm->bool): (G): is_adjoint@RootDatum(root_datum@InnerClass(IcRf:G))
+is_adjoint: (RootDatum->bool): (rd):  if is_semisimple@RootDatum(rd) then is_simply_connected@RootDatum(dual@RootDatum(rd)) else false fi 
+is_ascent: (int,KGBElt->bool): (s,x): >=@(int,int)(status@(int,KGBElt)(s,x),3)
+is_compact: (int,KGBElt->bool): (s,x): =@(int,int)(status@(int,KGBElt)(s,x),1)
+is_complex: (int,KGBElt->bool): (s,x): =@(int,int)(%@(int,int)(status@(int,KGBElt)(s,x),4),0)
+is_connected_center: (RootDatum->bool): (rd): is_simply_connected@RootDatum(derived_root_datum@RootDatum(dual@RootDatum(rd)))
+is_descent: (int,KGBElt->bool): (s,x): <@(int,int)(status@(int,KGBElt)(s,x),3)
+is_dominant: (RootDatum,ratvec->bool): (rd,v): is_nonnegative@ratvec(QvV:*@(vec,mat)(numer@ratvec(v),simple_coroots@RootDatum(rd)))
+is_equal_rank: (RealForm->bool): (G): (((,a,b),,,): =@(int,int)(+@(int,int)(a,b),0))(Cartan_info@CartanClass(fundamental_Cartan@RealForm(G)))
+is_even: (int->bool): (i): =@(int,int)(%@(int,int)(i,2),0)
+is_final: (Param->bool): {is_final@Param}
+is_imaginary: (int,KGBElt->bool): (s,x): =@(int,int)(%@(int,int)(status@(int,KGBElt)(s,x),2),1)
+is_integer: (rat->bool): (r): =@(int,int)(denom@rat(r),1)
+is_integer: (ratvec->bool): (v): =@(int,int)(denom@ratvec(v),1)
+is_less_singular: (RootDatum,ratvec,ratvec->bool): (rd,gamma,gamma_new):  if not_less_singular@(RootDatum,ratvec,ratvec)(rd,gamma,gamma_new) then false else true fi 
+is_noncompact: (int,KGBElt->bool): (s,x): =@(int,int)(status@(int,KGBElt)(s,x),3)
+is_nonnegative: (rat->bool): (r): >=@(rat,rat)(r,QI:0)
+is_nonnegative: (ratvec->bool): (v): ((nonnegative): voided: for r in v do voided:nonnegative:= if nonnegative then >=@(rat,rat)(r,QI:0) else false fi  od ;nonnegative)(true)
+is_non_parity: (int,Param->bool): (s,p):  if =@(string,string)(status_code@(int,KGBElt)(s,x@Param(p)),"r ") then  if is_parity@(int,Param)(s,p) then false else true fi  else false fi 
+is_odd: (int->bool): (i):  if is_even@int(i) then false else true fi 
+is_parity: (int,Param->bool): (s,p):  if =@(string,string)(status_code@(int,KGBElt)(s,x@Param(p)),"r ") then =@(Param,Param)(inv_Cayley@(int,Param)(s,p),p) else false fi 
+is_positive: (rat->bool): (r): >@(rat,rat)(r,QI:0)
+is_positive: (ratvec->bool): (v): ((positive): voided: for r in v do voided:positive:= if positive then >@(rat,rat)(r,QI:0) else false fi  od ;positive)(true)
+is_quasicompact: (RealForm->bool): (G): =@(int,int)(form_number@RealForm(G),0)
+is_quasisplit: (RealForm->bool): (G): =@(int,int)(form_number@RealForm(G),-@(int,int)(nr_of_real_forms@InnerClass(IcRf:G),1))
+is_real: (int,KGBElt->bool): (s,x): =@(int,int)(status@(int,KGBElt)(s,x),2)
+is_regular: (Param->bool): (p): is_regular@(RealForm,ratvec)(real_form@Param(p),infinitesimal_character@Param(p))
+is_regular: (RealForm,ratvec->bool): (G,lambda): is_regular@(RootDatum,ratvec)(root_datum@InnerClass(IcRf:G),lambda)
+is_regular: (RootDatum,ratvec->bool): (rd,lambda): ((regular): voided: for alpha in positive_coroots@RootDatum(rd) do  if =@(rat,rat)(*@(ratvec,ratvec)(QvV:alpha,lambda),QI:0) then voided:regular:=false else () fi  od ;regular)(true)
+is_semisimple: (RealForm->bool): (G): is_semisimple@RootDatum(root_datum@InnerClass(IcRf:G))
+is_semisimple: (RootDatum->bool): (rd): =@(int,int)(semisimple_rank@RootDatum(rd),rank@RootDatum(rd))
+is_simply_connected: (InnerClass->bool): (ic): is_simply_connected@RootDatum(root_datum@InnerClass(ic))
+is_simply_connected: (RootDatum->bool): (rd):  if is_semisimple@RootDatum(rd) then =@(int,int)(abs@int(det@mat(simple_coroots@RootDatum(rd))),1) else false fi 
+is_split: (RealForm->bool): (G): (((a,b,),,,): =@(int,int)(+@(int,int)(a,b),0))(Cartan_info@CartanClass(most_split_Cartan@RealForm(G)))
+is_standard: (Param->bool): {is_standard@Param}
+is_strictly_dominant: (RootDatum,ratvec->bool): (rd,v):  if is_dominant@(RootDatum,ratvec)(rd,v) then is_regular@(RootDatum,ratvec)(rd,v) else false fi 
+is_unitary: (Param->bool): (p): is_unitary@ParamPol(hermitian_form_irreducible@Param(p))
+is_unitary: (ParamPol->bool): (P): ((OK,no_coef_1,no_coef_s,list): ((i): voided: while  if OK then >=@(int,int)(i:=-@(int,int)(i,1),0) else false fi  do ((x,y):  if =@(int,int)(x,0) then voided:no_coef_s:=false;voided:OK:=no_coef_1 else voided:no_coef_1:=false;voided:OK:= if no_coef_s then =@(int,int)(y,0) else false fi  fi )(%@Split(list[i])) od ;OK)(#(list)))(true,true,true, for w in P do w od )
+is_zero: (Param->bool): {is_zero@Param}
+iterate_deform_debug: bool: false
+iterate_deform: (Param->(Param,ParamPol),int): (p): ((rf): ((d,d_done,count): voided:p:=weak_lower@Param(p);voided: while  if >@(int,int)(#@ParamPol(d),0) then true elif has_nu0@Param(p) then false else true fi  do ((new_p,d_new): voided:count:=+@(int,int)(count,1); if iterate_deform_debug then prints("deforming p: ",p," at ",infinitesimal_character@Param(p)) else () fi ;voided:p:=new_p;voided: for k@q in d do  if has_nu0@Param(q) then voided:d_done:=+@(ParamPol,(Split,Param))(d_done,(k,q)) else ((new_q,deformation_terms): voided:count:=+@(int,int)(count,1);voided:d_new:=+@(ParamPol,(Split,Param))(d_new,(k,new_q));voided:d_new:=+@(ParamPol,[(Split,Param)])(d_new, for l@r in deformation_terms do (*@(Split,Split)(k,l),r) od ))(deformation@Param(q)) fi  od ;voided:d:=d_new; if iterate_deform_debug then prints("Remaining in d_new: ",#@ParamPol(d)) else () fi )(deformation@Param(p)) od ;((p,d_done),count))(null_module@RealForm(rf),null_module@RealForm(rf),0))(real_form@Param(p))
+iterate_H1: (int,int->): (min_rank,max_rank): voided: for rank: +@(int,int)(-@(int,int)(max_rank,min_rank),1) from min_rank do voided: for isogeny in ["sc","ad"] do prints("-------------------------------------------------------------------------"); if =@(string,string)(isogeny,"sc") then prints("Calculating H^1(Gamma,G) for simply connected simple groups of rank ",rank) elif =@(string,string)(isogeny,"ad") then prints("Calculating H^1(Gamma,G) for adjoint simple groups of rank ",rank) else () fi ;prints("");voided: for g in all_simple@(string,int)(isogeny,rank) do prints(g,"   ",H1@RealForm(g)) od  od  od 
+iterate_H1: (int->): (rank): iterate_H1@(int,int)(rank,rank)
+iterate_H1: (->): (): iterate_H1@(int,int)(1,8)
+J: (Param->Param,string): (p):  if  if is_standard@Param(p) then false else true fi  then error@string("parameter is not standard") elif  if is_final@Param(p) then false else true fi  then error@string("parameter is not final") else (p,irr) fi 
+K_0: (RealForm->RealForm): (G): ((pos_roots): ((pos_coroots): ((delta,(pos_roots,pos_coroots)): ((P,restricted_positive_roots): ((fix_positive_coroots): ((Q,injected_positive_coroots): ((R): ((S): ((R_reduced): ((S_reduced): ((J): ((JS_reduced): ((rho): ((checkrho): ((simple_roots): ((): ((simple_coroots): ((): ((rd): quasicompact_form@InnerClass(inner_class@(RootDatum,mat)(rd,id_mat@int(rank@RootDatum(rd)))))(root_datum@([vec],[vec],int)(simple_roots,simple_coroots,n_rows@mat(M[V]:simple_roots))))(voided: for a in JS_reduced do  if =@(int,int)(*@(vec,vec)(a,rho),2) then voided:simple_coroots:=#(simple_coroots,a) else () fi  od ))([]))(voided: for a in R_reduced do  if =@(int,int)(*@(vec,vec)(a,checkrho),2) then voided:simple_roots:=#(simple_roots,a) else () fi  od ))([]))(sum@mat(JS_reduced)))(sum@mat(R_reduced)))(*@(mat,mat)(J,S_reduced)))(*@(mat,mat)(left_inverse@mat(^@mat(P)),right_inverse@mat(Q))))(M[[I]]:remove_short@[[int]]([[I]]M:S)))(M[[I]]:remove_long@[[int]]([[I]]M:R)))(M[[I]]:remove_duplicates@[[int]]([[I]]M:injected_positive_coroots)))(M[[I]]:remove_duplicates@[[int]]([[I]]M:restricted_positive_roots)))(inject_coroots@(mat,mat)(fix_positive_coroots,delta)))(fix_coroots@(mat,mat,mat)(pos_roots,pos_coroots,delta)))(restrict_roots@(mat,mat)(pos_roots,delta)))(distinguished_involution@InnerClass(IcRf:G),discard_nci@(mat,mat,KGBElt)(pos_roots,pos_coroots,KGB@(RealForm,int)(G,0))))(positive_coroots@RootDatum(RdRf:G)))(positive_roots@RootDatum(RdRf:G))
+kernel: (mat->mat): {kernel@mat}
+kgb_number: (KGBElt->int): (x): ((G): ((kgb,i,rv): voided: while <@(int,int)(i,#(kgb)) do  if =@(KGBElt,KGBElt)(x,KGB@(RealForm,int)(G,i)) then voided:(rv:=i,i:=#(kgb)) else voided:i:=+@(int,int)(i,1) fi  od ;rv)(KGB@RealForm(G),0,-@int(1)))(real_form@KGBElt(x))
+KGB: (RealForm,int->KGBElt): {KGB@(RealForm,int)}
+KGB: (RealForm->[KGBElt]): (rf):  for i: KGB_size@RealForm(rf) from 0 do KGB@(RealForm,int)(rf,i) od 
+KGB_size: (RealForm->int): {KGB_size@RealForm}
+KL_block: (Param->[Param],int,mat,[vec],vec,vec,mat): {KL_block@Param}
+KL_col: (Param->ParamPol): (p): ((block,kl,polys,stops,indices,cumulation): ((klpolys): +@(ParamPol,[(Split,Param)])(null_module@RealForm(real_form@Param(p)), for i: #@vec(indices) from 0 do (at_s@vec(klpolys[i]),block[indices[i]]) od ))(signed_KL_col@(int,mat,[vec],vec,vec,mat)(-@(int,int)(#(block),1),kl,polys,stops,indices,cumulation)))(partial_KL_block@Param(p))
+KL: (int,mat,[vec],mat->[vec]): (init,KL,polys,cumulation):  for i: n_rows@mat(cumulation) from 0 do mat_mult_int_poly@(mat,mat,[vec],int,int)(cumulation,KL,polys,i,init) od 
+KL: (int,mat,[vec]->[vec]): (init,KL,polys):  for i: n_rows@mat(KL) from 0 do polys[KL[i,init]] od 
+KL_inverse_matrix_at_one: (Param->mat): (p):  if is_regular@Param(p) then KL_regular_inverse_matrix_at_one@Param(p) else KL_singular_inverse_matrix_at_one@Param(p) fi 
+KL_matrix_at_one: (Param->mat): (p):  if is_regular@Param(p) then KL_regular_matrix_at_one@Param(p) else KL_singular_matrix_at_one@Param(p) fi 
+KL: (Param->[vec]): (p):  if is_regular@Param(p) then KL_regular@Param(p) else KL_singular@Param(p) fi 
+KL_regular_inverse_matrix_at_one: (Param->mat): (p): ((M,): M)(invert@mat(signed_KL_mat_regular_at_one@Param(p)))
+KL_regular_matrix_at_one: (Param->mat): (p): ((,,KL,polys,,,): M[V]: for col in KL do V[I]: for entry in col do eval@(vec,int)(polys[entry],1) od  od )(KL_block@Param(p))
+KL_regular: (Param->[vec]): (p):  if  if is_regular@Param(p) then false else true fi  then error@string("Parameter is not regular") else ((,init,kl,polys,,,): KL@(int,mat,[vec])(init,kl,polys))(KL_block@Param(p)) fi 
+KL_singular_inverse_matrix_at_one_alt: (Param->mat): (p): ((block,init,KL,polys,stops,indices,cumulation): ((bigQmatrix,): ((Q,): Q)(extract_submatrix@(mat,vec,int)(bigQmatrix,indices,init)))(invert@mat(M[V]: for j: n_columns@mat(KL) from 0 do V[I]: for i: n_rows@mat(KL) from 0 do *@(int,int)(^@(int,int)(-@int(1),length_diff@(int,int,vec)(i,j,stops)),eval@(vec,int)(polys[KL[i,j]],1)) od  od )))(KL_block@Param(p))
+KL_singular_inverse_matrix_at_one: (Param->mat): (p): ((M,): M)(invert@mat(signed_KL_mat_singular_at_one@Param(p)))
+KL_singular_matrix_at_one: (Param->mat): (p): ((,,KL,polys,,indices,cumulation): M[V]: for ind_j in indices do V[I]: for i: #@vec(indices) from 0 do eval@(vec,int)(mat_mult_int_poly@(mat,mat,[vec],int,int)(cumulation,KL,polys,i,ind_j),1) od  od )(KL_block@Param(p))
+KL_singular: (Param->[vec]): (p): ((,init,kl,polys,,,cumulation): KL@(int,mat,[vec],mat)(init,kl,polys,cumulation))(KL_block@Param(p))
+KL_sum_at_s: (Param->ParamPol): {KL_sum_at_s@Param}
+K: (RealForm->RealForm,int): (G): (K_0@RealForm(G),components_rank@RealForm(G))
+lambdaminusrho: (Param->vec): (p): ((,lambda,): lambda)(%@Param(p))
+lambda: (Param->ratvec): (p): +@(ratvec,ratvec)(QvV:lambdaminusrho@Param(p),rho@RealForm(real_form@Param(p)))
+lambda_plus_rho_res_T: (KGBElt,ratvec->ratvec): (x,lambda): ((lpr): /@(ratvec,int)(+@(ratvec,ratvec)(lpr,*@(mat,ratvec)(involution@KGBElt(x),lpr)),2))(+@(ratvec,ratvec)(lambda,rho@RealForm(real_form@KGBElt(x))))
+large_discrete_series: (RealForm->Param): (G):  if  if is_equal_rank@RealForm(G) then false else true fi  then error@string("group is not equal rank") else large_fundamental_series@RealForm(G) fi 
+large_fundamental_series: (RealForm->Param): (G):  if  if is_quasisplit@RealForm(G) then false else true fi  then error@string("group is not quasisplit") else param@(RealForm,int,vec,ratvec)(G,0,null@int(rank@RealForm(G)),QvV:null@int(rank@RealForm(G))) fi 
+lcm: (int,int->int): (a,b): ((,l,): l)(Euclid@(int,int)(a,b))
+left_inverse: (mat->mat): (A): ((S,D,T): ((v):  if !=@(int,int)(abs@int(product@vec(v)),1) then error@string("no integral right inverse") elif <@(int,int)(#@vec(v),n_columns@mat(D)) then error@string("no right inverse") else *@(mat,mat)(*@(mat,mat)(T,^@mat(D)),S) fi )(nonzero_diagonal_elements@mat(D)))(weak_snf@mat(A))
+length_diff: (int,int,vec->int): (i,j,stops): -@(int,int)(length@(int,vec)(j,stops),length@(int,vec)(i,stops))
+length: (int,vec->int): (i,stops): ((a,b): voided: while <@(int,int)(+@(int,int)(a,1),b) do ((avg):  if <=@(int,int)(stops[avg],i) then voided:a:=avg else voided:b:=avg fi )(\@(int,int)(+@(int,int)(a,b),2)) od ;a)(0,#@vec(stops))
+length: (Param->int): {length@Param}
+less: ([int],[int]->bool): (v,w):  if !=@(int,int)(#(v),#(w)) then error@string("can't compare vectors of unequal length") elif =@(vec,vec)(V[I]:v,V[I]:w) then false elif <@(int,int)(v[0],w[0]) then true elif >@(int,int)(v[0],w[0]) then false else less(cut@[int](v),cut@[int](w)) fi 
+levi: (RealForm,[int]->InnerClass): (G,S): ((complex_levi): ((simple_levi_roots): ((levi_theta): inner_class@(RootDatum,mat)(complex_levi,distinguished_involution@InnerClass(IcRf:G)))(sub_matrix@(mat,mat)(distinguished_involution@InnerClass(IcRf:G),simple_levi_roots)))(simple_roots@RootDatum(complex_levi)))(levi@(RootDatum,[int])(root_datum@InnerClass(IcRf:G),S))
+levi: (RootDatum,[int]->RootDatum): (rd,S): ((simple_levi_roots,simple_levi_coroots): ((): root_datum@([vec],[vec],int)(simple_levi_roots,simple_levi_coroots,rank@RootDatum(rd)))(voided: for i in S do voided:(simple_levi_roots:=#(simple_levi_roots,simple_roots@RootDatum(rd)[i]),simple_levi_coroots:=#(simple_levi_coroots,simple_coroots@RootDatum(rd)[i])) od ))([],[])
+Lie_type: (int,int->LieType): (p): ((type,): type)(Cartan_matrix_type@mat(Cartan_matrix@(int,int)(p)))
+Lie_type: (RootDatum->LieType): {Lie_type@RootDatum}
+Lie_type: (string->LieType): {Lie_type@string}
+lower: (Param->Param): (p): (((x,lambda,nu),rp): ((lim): param@(KGBElt,vec,ratvec)(x,lambda, if =@(int,int)(lim,0) then null_wt@int(#@ratvec(nu)) else *@(rat,ratvec)(rp[-@(int,int)(lim,1)],nu) fi ))(((nrp):  if  if >@(int,int)(nrp,0) then =@(rat,rat)(rp[-@(int,int)(nrp,1)],/@(int,int)(1,1)) else false fi  then -@(int,int)(nrp,1) else nrp fi )(#(rp))))(%@Param(p),reducibility_points@Param(p))
+make_dominant_internal: (RootDatum,[int],[int]->[int],[int]): (rd,v,w):  if is_dominant@(RootDatum,ratvec)(rd,Rv[I]:v) then (v,w) else ((new_v,k): make_dominant_internal(rd,new_v,#(w,k)))(move_towards_dominant@(RootDatum,[int])(rd,v)) fi 
+make_dominant: (RootDatum,[int]->[int],[int]): (rd,v): make_dominant_internal(rd,v,[])
+make_dominant: (RootDatum,[rat]->[rat],[int]): (rd,v): ((num,denom): ((vector,w): ([Q]Qv:/@(vec,int)(V[I]:vector,denom),w))(make_dominant@(RootDatum,[int])(rd,[I]V:num)))(%@ratvec(Qv[Q]:v))
+make_final: (Param->[Param]): (p):  for c@q in +@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),p) do q od 
+make_maximally_singular: (Param->Param): (p): psi@(Param,[int])(p,tau_complement@Param(p))
+make_nu0: (Param->Param): (p): *@(Param,rat)(p,QI:0)
+make_nu0: (ParamPol->ParamPol): (P): +@(ParamPol,[(Split,Param)])(null_module@RealForm(real_form@ParamPol(P)), for w@p in P do (w,*@(Param,rat)(p,QI:0)) od )
+match: ([int],int->bool): (v,k): ((rv): ((i): voided: while <@(int,int)(i,#(v)) do  if =@(int,int)(v[i],k) then voided:rv:=true;voided:i:=#(v) else () fi ;voided:i:=+@(int,int)(i,1) od ;rv)(0))(false)
+mat_mult_int_poly: (mat,mat,[vec],int,int->vec): (cumulation,KL,polys,i,j): (((r,c),rv): voided: for k: c from 0 do voided:rv:=+@(vec,vec)(rv,*@(int,vec)(cumulation[i,k],polys[KL[k,j]])) od ;rv)(#@mat(cumulation),V[I]:[])
+maximal_central_torus: (InnerClass->RealForm): (ic): radical@InnerClass(ic)
+maximal_central_torus: (RealForm->RealForm): (G): radical@RealForm(G)
+maximal_central_torus: (RootDatum->RootDatum): (rd): radical@RootDatum(rd)
+max: (int,int->int): (k,l):  if <@(int,int)(k,l) then l else k fi 
+max: ([int]->int): (p): ((m): voided: for x in p do  if >@(int,int)(x,m) then voided:m:=x else () fi  od ;m)(0)
+merge: (vec,vec->[int]): (a,b):  if =@(int,int)(#@vec(a),0) then [I]V:b else ((i,j): voided:b:=#@(vec,int)(b,a[-@(int,int)(#@vec(a),1)]); while  if <@(int,int)(i,#@vec(a)) then true else <@(int,int)(+@(int,int)(j,1),#@vec(b)) fi  do  if  if <@(int,int)(i,#@vec(a)) then <=@(int,int)(a[i],b[j]) else false fi  then a[i] next voided:i:=+@(int,int)(i,1) else b[j] next voided:j:=+@(int,int)(j,1) fi  od )(0,0) fi 
+min: (int,int->int): (k,l):  if <@(int,int)(k,l) then k else l fi 
+minor: (mat,int,int->mat): (M,size,start): ((rv): voided: for i: size from 0 do voided: for j: size from 0 do voided:rv[(i,j)]:=M[+@(int,int)(i,start),+@(int,int)(j,start)] od  od ;rv)(null@(int,int)(size,size))
+minor: (mat,int->mat): (M,size): minor@(mat,int,int)(M,size,0)
+mixed: (Split->bool): (w): ((a,b): !=@(int,int)(*@(int,int)(a,b),0))(%@Split(w))
+module_print: (ParamPol->): (P): array_prints@[string](to_string@ParamPol(P))
+module_print: (ParamPol,string->): (P,type):  if  if =@(string,string)(type,irr) then true else =@(string,string)(type,std) fi  then array_prints@[string](to_string@(ParamPol,string)(P,type)) else error@string("Incorrect type") fi 
+most_split_Cartan: (RealForm->CartanClass): (G): Cartan_class@(InnerClass,int)(IcRf:G,-@(int,int)(nr_of_Cartan_classes@InnerClass(IcRf:G),1))
+move_towards_dominant: (RootDatum,[int]->[int],int): (rd,v):  if is_dominant@(RootDatum,ratvec)(rd,Rv[I]:v) then (v,-@int(1)) else ((n): ((w): ((done): ((i): voided: while =@(bool,bool)(done,false) do  if <@(int,int)(w[i],0) then voided:v:=[I]V:*@(mat,vec)(simple_reflection@(RootDatum,int)(rd,i),V[I]:v);voided:done:=true else voided:i:=+@(int,int)(i,1) fi  od ;(v,i))(0))(false))(*@(mat,vec)(^@mat(simple_coroots@RootDatum(rd)),V[I]:v)))(semisimple_rank@RootDatum(rd)) fi 
+mprint: (ParamPol->): (P): module_print@ParamPol(P)
+mprint: (ParamPol,string->): (P,type): module_print@(ParamPol,string)(P,type)
+mprint: (Param,string->): (p,type): prints(to_string@(Param,string)(p,type))
+mu: (Param->rat): (p): *@(ratvec,ratvec)(lambda_plus_rho_res_T@(KGBElt,ratvec)(x@Param(p),lambda@Param(p)),+@(ratvec,ratvec)(torus_factor@KGBElt(x@Param(p)),rhocheck@RealForm(real_form@Param(p))))
+nci_Cayley: (int,Param->ParamPol): (k,p): ((c1): ((c2):  if =@(Param,Param)(c1,c2) then +@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),c1) else +@(ParamPol,Param)(+@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),c1),c2) fi )(cross@(int,Param)(k,c1)))(Cayley@(int,Param)(k,p))
+n_columns: (mat->int): (m): ((,c): c)(#@mat(m))
+new_test: bool: true
+nilpotent_lambda: (LieType,[int]->ratvec): (t,P): ((rv):  if =@(int,int)(get_type@LieType(t),0) then voided: for p in P do voided:rv:=#(rv,rho@int(p)) od ;Qv[Q]:rv else voided: for k in P do voided:rv:=#(rv,String@int(k)) od ;Qv[Q]:#(rv, for i: -@(int,int)(\@(int,int)(sum@vec(V[I]:P),2),#(rv)) from 0 do /@(int,int)(0,1) od ) fi )([])
+nilpotent_lambda: (RootDatum,[int]->ratvec): (rd,p): nilpotent_lambda@(LieType,[int])(Lie_type@RootDatum(rd),p)
+nilpotent_lambdas_E6: [ratvec]: [[ 0, 0, 0, 0, 0, 0 ]/1,[ 0, 1, 0, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 1 ]/2,[ 0, 0, 0, 1, 0, 0 ]/2,[ 0, 1, 0, 0, 0, 0 ]/1,[ 1, 1, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 1, 0, 1, 0 ]/2,[ 1, 2, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 1, 0, 1 ]/2,[ 0, 1, 1, 0, 1, 0 ]/2,[ 0, 0, 0, 1, 0, 0 ]/1,[ 1, 1, 0, 0, 0, 1 ]/1,[ 0, 1, 0, 1, 0, 0 ]/1,[ 1, 1, 1, 0, 1, 1 ]/2,[ 2, 1, 1, 0, 1, 2 ]/2,[ 1, 2, 1, 0, 1, 1 ]/2,[ 1, 0, 0, 1, 0, 1 ]/1,[ 1, 1, 0, 1, 0, 1 ]/1,[ 1, 1, 1, 0, 1, 1 ]/1,[ 1, 1, 1, 1, 1, 1 ]/1]
+nilpotent_lambdas_E7: [ratvec]: [[ 0, 0, 0, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 0, 0 ]/2,[ 0, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 1, 0, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 0, 0 ]/1,[ 0, 1, 0, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 1, 0, 0, 0 ]/2,[ 2, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 0, 0, 1, 0 ]/1,[ 0, 1, 0, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 1, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 1, 0, 0, 0 ]/2,[ 0, 0, 1, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 1, 0, 1 ]/2,[ 1, 0, 1, 0, 0, 0, 0 ]/1,[ 0, 1, 1, 0, 0, 0, 1 ]/2,[ 0, 0, 0, 1, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 0 ]/1,[ 0, 0, 0, 0, 1, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 1, 1 ]/1,[ 2, 1, 1, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 1, 0, 1, 0 ]/2,[ 2, 0, 0, 1, 0, 1, 0 ]/2,[ 0, 0, 0, 1, 0, 0, 0 ]/1,[ 1, 0, 0, 1, 0, 2, 0 ]/2,[ 1, 0, 0, 1, 0, 1, 2 ]/2,[ 1, 0, 0, 0, 1, 0, 0 ]/1,[ 0, 1, 1, 0, 1, 0, 2 ]/2,[ 0, 0, 1, 0, 0, 1, 0 ]/1,[ 1, 0, 1, 0, 0, 1, 0 ]/1,[ 0, 0, 0, 1, 0, 0, 1 ]/1,[ 0, 0, 0, 1, 0, 1, 0 ]/1,[ 2, 1, 1, 0, 1, 1, 0 ]/2,[ 2, 1, 1, 0, 1, 0, 2 ]/2,[ 1, 0, 0, 1, 0, 0, 1 ]/1,[ 2, 1, 1, 0, 1, 2, 2 ]/2,[ 1, 0, 0, 1, 0, 1, 0 ]/1,[ 1, 0, 1, 1, 0, 1, 0 ]/1,[ 1, 0, 0, 1, 0, 1, 1 ]/1,[ 1, 1, 1, 0, 1, 0, 1 ]/1,[ 1, 1, 1, 0, 1, 1, 1 ]/1,[ 1, 1, 1, 1, 1, 1, 1 ]/1]
+nilpotent_lambdas_E8: [ratvec]: [[ 0, 0, 0, 0, 0, 0, 0, 0 ]/1,[ 0, 0, 0, 0, 0, 0, 0, 1 ]/2,[ 1, 0, 0, 0, 0, 0, 0, 0 ]/2,[ 0, 0, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 1, 0, 0, 0, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 0, 0, 1 ]/2,[ 0, 0, 0, 0, 0, 1, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 0, 0, 2 ]/2,[ 0, 0, 1, 0, 0, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 0, 1, 0 ]/2,[ 0, 0, 0, 0, 0, 1, 0, 1 ]/2,[ 0, 0, 0, 0, 0, 0, 1, 0 ]/1,[ 0, 0, 0, 0, 0, 0, 1, 1 ]/1,[ 0, 0, 0, 0, 1, 0, 0, 0 ]/2,[ 0, 0, 1, 0, 0, 0, 0, 1 ]/2,[ 0, 1, 0, 0, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 0, 0, 1 ]/1,[ 0, 0, 0, 1, 0, 0, 0, 0 ]/2,[ 0, 1, 0, 0, 0, 0, 1, 2 ]/2,[ 0, 1, 0, 0, 0, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 1, 0, 1 ]/2,[ 1, 0, 0, 0, 1, 0, 0, 0 ]/2,[ 1, 0, 0, 0, 0, 1, 0, 2 ]/2,[ 0, 0, 0, 1, 0, 0, 0, 1 ]/2,[ 0, 0, 0, 0, 0, 1, 0, 0 ]/1,[ 2, 0, 0, 0, 0, 1, 0, 1 ]/2,[ 0, 0, 0, 1, 0, 0, 0, 2 ]/2,[ 0, 0, 1, 0, 0, 1, 0, 0 ]/2,[ 0, 1, 0, 0, 0, 0, 0, 1 ]/1,[ 1, 0, 0, 0, 0, 0, 1, 0 ]/1,[ 1, 0, 0, 0, 0, 0, 1, 1 ]/1,[ 0, 0, 0, 1, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 1, 0, 0, 0, 1 ]/2,[ 0, 0, 1, 0, 0, 1, 0, 1 ]/2,[ 0, 1, 1, 0, 0, 0, 1, 0 ]/2,[ 1, 0, 0, 0, 1, 0, 1, 0 ]/2,[ 0, 0, 0, 1, 0, 1, 0, 0 ]/2,[ 1, 0, 0, 0, 1, 0, 1, 2 ]/2,[ 0, 0, 0, 0, 1, 0, 0, 0 ]/1,[ 1, 0, 0, 0, 0, 1, 0, 0 ]/1,[ 0, 1, 1, 0, 0, 0, 1, 2 ]/2,[ 1, 0, 0, 1, 0, 1, 0, 0 ]/2,[ 0, 0, 0, 1, 0, 1, 0, 2 ]/2,[ 1, 0, 0, 0, 0, 1, 0, 1 ]/1,[ 0, 0, 0, 0, 1, 0, 0, 1 ]/1,[ 2, 1, 1, 0, 0, 0, 1, 2 ]/2,[ 1, 0, 0, 0, 0, 1, 1, 1 ]/1,[ 1, 0, 0, 1, 0, 1, 0, 1 ]/2,[ 1, 0, 0, 1, 0, 1, 1, 0 ]/2,[ 1, 0, 0, 1, 0, 1, 0, 2 ]/2,[ 2, 0, 0, 1, 0, 1, 0, 2 ]/2,[ 0, 0, 0, 1, 0, 0, 0, 1 ]/1,[ 1, 0, 0, 0, 1, 0, 0, 1 ]/1,[ 1, 0, 0, 1, 0, 1, 2, 2 ]/2,[ 0, 1, 1, 0, 1, 0, 2, 2 ]/2,[ 0, 0, 0, 1, 0, 0, 1, 0 ]/1,[ 2, 1, 1, 0, 1, 1, 0, 1 ]/2,[ 0, 0, 0, 1, 0, 0, 1, 1 ]/1,[ 2, 1, 1, 0, 1, 0, 2, 2 ]/2,[ 1, 0, 0, 1, 0, 0, 1, 0 ]/1,[ 1, 0, 0, 1, 0, 0, 1, 1 ]/1,[ 2, 1, 1, 0, 1, 2, 2, 2 ]/2,[ 1, 0, 0, 1, 0, 1, 0, 1 ]/1,[ 1, 0, 0, 1, 0, 1, 1, 1 ]/1,[ 1, 1, 1, 0, 1, 0, 1, 1 ]/1,[ 1, 1, 1, 0, 1, 1, 1, 1 ]/1,[ 1, 1, 1, 1, 1, 1, 1, 1 ]/1]
+nilpotent_lambdas_E: (int->[ratvec]): (n):  if =@(int,int)(n,6) then nilpotent_lambdas_E6 elif =@(int,int)(n,7) then nilpotent_lambdas_E7 elif =@(int,int)(n,8) then nilpotent_lambdas_E8 else error@string("wrong rank for type E") fi 
+nilpotent_lambdas_F4: [ratvec]: [[ 0, 0, 0, 0 ]/1,[ 0, 0, 0, 1 ]/2,[ 1, 0, 0, 0 ]/1,[ 0, 0, 1, 0 ]/2,[ 1, 0, 0, 0 ]/1,[ 0, 0, 0, 1 ]/1,[ 0, 1, 0, 0 ]/2,[ 1, 0, 0, 2 ]/2,[ 0, 1, 0, 1 ]/2,[ 1, 0, 1, 0 ]/2,[ 0, 0, 1, 0 ]/1,[ 2, 1, 0, 1 ]/2,[ 0, 0, 1, 1 ]/1,[ 1, 0, 1, 0 ]/1,[ 1, 0, 1, 1 ]/1,[ 1, 1, 1, 1 ]/1]
+nilpotent_lambdas_G2: [ratvec]: [[ 0, 0 ]/1,[ 0, 1 ]/2,[ 1, 0 ]/2,[ 1, 0 ]/1,[ 1, 1 ]/1]
+nilpotent_lambdas: (RealForm->[ratvec]): (G): nilpotent_lambdas@RootDatum(root_datum@InnerClass(IcRf:G))
+nilpotent_lambdas: (RootDatum->[ratvec]): (rd): ((lt,r): ((code):  if <@(int,int)(code,4) then  for p in dual_nilpotent_orbits@RootDatum(rd) do nilpotent_lambda@(LieType,[int])(lt,p) od  elif =@(int,int)(code,6) then nilpotent_lambdas_G2 elif =@(int,int)(code,5) then nilpotent_lambdas_F4 elif =@(int,int)(code,4) then nilpotent_lambdas_E@int(r) else error@string("Wrong type") fi )(get_type@LieType(lt)))(Lie_type@RootDatum(rd),rank@RootDatum(rd))
+nilpotent_orbits: (LieType->[[int]]): (t): ((s,n):  if =@(int,int)(s,0) then partitions@int(+@(int,int)(n,1)) elif =@(int,int)(s,1) then partitions_parity@(int,int)(+@(int,int)(*@(int,int)(2,n),1),0) elif <@(int,int)(s,4) then partitions_parity@(int,int)(*@(int,int)(2,n),-@(int,int)(3,s)) else error@string("Exceptional type") fi )(get_type@LieType(t),semisimple_rank@LieType(t))
+nilpotent_orbits: (RealForm->[[int]]): (G): nilpotent_orbits@RootDatum(root_datum@InnerClass(IcRf:G))
+nilpotent_orbits: (RootDatum->[[int]]): (rd): nilpotent_orbits@LieType(Lie_type@RootDatum(rd))
+nonzero_diagonal_elements: (mat->vec): (M): ((v): voided: for i: min@(int,int)(n_columns@mat(M),n_rows@mat(M)) from 0 do  if !=@(int,int)(M[i,i],0) then voided:v:=#(v,M[i,i]) else () fi  od ;V[I]:v)([])
+normparam: (KGBElt,ratvec,ratvec->Param): (x,lambda,nu): param@(KGBElt,vec,ratvec)(x,ratvectovec@ratvec(-@(ratvec,ratvec)(lambda,rho@RealForm(real_form@KGBElt(x)))),nu)
+normparam: (RealForm,int,ratvec,ratvec->Param): (G,x,lambda,nu): param@(RealForm,int,vec,ratvec)(G,x,ratvectovec@ratvec(-@(ratvec,ratvec)(lambda,rho@RealForm(G))),nu)
+not_less_singular: (RootDatum,ratvec,ratvec->bool): (rd,gamma,gamma_new): ((rv): voided: for a in simple_coroots@RootDatum(rd) do  if  if =@(rat,rat)(*@(ratvec,ratvec)(QvV:a,gamma),QI:0) then !=@(rat,rat)(*@(ratvec,ratvec)(QvV:a,gamma_new),QI:0) else false fi  then voided:rv:=false else () fi  od ;rv)(true)
+nr_of_Cartan_classes: (InnerClass->int): {nr_of_Cartan_classes@InnerClass}
+nr_of_dual_real_forms: (InnerClass->int): {nr_of_dual_real_forms@InnerClass}
+nr_of_real_forms: (InnerClass->int): {nr_of_real_forms@InnerClass}
+n_rows: (mat->int): (m): ((r,): r)(#@mat(m))
+null: (int,int->mat): {null@(int,int)}
+null: (int->vec): {null@int}
+null_module: (Param->ParamPol): (p): null_module@RealForm(real_form@Param(p))
+null_module: (ParamPol->ParamPol): (P): null_module@RealForm(real_form@ParamPol(P))
+null_module: (RealForm->ParamPol): {null_module@RealForm}
+null_wt: (int->ratvec): (r): QvV:null@int(r)
+numer: (rat->int): (a): ((n,): n)(%@rat(a))
+numer: (ratvec->vec): (a): ((n,): n)(%@ratvec(a))
+nu: (Param->ratvec): (p): ((,,nu): nu)(%@Param(p))
+occurrence_matrix: (InnerClass->mat): {occurrence_matrix@InnerClass}
+ones: (int->vec): (n): V[I]: for i: n from 0 do 1 od 
+orientation_nr: (Param->int): {orientation_nr@Param}
+orientation_nr_term: (int,Param->Split): (on_p,q): (act[%@(int,int)(-@(int,int)(on_p,orientation_nr@Param(q)),4)])()
+param: (KGBElt,vec,ratvec->Param): {param@(KGBElt,vec,ratvec)}
+param: (RealForm,int,vec,ratvec->Param): (G,k,lambda,nu): param@(KGBElt,vec,ratvec)(KGB@(RealForm,int)(G,k),lambda,nu)
+partial_block: (Param->[Param]): {partial_block@Param}
+partial_KL_block: (Param->[Param],mat,[vec],vec,vec,mat): {partial_KL_block@Param}
+partition_multiplicities: ([int]->vec): (p): ((rv): voided: for k in p do voided:rv[k]:=+@(int,int)(rv[k],1) od ;voided:rv[0]:=0;rv)(null@int(+@(int,int)(max@[int](p),1)))
+partitions: (int->[[int]]): (n): ((rv):  if =@(int,int)(n,1) then voided:rv:=[[1]] else voided: for p in part(-@(int,int)(n,1)) do ((l): ((last): voided:rv:=#(rv,#(p,1)); if  if =@(int,int)(l,0) then true else >@(int,int)(p[-@(int,int)(l,1)],last) fi  then voided:p[l]:=+@(int,int)(last,1);voided:rv:=#(rv,p) else () fi )(p[l]))(-@(int,int)(#(p),1)) od  fi ;rv)([])
+partitions_parity: (int,int->[[int]]): (n,parity): ((P,rv): voided: for p in P do ((valid): voided: for m@i in partition_multiplicities@[int](p) do  if  if =@(int,int)(%@(int,int)(i,2),parity) then =@(int,int)(%@(int,int)(m,2),1) else false fi  then voided:valid:=false else () fi  od ; if valid then voided:rv:=#(rv,p) else () fi )(true) od ;rv)(partitions@int(n),[])
+PGL_C: (int->RealForm): (n): PSL_C@int(n)
+PGL_H: (int->RealForm): (n): PSL_H@int(n)
+PGL: (int,string->RealForm): (n,K): PSL@(int,string)(n,K)
+PGL_R: (int->RealForm): (n): PSL_R@int(n)
+phi: ((ParamPol,string),int,ratvec->ParamPol,string): ((P,type),k,v): ((Q): voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@((ParamPol,string),(ParamPol,string))(Q,*@(Split,(ParamPol,string))(w,phi@((Param,string),int,ratvec)((q,type),k,v))) od ;Q)(null_module@ParamPol(P),type)
+phi: ((Param,string),int,ratvec->ParamPol,string): ((p,type),k,v): ((gamma,rd): ((a):  if  if is_integer@ratvec(-@(ratvec,ratvec)(v,gamma)) then false else true fi  then error@string("translation is not integral") elif  if is_regular@(RootDatum,ratvec)(rd,v) then false else true fi  then error@string("translation is not to regular infinitesimal character") elif  if  if =@(rat,rat)(*@(ratvec,ratvec)(QvV:a,gamma),QI:0) then !=@(rat,rat)(*@(ratvec,ratvec)(QvV:a,v),QI:0) else false fi  then false else true fi  then error@string("this is not translation away from a single root wall") elif !=@(int,int)(#(singular_roots@(RootDatum,ratvec)(rd,gamma)),1) then error@string("this is not translation away from a single root wall") else () fi ;+@((ParamPol,string),(ParamPol,string))((virtual@Param(translate_to@(Param,ratvec)(p,v)),type),coherent@(int,(Param,string))(k,(translate_to@(Param,ratvec)(p,v),type))))(simple_coroots@RootDatum(rd)[k]))(infinitesimal_character@Param(p),root_datum@Param(p))
+phi_psi: ((ParamPol,string),int->ParamPol,string): ((P,type),k): phi@((ParamPol,string),int,ratvec)(psi@((ParamPol,string),int)((P,type),k),k,infinitesimal_character@ParamPol(P))
+phi_psi: ((Param,string),int->ParamPol,string): ((p,type),k): phi@((Param,string),int,ratvec)(psi@((Param,string),int)((p,type),k),k,infinitesimal_character@Param(p))
+pi0: (RealForm->int): (G): ^@(int,int)(2,components_rank@RealForm(G))
+positive_coroots: (RootDatum->mat): {positive_coroots@RootDatum}
+positive_roots: (RootDatum->mat): {positive_roots@RootDatum}
+prettyPrint: (ParamPol->): (P): voided: for w@p in P do prints("(",prettyPrint@Split(w),")*",p,", ",infinitesimal_character@Param(p)) od 
+prettyPrint: (Split->string): (w): ((a,b):  if =@(int,int)(b,0) then int_format@int(a) elif =@(int,int)(a,0) then  if =@(int,int)(b,1) then "s" elif =@(int,int)(b,-@int(1)) then "-s" else #@(string,string)(int_format@int(b),"s") fi  elif =@(int,int)(b,1) then #@(string,string)(int_format@int(a),"+s") elif =@(int,int)(b,-@int(1)) then #@(string,string)(int_format@int(a),"-s") elif <@(int,int)(b,-@int(1)) then #@(string,string)(#@(string,string)(int_format@int(a),int_format@int(b)),"s") else #@(string,string)(#@(string,string)(#@(string,string)(int_format@int(a),"+"),int_format@int(b)),"s") fi )(%@Split(w))
+print_blockd: (RealForm,DualRealForm->): {print_blockd@(RealForm,DualRealForm)}
+print_block: (Param->): {print_block@Param}
+print_block: (RealForm,DualRealForm->): {print_block@(RealForm,DualRealForm)}
+print_blockstabilizer: (RealForm,DualRealForm,CartanClass->): {print_blockstabilizer@(RealForm,DualRealForm,CartanClass)}
+print_blocku: (RealForm,DualRealForm->): {print_blocku@(RealForm,DualRealForm)}
+print_Cartan_info: (CartanClass->): (cc): (((cr,Cr,sr),ww,(orbit_size,fiber_size),(i_tp,r_tp,C_tp)): prints("compact: ",cr,", complex: ",Cr,", split: ",sr);((str):  if =@(int,int)(#@vec(ww),0) then voided:str:=#@(string,string)(str,"e") else voided:str:=+@(string,int)(str,+@(int,int)(ww[0],1));voided: for i: -@(int,int)(#@vec(ww),1) from 1 do voided:str:=#@(string,string)(str,+@(string,int)(",",+@(int,int)(ww[i],1))) od  fi ;prints(str))("canonical twisted involution: ");prints("twisted involution orbit size: ",orbit_size,"; fiber size: ",fiber_size,"; strong inv: ",*@(int,int)(orbit_size,fiber_size));prints("imaginary root system: ",show@string(str@LieType(i_tp)));prints("real root system: ",show@string(str@LieType(r_tp)));prints("complex factor: ",show@string(str@LieType(C_tp))))(Cartan_info@CartanClass(cc))
+print_c_form_irreducible_long: (Param->): (p): ((f,b): voided: for (q,coeff,Q) in b do prints("");prints("standard module: ",q);prints("coefficient: ",prettyPrint@Split(coeff));prints("form on standard: ");prettyPrint@ParamPol(Q) od ;prints("");prints("c-form on irreducible module:");prints(p," at ",infinitesimal_character@Param(p));prettyPrint@ParamPol(f))(c_form_irreducible_long@Param(p))
+print_character_formula: (Param->): (p):  if is_regular@Param(p) then print_regular_character_formula@Param(p) else print_singular_character_formula@Param(p) fi 
+print_composition_series: (Param->): (p):  if is_regular@Param(p) then print_regular_composition_series@Param(p) else print_singular_composition_series@Param(p) fi 
+print_gradings: (CartanClass,RealForm->): {print_gradings@(CartanClass,RealForm)}
+print_hermitian_form_irreducible: (Param->): (p): prettyPrint@ParamPol(hermitian_form_irreducible@Param(p))
+print_hermitian_form_irreducible: ([Param]->): (P): voided: for p in P do prints("");prints("Hermitian form on irreducible: ",p);print_hermitian_form_irreducible@Param(p) od 
+print_inner_forms: (RealForm->): (G): print_real_forms@RealForm(G)
+print_KGB: (RealForm->): {print_KGB@RealForm}
+print_KL_basis: (RealForm,DualRealForm->): {print_KL_basis@(RealForm,DualRealForm)}
+print_KL_list: (RealForm,DualRealForm->): {print_KL_list@(RealForm,DualRealForm)}
+print_KL: (Param->): (p): (((block,k,kl,polys,lengths,indices,cumulated),KL): voided: for q@i in block do  if >@(int,int)(#@vec(strip@vec(KL[i])),0) then prints(q,": ",stringPoly@(vec,string)(KL[i],"q")) else () fi  od )(KL_block@Param(p),KL@Param(p))
+printPoly: (vec->): (v): prints(stringPoly@(vec,string)(v,"q"))
+print_prim_KL: (RealForm,DualRealForm->): {print_prim_KL@(RealForm,DualRealForm)}
+print_real_forms: (RealForm->): (G): voided: for n@i in form_names@InnerClass(inner_class@RealForm(G)) do prints(i,": ",n) od ;prints("To define a real form rf do: set rf=real_forms(G)[i]")
+print_real_Weyl: (RealForm,CartanClass->): {print_real_Weyl@(RealForm,CartanClass)}
+print_regular_character_formula: (Param->): (p): ((char): voided: for w@p in char do prints(prettyPrint@Split(w),"*",p) od )(regular_character_formula@Param(p))
+print_regular_composition_series: (Param->): (p): ((char): voided: for w@p in char do prints(prettyPrint@Split(w),"*",p) od )(regular_composition_series@Param(p))
+print_signedKL: (Param->): (p): (((block,k,kl,polys,lengths,indices,cumulated),signedKL): voided: for q@i in block do  if >@(int,int)(#@vec(strip@vec(signedKL[i])),0) then prints(i,", ",q,": ",stringPoly@(vec,string)(signedKL[i],"q")) else () fi  od )(KL_block@Param(p),signed_KL_col@Param(p))
+print_singular_character_formula: (Param->): (p): ((char): voided: for w@p in char do prints(prettyPrint@Split(w),"*",p) od )(singular_character_formula@Param(p))
+print_singular_composition_series: (Param->): (p): ((char): voided: for w@p in char do prints(prettyPrint@Split(w),"*",p) od )(singular_composition_series@Param(p))
+print_strong_real: (CartanClass->): {print_strong_real@CartanClass}
+print_strong_real: (RealForm->): (G): print_strong_real@CartanClass(Cartan_class@(InnerClass,int)(IcRf:G,0))
+print_W_cells: (RealForm,DualRealForm->): {print_W_cells@(RealForm,DualRealForm)}
+print_W_graph: (RealForm,DualRealForm->): {print_W_graph@(RealForm,DualRealForm)}
+print_X: (InnerClass->): {print_X@InnerClass}
+product: (vec->int): (v): ((s): voided: for e in v do voided:s:=*@(int,int)(s,e) od ;s)(1)
+projection: (mat,vec->mat,[int]): (M,v): ((sub): ((quotient): ((P): ((Pinverse,d): ((w): ((Q): (Q,[I]V:*@(mat,vec)(Q,v)))(^@mat(M[V]: for i: -@(int,int)(#@vec(w),n_columns@mat(M[V]:sub)) from 0 do ^@mat(Pinverse)[+@(int,int)(n_columns@mat(M[V]:sub),i)] od )))(*@(mat,vec)(Pinverse,v)))(invert@mat(P)))(M[V]:#(sub,quotient)))(closure_quotient_module_basis@mat(M)))([V]M:submodule_basis@mat(M))
+psi_is_zero: ((Param,string),int->bool): ((p,type),k): psi_is_zero@((Param,string),int)((p,type),k)
+psi_is_zero: ((Param,string),[int]->bool): ((p,type),v): ((rd,gamma): ((shift): voided: for k in v do voided:shift:=+@(ratvec,ratvec)(shift,*@(int,ratvec)(rattoint@rat(*@(ratvec,ratvec)(QvV:simple_coroots@RootDatum(rd)[k],gamma)),fundamental_weight@(RootDatum,int)(rd,k))) od ; if  if is_integer@ratvec(shift) then false else true fi  then error@string("cannot project to this subspace") else translate_to_is_zero@((Param,string),ratvec)((p,type),-@(ratvec,ratvec)(gamma,shift)) fi )(QvV:null@int(rank@RootDatum(rd))))(integrality_datum@Param(p),infinitesimal_character@Param(p))
+psi: (Param,int->Param): (p,k): ((p,rd,gamma): ((coroot): ((c): ((shift):  if  if is_integer@ratvec(shift) then false else true fi  then error@string("cannot translate to this infinitesimal character") else translate_to@(Param,ratvec)(p,-@(ratvec,ratvec)(gamma,shift)) fi )(*@(int,ratvec)(c,fundamental_weight@(RootDatum,int)(rd,k))))(rattoint@rat(*@(ratvec,ratvec)(QvV:coroot,gamma))))(simple_coroots@RootDatum(rd)[k]))(dominant@Param(p),integrality_datum@Param(p),infinitesimal_character@Param(p))
+psi: (Param,[int]->Param): (p,v): voided: for k: #(v) from 0 do voided:p:=psi@(Param,int)(p,v[k]) od ;p
+psi: (ParamPol,int->ParamPol): (P,k): ((Q): voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,psi@(Param,int)(q,k))) od ;Q)(null_module@ParamPol(P))
+psi: (ParamPol,[int]->ParamPol): (P,v): voided: for k in v do voided:P:=psi@(ParamPol,int)(P,v[k]) od ;P
+psi: ((ParamPol,string),int->ParamPol,string): ((P,type),k): ((Q): voided: for (w,q) in %@ParamPol(P) do  if  if psi_is_zero@((Param,string),int)((q,type),k) then false else true fi  then voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,psi@(Param,int)(q,k))) else () fi  od ;(Q,type))(null_module@ParamPol(P))
+psi: ((ParamPol,string),[int]->ParamPol,string): ((P,type),v): voided: for k: #(v) from 0 do ((Q,): voided:Q;voided:P:=Q)(psi@((ParamPol,string),int)((P,type),v[k])) od ;(P,type)
+psi: ((Param,string),int->Param,string): ((p,type),k): ((p,rd,gamma): ((coroot): ((c): ((shift):  if  if is_integer@ratvec(shift) then false else true fi  then error@string("cannot translate to this infinitesimal character") else translate_to@((Param,string),ratvec)((p,type),-@(ratvec,ratvec)(gamma,shift)) fi )(*@(int,ratvec)(c,fundamental_weight@(RootDatum,int)(rd,k))))(rattoint@rat(*@(ratvec,ratvec)(QvV:coroot,gamma))))(simple_coroots@RootDatum(rd)[k]))(dominant@Param(p),integrality_datum@Param(p),infinitesimal_character@Param(p))
+psi: ((Param,string),[int]->Param,string): ((p,type),v): ((rd,gamma): ((shift): voided: for k in v do voided:shift:=+@(ratvec,ratvec)(shift,*@(int,ratvec)(rattoint@rat(*@(ratvec,ratvec)(QvV:simple_coroots@RootDatum(rd)[k],gamma)),fundamental_weight@(RootDatum,int)(rd,k))) od ; if  if is_integer@ratvec(shift) then false else true fi  then error@string("cannot project to this subspace") else translate_to@((Param,string),ratvec)((p,type),-@(ratvec,ratvec)(gamma,shift)) fi )(QvV:null@int(rank@RootDatum(rd))))(integrality_datum@Param(p),infinitesimal_character@Param(p))
+PSL_C: (int->RealForm): (n): complex@RootDatum(PSL@int(n))
+PSL_H: (int->RealForm): (n): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(PSL@int(*@(int,int)(2,n)),"s"),0)
+PSL: (int->RootDatum): (n): root_datum@([vec],[vec],int)(SL_coroots@int(n),SL_roots@int(n),-@(int,int)(n,1))
+PSL: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(PSL@int(n), if >@(int,int)(n,1) then "s" else "" fi )),(n): complex@RootDatum(PSL@int(n)),(n): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(PSL@int(*@(int,int)(2,n)),"s"),0)))(K))(n)
+PSL_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(PSL@int(n), if >@(int,int)(n,1) then "s" else "" fi ))
+PSO: (int,int->RealForm): (p,q): SO@(int,int,RootDatum)(p,q,PSO@int(+@(int,int)(p,q)))
+PSO: (int->RootDatum): (n): adjoint@LieType(LT:SO_lie_type@int(n))
+PSOstar: (int->RealForm): (n): ((G): ((sc): real_forms@RealForm(G)[sc[1][0]])(square_classes@RealForm(SO@(int,int)(n,0))))(PSO@(int,int)(n,0))
+PSp_C: (int->RealForm): (n): complex@RootDatum(PSp@int(n))
+PSp_H: (int->RealForm): (n): error@string("PSp(n,H) is not yet implemented")
+PSp: (int,int->RealForm): (p,q): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(PSp@int(*@(int,int)(2,+@(int,int)(p,q))),"e"),min@(int,int)(p,q))
+PSp: (int->RootDatum): (n):  if =@(int,int)(%@(int,int)(n,2),1) then error@string("Odd symplectic datum") else ((type): adjoint@LieType(LT:+@(string,string)(type,int_format@int(\@(int,int)(n,2)))))( if =@(int,int)(\@(int,int)(n,2),1) then "A" else "C" fi ) fi 
+PSp: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(PSp@int(n),"s")),(n): complex@RootDatum(PSp@int(n)),(n): error@string("PSp(n,H) is not yet implemented")))(K))(n)
+PSp_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(PSp@int(n),"s"))
+PSU: (int,int->RealForm): (p,q): SU@(int,int,RootDatum)(p,q,PSL@int(+@(int,int)(p,q)))
+PSU: (int->RealForm): (n): PSU@(int,int)(n,0)
+push_to_all_walls: (Param->[()]): (p):  for A in generate_all_subsets@[int](tau_complement@Param(p)) do prints(A,", ",is_unitary@Param(psi@(Param,[int])(p,A))) od 
+quasicompact_form: (InnerClass->RealForm): (ic): real_forms@InnerClass(ic)[0]
+quasicompact_form: (RealForm->RealForm): (G): real_forms@RealForm(G)[0]
+quasisplit_form: (InnerClass->RealForm): {quasisplit_form@InnerClass}
+quotient_basis: (LieType,[ratvec]->mat): {quotient_basis@(LieType,[ratvec])}
+quotient_matrix: (mat,mat->mat): (M,A): ((P): ((Pinverse,d): ((Q): voided: for i: n_rows@mat(Q) from 0 do voided: for j: n_columns@mat(Q) from 0 do voided:Q[(i,j)]:=rattoint@rat(/@(int,int)(Q[i,j],d)) od  od ;Q)(minor@(mat,int,int)(*@(mat,mat)(*@(mat,mat)(Pinverse,A),M[V]:P),-@(int,int)(n_columns@mat(A),n_columns@mat(M)),n_columns@mat(M))))(invert@mat(M[V]:P)))(#([V]M:submodule_basis@mat(M),quotient_module_basis@mat(M)))
+quotient_module_basis: (mat->[vec]): (M): ((S,D,T): ((v): ((p):  if !=@(int,int)(abs@int(p),1) then error@string("sublattice is not a direct factor") else ((Sinv):  for i: -@(int,int)(n_columns@mat(Sinv),#@vec(v)) from 0 do Sinv[+@(int,int)(i,#@vec(v))] od )(Z_invert@mat(S)) fi )(product@vec(v)))(nonzero_diagonal_elements@mat(D)))(weak_snf@mat(M))
+r1_Cayley: (int,Param->ParamPol): (k,p): ((c1): ((c2):  if =@(Param,Param)(c1,c2) then +@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),c1) else +@(ParamPol,Param)(+@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),c1),c2) fi )(cross@(int,Param)(k,c1)))(inv_Cayley@(int,Param)(k,p))
+radical: (InnerClass->RealForm): (ic): ((M): ((X0): ((Q): real_form@(InnerClass,int)(inner_class@(RootDatum,mat)(radical@RootDatum(root_datum@InnerClass(ic)),Q),0))(sub_matrix@(mat,mat)(M,X0)))(kernel@mat(^@mat(simple_coroots@RootDatum(RdIc:ic)))))(distinguished_involution@InnerClass(ic))
+radical: (RealForm->RealForm): (G): radical@InnerClass(inner_class@RealForm(G))
+radical: (RootDatum->RootDatum): (rd): root_datum@([vec],[vec],int)([],[],-@(int,int)(rank@RootDatum(rd),semisimple_rank@RootDatum(rd)))
+rank: (LieType->int): {rank@LieType}
+rank: (RealForm->int): (G): rank@RootDatum(root_datum@InnerClass(IcRf:G))
+rank: (RootDatum->int): {rank@RootDatum}
+rattoint: (rat->int): (r): ((n,d):  if =@(int,int)(d,1) then n else error@string("Not an integer") fi )(%@rat(r))
+ratvectovec: (ratvec->vec): (v): ((w,d):  if =@(int,int)(d,1) then w else error@string("Not an integer vector") fi )(%@ratvec(v))
+raw_KL: (RealForm,DualRealForm->mat,[vec],vec): {raw_KL@(RealForm,DualRealForm)}
+real_coroots: (InnerClass,[int]->mat): (ic,tw): real_coroots@(RootDatum,mat)(RdIc:ic,involution@(InnerClass,[int])(ic,tw))
+real_coroots: (RootDatum,mat->mat): (rd,theta): ((rc): voided: for alpha in coroots@RootDatum(rd) do  if =@(vec,vec)(*@(vec,mat)(alpha,theta),-@vec(alpha)) then voided:rc:=#(rc,alpha) else () fi  od ; if =@(int,int)(#(rc),0) then null@(int,int)(rank@RootDatum(rd),0) else M[V]:rc fi )([])
+real_form: (DualRealForm->RealForm): {real_form@DualRealForm}
+real_form: (InnerClass,int->RealForm): {real_form@(InnerClass,int)}
+real_form: (KGBElt->RealForm): {real_form@KGBElt}
+real_form: (ParamPol->RealForm): {real_form@ParamPol}
+real_form: (Param->RealForm): {real_form@Param}
+real_forms: (CartanClass->[RealForm]): {real_forms@CartanClass}
+real_forms: (InnerClass->[RealForm]): (ic): real_forms@CartanClass(Cartan_class@(InnerClass,int)(ic,0))
+real_forms: (RealForm->[RealForm]): (G): real_forms@CartanClass(Cartan_class@(InnerClass,int)(IcRf:G,0))
+real_roots: (InnerClass,[int]->mat): (ic,tw): real_roots@(RootDatum,mat)(RdIc:ic,involution@(InnerClass,[int])(ic,tw))
+real_roots: (RootDatum,mat->mat): (rd,theta): ((rr): voided: for alpha in roots@RootDatum(rd) do  if =@(vec,vec)(*@(mat,vec)(theta,alpha),-@vec(alpha)) then voided:rr:=#(rr,alpha) else () fi  od ; if =@(int,int)(#(rr),0) then null@(int,int)(rank@RootDatum(rd),0) else M[V]:rr fi )([])
+real_type: (int,Param->int): (s,p): imaginary_type@(int,Param)(s,Cayley@(int,Param)(s,p))
+rec_def: (Param->Param,ParamPol): (p):  if  if is_zero@Param(p) then true elif is_final@Param(p) then false else true fi  then error@string("improper parameter") else ((empty): ((recd): (recd:=(coef,p):  if has_nu0@Param(p) then (p,empty) elif  if is_standard@Param(p) then false else true fi  then prints(p,%@Param(p));error@string("halt") else (((x,lambda,nu),rp): ((inx,at_nu0,acc): voided: while >@(int,int)(inx,0) do voided:acc:=+@(ParamPol,ParamPol)(acc,deform@Param(param@(KGBElt,vec,ratvec)(x,lambda,*@(rat,ratvec)(rp[inx:=-@(int,int)(inx,1)],nu)))) od ;voided: for k@q in acc do ((c): ((q0,nu0_terms): voided:at_nu0:=+@(ParamPol,ParamPol)(at_nu0,+@(ParamPol,(Split,Param))(nu0_terms,(c,q0))))(recd(c,q)))(*@(Split,Split)(coef,k)) od ;(param@(KGBElt,vec,ratvec)(x,lambda,null_wt@int(#@ratvec(nu))),at_nu0))(#(rp),empty,empty))(%@Param(p),reducibility_points@Param(p)) fi )(SpI:1,p))((c,p): (p,empty)))(null_module@RealForm(real_form@Param(p))) fi 
+recursive_deform: (Param->Param,ParamPol): (p): ((zero): ((recd): (recd:=(coef,p,back_trace):  if has_nu0@Param(p) then (p,zero) elif  if is_standard@Param(p) then false else true fi  then back_trace();prints(p,%@Param(p));error@string("halt") else (((x,lambda,nu),rp): ((inx,at_nu0): ((acc): voided: for terms@i in acc do ((f): voided: for k@q in terms do ((c): ((q0,nu0_terms): voided:at_nu0:=+@(ParamPol,ParamPol)(at_nu0,+@(ParamPol,(Split,Param))(nu0_terms,(c,q0))))(recd(c,q,f)))(*@(Split,Split)(coef,k)) od )((): ((a): back_trace();prints(a,", ",(x,lambda,*@(rat,ratvec)(a,nu))))(rp[-@(int,int)(-@(int,int)(#(rp),1),i)])) od ;(param@(KGBElt,vec,ratvec)(x,lambda,null_wt@int(#@ratvec(nu))),at_nu0))( while >@(int,int)(inx,0) do deform@Param(param@(KGBElt,vec,ratvec)(x,lambda,*@(rat,ratvec)(rp[inx:=-@(int,int)(inx,1)],nu))) od ))(#(rp),zero))(%@Param(p),reducibility_points@Param(p)) fi )(SpI:1,p,(): ()))((c,p,f): (p,zero)))(null_module@RealForm(real_form@Param(p)))
+reducibility_points: (Param->[rat]): {reducibility_points@Param}
+reflection: (RootDatum,int->mat): (rd,alpha): -@(mat,mat)(id_mat@int(rank@RootDatum(rd)),*@(mat,mat)(M[V]:[roots@RootDatum(rd)[alpha]],^@mat(M[V]:[coroots@RootDatum(rd)[alpha]])))
+regular_character_formula: (Param->ParamPol): (p):  if  if is_regular@Param(p) then false else true fi  then error@string("Parameter is not regular") else ((sum,(block,init,KL,polys,stops,,)): voided: for q@i in block do ((poly_at_1):  if !=@(int,int)(poly_at_1,0) then voided:sum:=+@(ParamPol,ParamPol)(sum,*@(int,ParamPol)(*@(int,int)(^@(int,int)(-@int(1),length@(int,vec)(i,stops)),poly_at_1),virtual@Param(q))) else () fi )(eval@(vec,int)(polys[KL[i,init]],1)) od ;*@(int,ParamPol)(^@(int,int)(-@int(1),length@(int,vec)(init,stops)),sum))(null_module@RealForm(real_form@Param(p)),KL_block@Param(p)) fi 
+regular_composition_series: (Param->ParamPol): (p):  if  if is_regular@Param(p) then false else true fi  then error@string("Parameter is not regular") else ((sum,(block,init,,,,,),M): voided: for q@i in block do ((coeff):  if !=@(int,int)(coeff,0) then voided:sum:=+@(ParamPol,ParamPol)(sum,*@(int,ParamPol)(coeff,virtual@Param(q))) else () fi )(M[i,init]) od ;sum)(null_module@RealForm(real_form@Param(p)),KL_block@Param(p),KL_regular_inverse_matrix_at_one@Param(p)) fi 
+remove_duplicates: ([[int]]->[[int]]): (list):  if =@(int,int)(#(list),0) then [[I]]M:null@(int,int)(1,0) else ((rv): voided: for v in list do ((need,i): (():  if need then voided:rv:=#(rv,v) else () fi )(voided: while <@(int,int)(i,#(rv)) do  if  if =@(vec,vec)(V[I]:v,V[I]:rv[i]) then true else =@(vec,vec)(V[I]:v,*@(int,vec)(20,V[I]:rv[i])) fi  then voided:(need:=false,i:=#(rv)) else voided:i:=+@(int,int)(i,1) fi  od ))(true,0) od ;rv)([]) fi 
+remove_long: ([[int]]->[[int]]): (list):  if =@(int,int)(#(list),0) then [[I]]M:null@(int,int)(1,0) else ((rv): voided: for v in list do ((need,i): (():  if need then voided:rv:=#(rv,v) else () fi )(voided: while <@(int,int)(i,#(list)) do  if =@(vec,vec)(V[I]:v,*@(int,vec)(2,V[I]:list[i])) then voided:(need:=false,i:=#(list)) else voided:i:=+@(int,int)(i,1) fi  od ))(true,0) od ;rv)([]) fi 
+remove_short: ([[int]]->[[int]]): (list):  if =@(int,int)(#(list),0) then [[I]]M:null@(int,int)(1,0) else ((rv): voided: for v in list do ((need,i): (():  if need then voided:rv:=#(rv,v) else () fi )(voided: while <@(int,int)(i,#(list)) do  if =@(vec,vec)(*@(int,vec)(2,V[I]:v),V[I]:list[i]) then voided:(need:=false,i:=#(list)) else voided:i:=+@(int,int)(i,1) fi  od ))(true,0) od ;rv)([]) fi 
+replace_gen: ((mat,vec),mat->mat): {replace_gen@((mat,vec),mat)}
+restrict_roots: (mat,mat->mat,mat): (roots,delta):  if =@((int,int),(int,int))(#@mat(roots),(0,0)) then (M[V]:[],M[V]:[]) else ((m): ((id): ((M): ((Q,): (Q,*@(mat,mat)(Q,roots)))(projection@(mat,vec)(kernel@mat(M),null@int(m))))(+@(mat,mat)(id,delta)))(id_mat@int(m)))(n_columns@mat(delta)) fi 
+reverse_sort: (vec->vec): (v): reverse@vec(sort@vec(v))
+reverse: (vec->vec): (v): V[I]: for i : #@vec(v) downto 0 do v[i] od 
+rhocheck: (RealForm->ratvec): (G): rhocheck@RootDatum(root_datum@InnerClass(IcRf:G))
+rhocheck: (RootDatum->ratvec): (rd): rho@RootDatum(dual@RootDatum(rd))
+rho: (int->[rat]): (n):  for k: n from 0 do -@(rat,rat)(/@(int,int)(-@(int,int)(n,1),2),QI:k) od 
+rho: (RealForm->ratvec): (G): rho@RootDatum(root_datum@InnerClass(IcRf:G))
+rho: (RootDatum->ratvec): (rd): ((res): voided: for i: semisimple_rank@RootDatum(rd) from 0 do voided:res:=+@(ratvec,ratvec)(res,fundamental_weight@(RootDatum,int)(rd,i)) od ;res)(QvV:null@int(rank@RootDatum(rd)))
+right_inverse: (mat->mat): (A): ((S,D,T): ((v):  if !=@(int,int)(abs@int(product@vec(v)),1) then error@string("no integral right inverse") elif <@(int,int)(#@vec(v),n_rows@mat(D)) then error@string("no right inverse") else *@(mat,mat)(*@(mat,mat)(T,^@mat(D)),S) fi )(nonzero_diagonal_elements@mat(D)))(weak_snf@mat(A))
+root_coradical: (RootDatum->mat): {root_coradical@RootDatum}
+root_datum: (InnerClass->RootDatum): {root_datum@InnerClass}
+root_datum: (LieType,mat->RootDatum): {root_datum@(LieType,mat)}
+root_datum: (LieType,[ratvec]->RootDatum): {root_datum@(LieType,[ratvec])}
+root_datum: (ParamPol->RootDatum): (P): root_datum@InnerClass(IcRf:real_form@ParamPol(P))
+root_datum: (Param->RootDatum): (p): root_datum@InnerClass(IcRf:real_form@Param(p))
+root_datum: ([vec],[vec],int->RootDatum): {root_datum@([vec],[vec],int)}
+roots: (RootDatum->mat): {roots@RootDatum}
+row_saturate: (mat->mat): {row_saturate@mat}
+R: string: "R"
+semisimple_rank: (LieType->int): {semisimple_rank@LieType}
+semisimple_rank: (RealForm->int): (G): semisimple_rank@RootDatum(root_datum@InnerClass(IcRf:G))
+semisimple_rank: (RootDatum->int): {semisimple_rank@RootDatum}
+sgn: (int->int): (k):  if <@(int,int)(k,0) then -@int(1) else 1 fi 
+show: (string->string): (s):  if =@(string,string)(s,"") then "empty" else s fi 
+signed_KL_col: (int,mat,[vec],vec->[vec]): (init,KL,polys,stops): ((l_init):  for i: n_rows@mat(KL) from 0 do *@(int,vec)(^@(int,int)(-@int(1),-@(int,int)(length@(int,vec)(i,stops),l_init)),polys[KL[i,init]]) od )(length@(int,vec)(init,stops))
+signed_KL_col: (int,mat,[vec],vec,vec,mat->[vec]): (init,KL,polys,stops,indices,cumulation): ((l_init):  for i: n_rows@mat(cumulation) from 0 do *@(int,vec)(^@(int,int)(-@int(1),-@(int,int)(length@(int,vec)(indices[i],stops),l_init)),mat_mult_int_poly@(mat,mat,[vec],int,int)(cumulation,KL,polys,i,init)) od )(length@(int,vec)(init,stops))
+signed_KL_col: (Param->[vec]): (p):  if is_regular@Param(p) then signed_KL_col_regular@Param(p) else signed_KL_col_singular@Param(p) fi 
+signed_KL_col_regular: (Param->[vec]): (p):  if  if is_regular@Param(p) then false else true fi  then error@string("Parameter is not regular") else ((,init,kl,polys,stops,,): signed_KL_col@(int,mat,[vec],vec)(init,kl,polys,stops))(KL_block@Param(p)) fi 
+signed_KL_col_singular: (Param->[vec]): (p): ((,init,kl,polys,stops,indices,cumulation): signed_KL_col@(int,mat,[vec],vec,vec,mat)(init,kl,polys,stops,indices,cumulation))(KL_block@Param(p))
+signed_KL_mat_at_one: (Param->mat): (p):  if is_regular@Param(p) then signed_KL_mat_regular_at_one@Param(p) else signed_KL_mat_singular_at_one@Param(p) fi 
+signed_KL_mat_regular_at_one: (Param->mat): (p): ((,,KL,polys,stops,,): M[V]: for col@j in KL do V[I]: for entry@i in col do *@(int,int)(^@(int,int)(-@int(1),length_diff@(int,int,vec)(i,j,stops)),eval@(vec,int)(polys[entry],1)) od  od )(KL_block@Param(p))
+signed_KL_mat_singular_at_one: (Param->mat): (p): ((,,KL,polys,stops,indices,cumulation): M[V]: for ind_j in indices do V[I]: for i: #@vec(indices) from 0 do *@(int,int)(^@(int,int)(-@int(1),length_diff@(int,int,vec)(indices[i],ind_j,stops)),eval@(vec,int)(mat_mult_int_poly@(mat,mat,[vec],int,int)(cumulation,KL,polys,i,ind_j),1)) od  od )(KL_block@Param(p))
+simple_coroots: (RootDatum->mat): {simple_coroots@RootDatum}
+simple_coroots: [vec]: [[  1, -1 ],[ 0, 1 ]]
+simple_reflection: (RootDatum,int->mat): (rd,s): -@(mat,mat)(id_mat@int(rank@RootDatum(rd)),*@(mat,mat)(M[V]:[simple_roots@RootDatum(rd)[s]],^@mat(M[V]:[simple_coroots@RootDatum(rd)[s]])))
+simple_roots: (RootDatum->mat): {simple_roots@RootDatum}
+simple_roots: [vec]: [[  1, -1 ],[ 0, 2 ]]
+simply_connected: (LieType->RootDatum): {simply_connected@LieType}
+singular_character_formula: (Param->ParamPol): (p): ((sum,(block,init,KL,polys,stops,indices,cumulation)): ((cumul_init_at_1): voided: for ind_i@i in indices do ((q,poly_at_1):  if !=@(int,int)(poly_at_1,0) then voided:sum:=+@(ParamPol,ParamPol)(sum,*@(int,ParamPol)(*@(int,int)(^@(int,int)(-@int(1),length@(int,vec)(ind_i,stops)),poly_at_1),virtual@Param(q))) else () fi )(block[ind_i],cumul_init_at_1[i]) od ;*@(int,ParamPol)(^@(int,int)(-@int(1),length@(int,vec)(init,stops)),sum))(*@(mat,vec)(cumulation,V[I]: for i: n_rows@mat(KL) from 0 do eval@(vec,int)(polys[KL[i,init]],1) od )))(null_module@RealForm(real_form@Param(p)),KL_block@Param(p))
+singular_composition_series: (Param->ParamPol): (p): ((sum,(block,init,,,,indices,)): ((col_M): voided: for coeff@i in col_M do  if !=@(int,int)(coeff,0) then voided:sum:=+@(ParamPol,ParamPol)(sum,*@(int,ParamPol)(coeff,virtual@Param(block[indices[i]]))) else () fi  od ;sum)(KL_singular_inverse_matrix_at_one@Param(p)[get_singular_index@(vec,int)(indices,init)]))(null_module@RealForm(real_form@Param(p)),KL_block@Param(p))
+singular_roots: (RootDatum,ratvec->[int]): (rd,v): ((rv): voided: for a@i in simple_coroots@RootDatum(rd) do  if =@(rat,rat)(*@(ratvec,ratvec)(QvV:a,v),QI:0) then voided:rv:=#(rv,i) else () fi  od ;rv)([])
+skew_symmetrize_coherent: ([int],(ParamPol,string)->ParamPol,string): (S,(P,type)): ((N): ((WS): voided: for w in WS do voided:N:=+@((ParamPol,string),(ParamPol,string))(N,*@(Split,(ParamPol,string))(SpI:^@(int,int)(-@int(1),#(w)),coherent@([int],(ParamPol,string))(w,(P,type)))) od ;N)(W_orbit_W_elements@(RootDatum,[int],[int])(root_datum@ParamPol(P),S,[I]V:ratvectovec@ratvec(*@(int,ratvec)(2,rho@RootDatum(root_datum@ParamPol(P)))))))(null_module@RealForm(real_form@ParamPol(P)),type)
+skew_symmetrize_coherent: ([int],(Param,string)->ParamPol,string): (S,(p,type)): skew_symmetrize_coherent@([int],(ParamPol,string))(S,(virtual@Param(p),type))
+skew_symmetrize_coherent: (ParamPol,string->ParamPol,string): (P,type): ((S): skew_symmetrize_coherent@([int],(ParamPol,string))(S,(P,type)))( for i: rank@RootDatum(root_datum@ParamPol(P)) from 0 do i od )
+skew_symmetrize_coherent: (Param,string->ParamPol,string): (p,type): skew_symmetrize_coherent@(ParamPol,string)(virtual@Param(p),type)
+SL_C: (int->RealForm): (n): complex@RootDatum(SL@int(n))
+SL_coroots: (int->[vec]): (n):  for i: -@(int,int)(n,1) from 0 do V[I]: for j: -@(int,int)(n,1) from 0 do  if =@(int,int)(j,i) then 1 elif =@(int,int)(j,+@(int,int)(i,1)) then -@int(1) else 0 fi  od  od 
+SL_H: (int->RealForm): (n): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(SL@int(*@(int,int)(2,n)),"s"),0)
+SL: (int->RootDatum): (n): root_datum@([vec],[vec],int)(SL_roots@int(n),SL_coroots@int(n),-@(int,int)(n,1))
+SL: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(SL@int(n), if >@(int,int)(n,1) then "s" else "" fi )),(n): complex@RootDatum(SL@int(n)),(n): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(SL@int(*@(int,int)(2,n)),"s"),0)))(K))(n)
+SL_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(SL@int(n), if >@(int,int)(n,1) then "s" else "" fi ))
+SL_roots: (int->[vec]): (n):  for col@j in SL_coroots@int(n) do  if <@(int,int)(j,-@(int,int)(n,2)) then col else V[I]: for e in col do +@(int,int)(e,1) od  fi  od 
+Smith_basis: (mat->mat): {Smith_basis@mat}
+Smith_Cartan: (LieType->mat,vec): {Smith_Cartan@LieType}
+Smith: (mat->mat,vec): {Smith@mat}
+SO_inner_class: (int,int->string): (p,q): ((ic): ic)( if =@(int,int)(+@(int,int)(p,q),1) then "" elif =@(int,int)(+@(int,int)(p,q),4) then  if =@(int,int)(%@(int,int)(p,2),0) then "ee" else "C" fi  elif  if =@(int,int)(%@(int,int)(p,2),1) then =@(int,int)(%@(int,int)(q,2),1) else false fi  then  if  if =@(int,int)(%@(int,int)(+@(int,int)(p,q),4),0) then >@(int,int)(+@(int,int)(p,q),4) else false fi  then "u" else "s" fi  else "e" fi )
+SO: (int,int->RealForm): (p,q): SO@(int,int,RootDatum)(p,q,SO@int(+@(int,int)(p,q)))
+SO: (int,int,RootDatum->RealForm): (p,q,rd): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(rd,SO_inner_class@(int,int)(p,q)),SO_real_form_number@(int,int)(p,q))
+SO: (int->RootDatum): (n): ((m):  if =@(int,int)(%@(int,int)(n,2),1) then root_datum@([vec],[vec],int)(type_B_roots@int(m),type_C_roots@int(m),m) else ((r): root_datum@([vec],[vec],int)(r,r,m))(type_D_roots@int(m)) fi )(\@(int,int)(n,2))
+SO_lie_type: (int->string): (n):  if =@(int,int)(n,1) then "" elif =@(int,int)(n,2) then "T1" elif =@(int,int)(n,3) then "A1" elif =@(int,int)(n,4) then "A1.A1" elif =@(int,int)(n,6) then "A3" elif =@(int,int)(%@(int,int)(n,2),1) then +@(string,int)("B",\@(int,int)(n,2)) else +@(string,int)("D",\@(int,int)(n,2)) fi 
+SO_real_form_number: (int,int->int): (p,q): ((n,(p,q)): ((number): number)( if <=@(int,int)(n,2) then 0 elif =@(int,int)(%@(int,int)(n,2),1) then q elif =@(int,int)(%@(int,int)(q,2),1) then \@(int,int)(q,2) elif <=@(int,int)(q,\@(int,int)(n,4)) then \@(int,int)(q,2) elif =@(int,int)(%@(int,int)(n,4),2) then +@(int,int)(\@(int,int)(q,2),1) else +@(int,int)(\@(int,int)(q,2),2) fi ))(+@(int,int)(p,q), if <@(int,int)(p,q) then (q,p) else (p,q) fi )
+sort_by: ((Param,bool->int)->([(Param,bool)]->[(Param,bool)])): (f): (v):  for index in inv_standardisation@vec(V[I]: for x in v do f(x) od ) do v[index] od 
+sort_by: ((Param->int)->([Param]->[Param])): (f): (v):  for index in inv_standardisation@vec(V[I]: for x in v do f(x) od ) do v[index] od 
+sort_by_reducibility_pairs: ([(Param,bool)]->[(Param,bool)]): (v):  for index in inv_standardisation@vec(V[I]: for x in v do f(x) od ) do v[index] od 
+sort_by_reducibility: ([Param]->[Param]): (v):  for index in inv_standardisation@vec(V[I]: for x in v do f(x) od ) do v[index] od 
+sort: (vec->vec): (v): ms(v,#@vec(v))
+SOstar: (int->RealForm): (n): ((G): ((sc): real_forms@RealForm(G)[sc[1][0]])(square_classes@RealForm(G)))(SO@(int,int)(n,0))
+sp4c: InnerClass: Complex reductive group of type C2, with involution defining
+sp4: RootDatum: simply connected root datum of Lie type 'C2'
+sp4R: RealForm: connected split real group with Lie algebra 'sp(4,R)'
+Sp_C: (int->RealForm): (n): complex@RootDatum(Sp@int(n))
+spherical_mixed: (RealForm,[(ratvec,bool)]->[(Param,bool)]): (G,nu_pairs):  for (nu,ans) in nu_pairs do (spherical_principal_series@(RealForm,ratvec)(G,nu),ans) od 
+spherical_principal_series: (RealForm,ratvec->Param): (G,nu): ((lambda): param@(KGBElt,vec,ratvec)(KGB@(RealForm,int)(G,-@(int,int)(KGB_size@RealForm(G),1)),lambda,nu))(null@int(rank@RealForm(G)))
+spherical: (RealForm,[ratvec]->[Param]): (G,nus):  for nu in nus do spherical_principal_series@(RealForm,ratvec)(G,nu) od 
+spherical_unipotent: (RealForm->[Param]): (G):  if >@(int,int)(#@LieType(Lie_type@RootDatum(root_datum@InnerClass(IcRf:G))),1) then error@string("Not a simple group") else () fi ;spherical@(RealForm,[ratvec])(G,nilpotent_lambdas@RealForm(G))
+Sp_H: (int->RealForm): (n): error@string("Sp(n,H) is not yet implemented")
+Spin: (int,int->RealForm): (p,q): SO@(int,int,RootDatum)(p,q,Spin@int(+@(int,int)(p,q)))
+Spin: (int->RootDatum): (n): simply_connected@LieType(LT:SO_lie_type@int(n))
+Spinstar: (int->RealForm): (n): ((G): ((sc): real_forms@RealForm(SO@(int,int)(n,0))[sc[1][0]])(square_classes@RealForm(G)))(Spin@(int,int)(n,0))
+Sp: (int,int->RealForm): (p,q): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(Sp@int(*@(int,int)(2,+@(int,int)(p,q))),"e"),min@(int,int)(p,q))
+Sp: (int->RootDatum): (n): ((m,r):  if =@(int,int)(r,1) then error@string("Odd symplectic datum") else () fi ;root_datum@([vec],[vec],int)(type_C_roots@int(m),type_B_roots@int(m),m))(\%@(int,int)(n,2))
+Sp: (int,string->RealForm): (n,K): ((by_field@((int->RealForm),(int->RealForm),(int->RealForm))((n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(Sp@int(n),"e")),(n): complex@RootDatum(Sp@int(n)),(n): error@string("Sp(n,H) is not yet implemented")))(K))(n)
+split_form: (LieType->RealForm): (t): split_form@RootDatum(simply_connected@LieType(t))
+split_form: (RealForm->RealForm): (G): split_form@RootDatum(root_datum@InnerClass(IcRf:G))
+split_form: (RootDatum->RealForm): (r): quasisplit_form@InnerClass(inner_class@(RootDatum,mat)(r,-@mat(id_mat@int(rank@RootDatum(r)))))
+split_form: (string->RealForm): (s): split_form@LieType(LT:s)
+split_power: (Split,int->Split): (x,n):  if =@(int,int)(n,1) then x else ((q,r): ((y): *@(Split,Split)(y, if =@(int,int)(r,0) then y else *@(Split,Split)(x,y) fi ))(p(x,q)))(\%@(int,int)(n,2)) fi 
+split_rank: (RealForm->int): (G): (((c,C,s),,,): +@(int,int)(C,s))(Cartan_info@CartanClass(most_split_Cartan@RealForm(G)))
+split_torus: (int->RealForm): (k): torus@(int,int,int)(0,k,0)
+Sp_R: (int->RealForm): (n): quasisplit_form@InnerClass(inner_class@(RootDatum,string)(Sp@int(n),"e"))
+square_classes: (CartanClass->[[int]]): {square_classes@CartanClass}
+square_classes: (InnerClass->[[int]]): (ic): square_classes@CartanClass(Cartan_class@(InnerClass,int)(ic,0))
+square_classes: (RealForm->[[int]]): (G): square_classes@InnerClass(inner_class@RealForm(G))
+s: Split: (0+1s)
+ss_rank: (RealForm->int): (G): semisimple_rank@RealForm(G)
+ss_rank: (RootDatum->int): (rd): semisimple_rank@RootDatum(rd)
+status_code: (int,KGBElt->string): (s,x): ["C-","ic","r ","nc","C+"][status@(int,KGBElt)(s,x)]
+status_code: (int,Param->string): (s,p): status_code@(int,KGBElt)(s,x@Param(p))
+status_code: (int,(Param,string)->string): (s,(p,type)): status_code@(int,Param)(s,p)
+status_codes: (KGBElt->[string]): (x):  for s: semisimple_rank@RootDatum(RdRf:real_form@KGBElt(x)) from 0 do status_code@(int,KGBElt)(s,x) od 
+status_codes: (Param->[string]): (p): status_codes@KGBElt(x@Param(p))
+status_codes: (Param,string->[string]): (p,type): status_codes@Param(p)
+status: (int,KGBElt->int): {status@(int,KGBElt)}
+std: string: "std"
+String: (int->[rat]): (n):  for k: \@(int,int)(n,2) from 0 do -@(rat,rat)(/@(int,int)(-@(int,int)(n,1),2),QI:k) od 
+stringPoly: (vec,string->string): (v,q):  if =@(int,int)(#@vec(v:=strip@vec(v)),0) then "0" else ((rv): voided: for c@k in v do  if !=@(int,int)(c,0) then ((coef,term): voided:rv:=#@(string,string)(rv,#@(string,string)(coef,term)))(#@(string,string)( if <@(int,int)(c,0) then "-" else "+" fi , if  if =@(int,int)(abs@int(c),1) then >@(int,int)(k,0) else false fi  then "" else int_format@int(abs@int(c)) fi ), if >@(int,int)(k,1) then #@(string,string)(#@(string,string)(q,"^"),int_format@int(k)) elif =@(int,int)(k,0) then "" else q fi ) else () fi  od ;rv)("") fi 
+strip: (vec->vec): (v): ((k): voided: while  if >@(int,int)(k,0) then =@(int,int)(v[-@(int,int)(k,1)],0) else false fi  do voided:k:=-@(int,int)(k,1) od ; if =@(int,int)(k,#@vec(v)) then v else V[I]: for i: k from 0 do v[i] od  fi )(#@vec(v))
+str: (LieType->string): {str@LieType}
+strong_real_forms_same_type: (InnerClass,int->[int]): (ic,k): square_classes@InnerClass(ic)[central_invariant@(InnerClass,int)(ic,k)]
+strong_real_forms_same_type: (RealForm->[int]): (G): strong_real_forms_same_type@(RealForm,int)(G,form_number@RealForm(G))
+strong_real_forms_same_type: (RealForm,int->[int]): (G,k): square_classes@RealForm(G)[central_invariant@(InnerClass,int)(inner_class@RealForm(G),k)]
+sub_matrix: (mat,mat->mat): (A,M): ((P): ((Pinverse,d): ((Q): voided: for i: n_rows@mat(Q) from 0 do voided: for j: n_columns@mat(Q) from 0 do voided:Q[(i,j)]:=rattoint@rat(/@(int,int)(Q[i,j],d)) od  od ;Q)(minor@(mat,int)(*@(mat,mat)(*@(mat,mat)(Pinverse,A),M[V]:P),n_columns@mat(M))))(invert@mat(M[V]:P)))(#([V]M:M,[V]M:kernel@mat(^@mat(M))))
+submodule_basis: (mat->mat): (M): ((S,D,T): ((v): M[V]: for i: #@vec(v) from 0 do *@(int,vec)(v[i],Z_invert@mat(S)[i]) od )(nonzero_diagonal_elements@mat(D)))(weak_snf@mat(M))
+subspace_normal: ([vec]->[vec],[vec],[vec],[int]): {subspace_normal@[vec]}
+SU: (int,int->RealForm): (p,q): SU@(int,int,RootDatum)(p,q,SL@int(+@(int,int)(p,q)))
+SU: (int,int,RootDatum->RealForm): (p,q,rd): ((n): ((ic): real_form@(InnerClass,int)(ic,min@(int,int)(p,q)))(inner_class@(RootDatum,string)(rd, if >@(int,int)(n,1) then "c" else "" fi )))(+@(int,int)(p,q))
+SU: (int->RealForm): (n): SU@(int,int)(n,0)
+sum: (mat->vec): (m): ((r,): ((sum): voided: for col in m do voided:sum:=+@(vec,vec)(sum,col) od ;sum)(null@int(r)))(#@mat(m))
+sum: (vec->int): (v): ((s): voided: for e in v do voided:s:=+@(int,int)(s,e) od ;s)(0)
+tau_complement: (Param->[int]): (p): ((rv): voided: for s: semisimple_rank@RootDatum(RdRf:real_form@Param(p)) from 0 do  if in_tau_complement@(int,Param)(s,p) then voided:rv:=#(rv,s) else () fi  od ;rv)([])
+tau_complement: (Param,string->[int]): (p,type): ((rv): voided: for s: semisimple_rank@RealForm(real_form@Param(p)) from 0 do  if in_tau_complement@(int,Param)(s,p) then voided:rv:=#(rv,s) else () fi  od ;rv)([])
+tau: (Param->[int]): (p): ((rv): voided: for s: semisimple_rank@RootDatum(RdRf:real_form@Param(p)) from 0 do  if in_tau@(int,Param)(s,p) then voided:rv:=#(rv,s) else () fi  od ;rv)([])
+tau: (Param,string->[int]): (p,type): tau@Param(p)
+test1: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical_unipotent@RealForm(Sp@(int,string)(4,R))))
+test2: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical_unipotent@RealForm(split_form@string(G2))))
+test3: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical_unipotent@RealForm(Sp@(int,string)(6,R))))
+test4: (->bool): (): ((G2): test@[(Param,bool)]( for p@i in trivial_block@RealForm(G2) do (p, if <@(int,int)(i,5) then true else =@(int,int)(i,9) fi ) od ))(quasisplit_form@InnerClass(inner_class@(RootDatum,string)(adjoint@LieType(LT:"G2"),"e")))
+test5: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical_unipotent@RealForm(SO@(int,int)(5,4))))
+test6: (->bool): (): test@[(Param,bool)]( for p@i in trivial_block@RealForm(Sp@(int,string)(4,R)) do (p, if <@(int,int)(i,7) then true else =@(int,int)(i,10) fi ) od )
+test7: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical@(RealForm,[ratvec])(split_form@string(F4), for i: 49 from 0 do F4_spherical_unitary[i] od )))
+test8: (->bool): (): test@[(Param,bool)](all_unitary@[Param](spherical@(RealForm,[ratvec])(split_form@string(E7), for i: 100 from 0 do E7_spherical_unitary[i] od )))
+test9: (->bool): (): ((): is_unitary@Param(trivial@RealForm(split_form@string(F4))))(prints("Testing trivial of F4"))
+test_even_unipotent: ([Param]->): (params): voided: for p in params do test_even_unipotent@Param(p) od 
+test_even_unipotent: (Param->): (p): ((q): ((Q): ((unitary): prints("");prints("original parameter: ",p);prints("translated parameter: ",q,", ",infinitesimal_character@Param(q));prints("translated irreducible is unitary: ",unitary); if translate_debug then prettyPrint@ParamPol(Q) else () fi )(is_unitary@ParamPol(Q)))(hermitian_form_irreducible@Param(q)))(make_maximally_singular@Param(p))
+test_line: (Param->): (p): ((x,lambdaminusrho,nu): ((points,ipoints): prints("testing line through ",p);prints("reducibility points: ",points);prints("integrality points (for 2*nu): ",ipoints); if =@(int,int)(#(points),0) then prints("entire line is irreducible and unitary", if is_final@Param(*@(Param,rat)(p,QI:0)) then "" else " (nu=0 is not final)" fi ) else ((points):  if  if =@(rat,rat)(points[-@(int,int)(#(points),1)],/@(int,int)(1,1)) then false else true fi  then voided:points:=[Q]Qv:/@(ratvec,int)(Qv[Q]:#(points,QI:1),1) else () fi ;voided: for i: -@(int,int)(#(points),1) from 1 do ((t): ((q): ((r): prints(*@(rat,ratvec)(t,nu),": ",is_unitary@Param(q));prints(*@(rat,ratvec)(points[i],nu),": ",is_unitary@Param(r)))(param@(KGBElt,vec,ratvec)(x,lambdaminusrho,*@(rat,ratvec)(points[i],nu))))(param@(KGBElt,vec,ratvec)(x,lambdaminusrho,*@(rat,ratvec)(t,nu))))(/@(rat,rat)(+@(rat,rat)(points[i],points[-@(int,int)(i,1)]),QI:2)) od )(#(QI:0,points)) fi )(reducibility_points@Param(p),integrality_points@(RootDatum,ratvec)(root_datum@Param(p),*@(int,ratvec)(2,nu))))(%@Param(p))
+test: (mat->mat,mat): (M): ((model,(diag,R,C)): voided: for v@i in diag do voided:model[(i,i)]:=v od ;(model,*@(mat,mat)(*@(mat,mat)(R,M),C)))(null@(int,int)(#@mat(M)),diagonalize@mat(M))
+test_one: (Param,bool->bool): (param,unitary): test@[(Param,bool)]([(param,unitary)])
+test_one_unitary: (Param->bool): (param): test@[(Param,bool)]([(param,true)])
+test: ([(Param,bool)]->bool): (parameters): ((rf,rv): (():  if new_test then voided: for (p,answer)@i in parameters do ((c_form,count): ((form): ((unitary):  if !=@(bool,bool)(unitary,answer) then voided:rv:=false else () fi ;prints(i,", ",p,", ",unitary,", ",answer,", ",#(reducibility_points@Param(p)),", ",count))(is_unitary@ParamPol(form)))(convert_cform_hermitian@ParamPol(c_form)))(((on_p,P,KL_sum): voided: for ev@q in KL_sum do ((fd): ((): voided:P:=+@(ParamPol,ParamPol)(P,*@(Split,ParamPol)(*@(Split,Split)(ev,orientation_nr_term@(int,Param)(on_p,q)),fd)))(prints(q,": ",#(reducibility_points@Param(q))," ",#@ParamPol(fd))))(full_deform@Param(q)) od ;(P,#@ParamPol(KL_sum)))(orientation_nr@Param(p),null_module@RealForm(rf),KL_sum_at_s@Param(p))) od ;prints("Result: ", if rv then "Passed" else "Failed" fi );rv else voided: for (p,answer)@i in parameters do ((c_form,list): ((form): ((unitary):  if !=@(bool,bool)(unitary,answer) then voided:rv:=false else () fi ;prints(i,", ",p,", ",unitary,", ",answer,", ",#(reducibility_points@Param(p)),", ",#(list)))(is_unitary@ParamPol(form)))(convert_cform_hermitian@ParamPol(c_form)))(c_form_irreducible_long@Param(p)) od ;prints("Result: ", if rv then "Passed" else "Failed" fi );rv fi )(prints("Testing ",#(parameters)," parameters for ",rf)))(((p,): real_form@Param(p))(parameters[0]),true)
+torus_bits: (KGBElt->vec): {torus_bits@KGBElt}
+torus_factor: (KGBElt->ratvec): {torus_factor@KGBElt}
+torus: (int,int,int->RealForm): (a,b,c): ((rd): ((theta): ((ic): real_form@(InnerClass,int)(ic,0))(inner_class@(RootDatum,mat)(rd,theta)))(torus_involution@(int,int,int)(a,b,c)))(root_datum@([vec],[vec],int)([],[],+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,c))))
+torus_involution: (int,int,int->mat): (a,b,c): ((M): voided:( for i: b from a do M[(i,i)]:=-@int(1) od , for i: c from 0 do voided:M[(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)))]:=0;voided:M[(+@(int,int)(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),1),+@(int,int)(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),1))]:=0;voided:M[(+@(int,int)(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),1),+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)))]:=1;M[(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),+@(int,int)(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,i)),1))]:=1 od );M)(id_mat@int(+@(int,int)(+@(int,int)(a,b),*@(int,int)(2,c))))
+to_string: (int->string): (n): int_format@int(n)
+to_string_irr: (Param->string): (p): ((x,lambda,nu): ((n): #@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)("J(x=",to_string@int(n)),",lambda="),to_string@ratvec(lambda)),",nu="),to_string@ratvec(nu)),")"))(kgb_number@KGBElt(x)))(x@Param(p),lambda@Param(p),nu@Param(p))
+to_string: (ParamPol->[string]): (P):  for w@p in P do #@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)("(",prettyPrint@Split(w)),")*"),to_string@Param(p)),")") od 
+to_string: (ParamPol,string->[string]): (P,type):  for w@p in P do #@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)("(",prettyPrint@Split(w)),")*"),to_string@(Param,string)(p,type)),")") od 
+to_string: (Param->string): (p): ((x,lambda,nu): ((n): #@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)("(x=",to_string@int(n)),",lambda="),to_string@ratvec(lambda)),",nu="),to_string@ratvec(nu)),")"))(kgb_number@KGBElt(x)))(x@Param(p),lambda@Param(p),nu@Param(p))
+to_string: (Param,string->string): (p,type):  if =@(string,string)(type,std) then to_string_std@Param(p) elif =@(string,string)(type,irr) then to_string_irr@Param(p) else error@string("type is incorrect") fi 
+to_string: (rat->string): (a): ((n,d): #@(string,string)(#@(string,string)(to_string@int(n),"/"),to_string@int(d)))(%@rat(a))
+to_string: (ratvec->string): (v): ((rv): voided: for i: -@(int,int)(#@ratvec(v),1) from 0 do voided:rv:=#@(string,string)(#@(string,string)(rv,to_string@rat(v[i])),",") od ;voided:rv:=#@(string,string)(#@(string,string)(rv,to_string@rat(v[-@(int,int)(#@ratvec(v),1)])),"]");rv)("[")
+to_string_std: (Param->string): (p): ((x,lambda,nu): ((n): #@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)(#@(string,string)("I(x=",to_string@int(n)),",lambda="),to_string@ratvec(lambda)),",nu="),to_string@ratvec(nu)),")"))(kgb_number@KGBElt(x)))(x@Param(p),lambda@Param(p),nu@Param(p))
+to_string: (vec->string): (v): ((rv): voided: for i: -@(int,int)(#@vec(v),1) from 0 do voided:rv:=#@(string,string)(#@(string,string)(rv,to_string@int(v[i])),",") od ;voided:rv:=#@(string,string)(#@(string,string)(rv,to_string@int(v[-@(int,int)(#@vec(v),1)])),"]");rv)("[")
+translate_by: (Param,[int]->Param): (p,shift): normparam@(KGBElt,ratvec,ratvec)(x@Param(p),+@(ratvec,ratvec)(lambda@Param(p),Rv[I]:shift),+@(ratvec,ratvec)(nu@Param(p),Rv[I]:shift))
+translate_by: (ParamPol,[int]->ParamPol): (P,shift): ((Q): voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_by@(Param,[int])(q,shift))) od ;Q)(null_module@ParamPol(P))
+translate_by: ((ParamPol,string),[int]->ParamPol,string): ((P,type),shift): ((Q):  if =@(string,string)(type,std) then voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_by@(Param,[int])(q,shift))) od  elif =@(string,string)(type,irr) then voided: for (w,q) in %@ParamPol(P) do ((qshift):  if irreducible_is_nonzero@Param(qshift) then voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_by@(Param,[int])(q,shift))) else () fi )(translate_by@(Param,[int])(q,shift)) od  else () fi ;(Q,type))(null_module@ParamPol(P))
+translate_by: ((Param,string),[int]->Param,string): ((p,type),shift): translate_to@((Param,string),ratvec)((p,type),+@(ratvec,ratvec)(infinitesimal_character@Param(dominant@Param(p)),Rv[I]:shift))
+translate_debug: bool: false
+translate_to_is_nonzero: ((Param,string),ratvec->bool): ((p,type),target):  if translate_to_is_zero@((Param,string),ratvec)((p,type),target) then false else true fi 
+translate_to_is_zero: ((Param,string),ratvec->bool): ((p,type),target): ((p,gamma): ((rv):  if  if is_integer@ratvec(-@(ratvec,ratvec)(gamma,target)) then false else true fi  then error@string("cannot project to this infinitesimal character") elif  if is_dominant@(RootDatum,ratvec)(root_datum@InnerClass(IcRf:real_form@Param(p)),target) then false else true fi  then error@string("cannnot translate to non-dominant parameter") elif irreducible_is_zero@Param(translate_to@(Param,ratvec)(p,target)) then voided:rv:=true else () fi ;rv)(false))(dominant@Param(p),infinitesimal_character@Param(p))
+translate_to: (ParamPol,ratvec->ParamPol): (P,target): ((Q): voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_to@(Param,ratvec)(q,target))) od ;Q)(null_module@ParamPol(P))
+translate_to: ((ParamPol,string),ratvec->ParamPol,string): ((P,type),target): ((Q):  if =@(string,string)(type,std) then voided: for (w,q) in %@ParamPol(P) do voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_to@(Param,ratvec)(q,target))) od  elif =@(string,string)(type,irr) then voided: for (w,q) in %@ParamPol(P) do ((qtarget):  if irreducible_is_nonzero@Param(qtarget) then voided:Q:=+@(ParamPol,(Split,Param))(Q,(w,translate_to@(Param,ratvec)(q,target))) else () fi )(translate_to@(Param,ratvec)(q,target)) od  else () fi ;(Q,type))(null_module@ParamPol(P))
+translate_to: (Param,ratvec->Param): (p,target): ((shift):  if  if is_integer@ratvec(shift) then false else true fi  then error@string("translation is not integral") else normparam@(KGBElt,ratvec,ratvec)(x@Param(p),+@(ratvec,ratvec)(lambda@Param(p),shift),+@(ratvec,ratvec)(nu@Param(p),shift)) fi )(-@(ratvec,ratvec)(target,infinitesimal_character@Param(p)))
+translate_to: ((Param,string),ratvec->Param,string): ((p,type),target): ((p,gamma): ((rv):  if is_less_singular@(RootDatum,ratvec,ratvec)(root_datum@Param(p),gamma,target) then error@string("cannot translate modules to less singularinfinitesimal character, except by using phi function") elif  if is_integer@ratvec(-@(ratvec,ratvec)(gamma,target)) then false else true fi  then error@string("difference of infinitesimal characters is not integral") elif  if is_dominant@(RootDatum,ratvec)(root_datum@Param(p),target) then false else true fi  then error@string("target infinitesimal character is not dominant") elif =@(string,string)(type,std) then voided:rv:=(translate_to@(Param,ratvec)(p,target),type) elif =@(string,string)(type,irr) then  if irreducible_is_zero@Param(translate_to@(Param,ratvec)(p,target)) then error@string("irreducible translates to 0") else voided:rv:=(translate_to@(Param,ratvec)(p,target),type) fi  else () fi ;rv)(p,type))(dominant@Param(p),infinitesimal_character@Param(p))
+trivial_block: (RealForm->[Param]): (G): get_block@Param(trivial@RealForm(G))
+trivial: (RealForm->Param): (G): finite_dimensional@(RealForm,vec)(G,null@int(rank@RealForm(G)))
+triv: Param: final parameter (x=10,lambda=[2,1]/1,nu=[2,1]/1)
+twisted_involution: (RootDatum,mat->InnerClass,vec): {twisted_involution@(RootDatum,mat)}
+twist: (KGBElt->KGBElt): {twist@KGBElt}
+type_B_roots: (int->[vec]): (n):  for i: n from 0 do  if <@(int,int)(i,-@(int,int)(n,1)) then V[I]: for j: n from 0 do  if =@(int,int)(j,i) then 1 elif =@(int,int)(j,+@(int,int)(i,1)) then -@int(1) else 0 fi  od  else V[I]: for j: n from 0 do  if <@(int,int)(j,-@(int,int)(n,1)) then 0 else 1 fi  od  fi  od 
+type_C_roots: (int->[vec]): (n):  for i: n from 0 do  if <@(int,int)(i,-@(int,int)(n,1)) then V[I]: for j: n from 0 do  if =@(int,int)(j,i) then 1 elif =@(int,int)(j,+@(int,int)(i,1)) then -@int(1) else 0 fi  od  else V[I]: for j: n from 0 do  if <@(int,int)(j,-@(int,int)(n,1)) then 0 else 2 fi  od  fi  od 
+type_D_roots: (int->[vec]): (n):  if <@(int,int)(n,2) then [] else  for i: n from 0 do  if <@(int,int)(i,-@(int,int)(n,1)) then V[I]: for j: n from 0 do  if =@(int,int)(j,i) then 1 elif =@(int,int)(j,+@(int,int)(i,1)) then -@int(1) else 0 fi  od  else V[I]: for j: n from 0 do  if <@(int,int)(j,-@(int,int)(n,2)) then 0 else 1 fi  od  fi  od  fi 
+U: (int,int->RealForm): (p,q): real_form@(InnerClass,int)(inner_class@(RootDatum,string)(GL@int(+@(int,int)(p,q)), if >@(int,int)(+@(int,int)(p,q),1) then "cc" else "c" fi ),min@(int,int)(p,q))
+virtual: (Param->ParamPol): (p): +@(ParamPol,Param)(null_module@RealForm(real_form@Param(p)),p)
+virtual: (Param,string->ParamPol,string): (p,type):  if  if =@(string,string)(type,irr) then true else =@(string,string)(type,std) fi  then (virtual@Param(p),type) else error@string("incorrect type") fi 
+weak_lower: (Param->Param): (p): (((x,lambda,nu),rp): ((lim): param@(KGBElt,vec,ratvec)(x,lambda, if =@(int,int)(lim,0) then null_wt@int(#@ratvec(nu)) else *@(rat,ratvec)(rp[-@(int,int)(lim,1)],nu) fi ))(#(rp)))(%@Param(p),reducibility_points@Param(p))
+weak_snf: (mat->mat,mat,mat): (M): ((v,S,T): ((D): ((): (S,D,T))(voided: for i: #@vec(v) from 0 do voided:D[(i,i)]:=v[i] od ))(null@(int,int)(n_rows@mat(S),n_columns@mat(T))))(diagonalize@mat(M))
+w_long: (RealForm->[int]): (G): w_long@RootDatum(root_datum@InnerClass(IcRf:G))
+w_long: (RootDatum->[int]): (rd): ((,w): w)(make_dominant@(RootDatum,[rat])(rd,[Q]Qv:-@ratvec(rho@RootDatum(rd))))
+w_matrix: (RealForm,[int]->mat): (G,w): w_matrix@(RootDatum,[int])(root_datum@InnerClass(IcRf:G),w)
+w_matrix: (RootDatum,[int]->mat): (rd,w): ((rv): voided: for j in reverse@vec(V[I]:w) do voided:rv:=*@(mat,mat)(rv,simple_reflection@(RootDatum,int)(rd,j)) od ;rv)(id_mat@int(rank@RootDatum(rd)))
+W_orbit_extra: (RealForm,[int],[int]->[[int]],[[int]]): (G,S,v): W_orbit_extra@(RootDatum,[int],[int])(root_datum@InnerClass(IcRf:G),S,v)
+W_orbit_extra: (RootDatum,[int],[int]->[[int]],[[int]]): (rd,S,v): ((Wreps,orbit,todo): voided: while >@(int,int)(#(todo),0) do voided:(((w,a):  for i in S do ((b): ((inlist,loc):  if  if inlist then false else true fi  then voided:(Wreps:=insert_at@([[int]],[int],int)(Wreps,#(i,w),loc),orbit:=insert_at@([[int]],[int],int)(orbit,b,loc),todo:=#(todo,(#(i,w),b))) else () fi )(in_list_reverse@([[int]],[int])(orbit,b)))([I]V:*@(mat,vec)(simple_reflection@(RootDatum,int)(rd,i),V[I]:a)) od )(todo[0]),todo:= for i: -@(int,int)(#(todo),1) from 1 do todo[i] od ) od ;(Wreps,orbit))([[]],[v],[([],v)])
+W_orbit_extra: (RootDatum,[int]->[[int]],[[int]]): (rd,v): W_orbit_extra@(RootDatum,[int],[int])(rd, for i: rank@RootDatum(rd) from 0 do i od ,v)
+W_orbit: (RealForm,[int]->[[int]]): (G,v): W_orbit@(RootDatum,[int])(root_datum@InnerClass(IcRf:G),v)
+W_orbit: (RealForm,[int],[int]->[[int]]): (G,S,v): W_orbit@(RootDatum,[int],[int])(root_datum@InnerClass(IcRf:G),S,v)
+W_orbit: (RootDatum,[int],[int]->[[int]]): (rd,S,v): ((W_elements,vectors): vectors)(W_orbit_extra@(RootDatum,[int],[int])(rd,S,v))
+W_orbit: (RootDatum,[int]->[[int]]): (rd,v): W_orbit@(RootDatum,[int],[int])(rd, for i: rank@RootDatum(rd) from 0 do i od ,v)
+W_orbit_W_elements: (RealForm,[int]->[[int]]): (G,v): W_orbit_W_elements@(RootDatum,[int])(root_datum@InnerClass(IcRf:G),v)
+W_orbit_W_elements: (RealForm,[int],[int]->[[int]]): (G,S,v): W_orbit_W_elements@(RootDatum,[int],[int])(root_datum@InnerClass(IcRf:G),S,v)
+W_orbit_W_elements: (RootDatum,[int],[int]->[[int]]): (rd,S,v): ((W_elements,vectors): W_elements)(W_orbit_extra@(RootDatum,[int],[int])(rd,S,v))
+W_orbit_W_elements: (RootDatum,[int]->[[int]]): (rd,v): ((W_elements,vectors): W_elements)(W_orbit_extra@(RootDatum,[int],[int])(rd, for i: rank@RootDatum(rd) from 0 do i od ,v))
+x: [KGBElt]: [KGB element #0,KGB element #1,KGB element #2,KGB element #3,KGB element #4,KGB element #5,KGB element #6,KGB element #7,KGB element #8,KGB element #9,KGB element #10]
+x: (Param->KGBElt): (p): ((x,,): x)(%@Param(p))
+Z_inverse: (mat->mat): (M): Z_invert@mat(M)
+Z_invert: (mat->mat): (M): ((rv,d):  if =@(int,int)(d,1) then rv elif =@(int,int)(d,-@int(1)) then -@mat(rv) else error@string("Matrix does not have determinant 1") fi )(invert@mat(M))
