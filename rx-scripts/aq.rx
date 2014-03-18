@@ -1,0 +1,76 @@
+{lowest K-types of A_q(lambda) modules
+ mainly for testing of LKT algorithm}
+
+<LKT
+
+{u(p): positive roots not in L_tau(p)}
+set u(Param p)=[vec]:
+let G=real_form(p) in
+{the theta-stable Levi is given by tau(p)} 
+let L=levi(root_datum(p),tau(p)) in
+{lambda defines L_tau}
+let lambda=rho(G)-rho(L) in
+let rv=[] in for alpha@i in positive_roots(G) do if lambda*positive_coroots(G)[i]>0 then rv#:=alpha fi od;rv
+
+{2*rho(u\cap P)=sum of imaginary noncompact roots, plus 1/2 sum of complex roots 
+(each complex root alpha contributes X_alpha+X_(theta(alpha)) to u\cap P)
+}
+set tworho_u_n(Param p,KGBElt x_K)=ratvec:
+let rv=ratvec:null(rank(real_form(p))) in 
+for alpha in u(p) do 
+ if is_imaginary(alpha,x_K) and  not is_compact(alpha,x_K) then rv+:=alpha 
+ elif is_complex(alpha,x_K) then rv+:=alpha/2 fi od;rv
+
+{Only use canonical x_K coming from p}
+set tworho_u_n(Param p)=ratvec:tworho_u_n(p,canonical_x_K(p))
+
+{at infinitesimal character rho, the LKT is 2*rho(u\cap P)}
+set aq_LKT_raw(Param p)=(KGBElt,ratvec):let x_K=canonical_x_K(p) in (x_K,tworho_u_n(p,x_K))
+
+set aq_LKT_raw(Param p, KGBElt x_K)=(KGBElt,ratvec):
+let (x,lambda)=aq_LKT_raw(p) in let (,mu)=move_highest_weight(x,x_K,lambda) in (x_K,mu)
+
+set aq_LKT(Param p, KGBElt x_K)=Param:
+let (,mu)=aq_LKT_raw(p,x_K) in finite_dimensional(K_0(x_K),project_K(real_form(p),mu))
+
+set aq_LKT(Param p)=Param:aq_LKT(p,canonical_x_K(p))
+
+set aq_LKT_highest_weight(Param p,KGBElt x_K)=vec:let pi=aq_LKT(p,x_K) in highest_weight(pi)
+set aq_LKT_dimension(Param p,KGBElt x_K)=int:let pi=aq_LKT(p,x_K) in dimension(pi)
+
+set aq_LKT_highest_weight(Param p)=vec:let pi=aq_LKT(p) in highest_weight(pi)
+set aq_LKT_dimension(Param p)=int:let pi=aq_LKT(p) in dimension(pi)
+
+set test_aq(RealForm G, KGBElt x)=void:
+if not is_equal_rank(G)  then error("test_aq only defined in equal rank case, use test_aq_list") else
+let ()=prints("Computing LKT of A_q(lambda) modules two ways") in
+let ()=prints("For all representations in trivial block of ", G) in
+let ()=prints("K=", K_0(x)) in
+let ()=prints("rho_K=", rho(K_0(x))) in
+let B=trivial_block(G) in 
+for p@i in B do 
+ if is_unitary(p) then
+  let hw=aq_LKT_highest_weight(p,x) in
+  let LKT=LKT_highest_weights(p,x)[0] in 
+   prints("parameter: ",i, "  LKT=", LKT, ", A_q-LKT=", hw, ", ", hw=LKT) fi od fi
+set test_aq(RealForm G)=void:test_aq(G,KGB(G,0))
+
+{for unequal rank case, can't use is_unitary to pick out A_q(lambda) modules
+do this by hand: run print_blocku(G,dual_quasisplit_form(G)) and 
+make list of type [int] of the parameters
+probably need to modify the numbers since those produced by 
+print_block_u and trivial_block(G) don't match up}
+set test_aq_list([int] v, KGBElt x)=void:
+let G=real_form(x) in
+let ()=prints("Computing LKT of A_q(lambda) modules two ways") in
+let ()=prints("For all representations in trivial block of ", G) in
+let ()=prints("Unequal rank: testing parameters ", v) in
+let ()=prints("K=", K_0(x)) in
+let ()=prints("rho_K=", rho(K_0(x))) in
+let B=trivial_block(G) in 
+for i:#v do
+  let p=B[v[i]] in
+  let hw=aq_LKT_highest_weight(p,x) in
+  let LKT=LKT_highest_weights(p,x)[0] in 
+   prints("parameter: ",v[i], "  LKT=", LKT, ", A_q-LKT=", hw, ", ", hw=LKT)  od 
+

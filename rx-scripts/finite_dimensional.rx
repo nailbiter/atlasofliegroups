@@ -1,0 +1,51 @@
+{some special operations defined only for complex groups}
+
+set is_finite_dimensional(Param p)=bool:
+if not semisimple_rank(integrality_datum(p))=semisimple_rank(real_form(p)) then false
+elif not  #tau(p)=semisimple_rank(real_form(p))  then false else true fi
+
+set complex_LKT(Param p)=
+let mu=involution(x(p))*lambda(p)+lambda(p) in 
+let (rv,)=make_dominant(real_form(p),mu) in
+ratvectovec(for i:rank(real_form(p))\2 do rv[i] od)
+
+{dimension of finite dimensional with given highest weight}
+set dimension(RootDatum rd, [int] lambda_in)=
+let lambda=
+ if is_dominant(rd,lambda_in) then lambda_in else
+ let (lambda_dominant,)=make_dominant(rd,lambda_in) in 
+ prints("Warning: changed ", lambda_in, ", to ", lambda_dominant, " to make it dominant");lambda_dominant fi  in
+let rho=rho(rd) in 
+let dim=rat:1 in 
+for a in positive_coroots(rd) do 
+dim*:=(lambda+rho)*a/(rho*a) od;rattoint(dim)
+
+set dimension(RealForm G, [int] lambda)=int:dimension(root_datum(G),lambda) 
+
+set highest_weight(Param p)=vec:
+if not is_finite_dimensional(p) then error("representation is not finite dimensional") 
+else ratvectovec(infinitesimal_character(p) - rho(real_form(p))) fi
+
+set dimension(Param p)=int:
+if not is_finite_dimensional(p) then error("representation is not finite dimensional") 
+else dimension(root_datum(p),highest_weight(p)) fi
+
+set fundamental_weight_coordinates(Param p)=
+if not is_finite_dimensional(p) then error("representation is not finite dimensional")  
+else for a in simple_coroots(real_form(p)) do a*highest_weight(p) od fi
+
+{set dimension_complex_Ktype(RealForm G,[int] lambda)=weyl_dimension_formula(K_0(G),lambda)}
+
+set testcomplex(RealForm G)=void:
+let t=trivial(G) in 
+let b=get_block(t) in 
+let P=c_form_irreducible(t) in 
+let rhocheck=for i:rank(G)\2 do rhocheck(G)[i] od  in 
+let Q=%P in 
+let (,last)=Q[#Q-1] in 
+let shift=complex_LKT(last) in 
+let ()=prints("rhocheck= ", rhocheck, "shift:", shift) in 
+let ()=for (w,p) in Q do prints(complex_LKT(p), ", ", shift-complex_LKT(p), ", ", prettyPrint(w), ", ", ((shift-complex_LKT(p))*rhocheck)) od in
+let ()=prints("") in
+for i:#b downto 0 do let p=b[i] in  prints(complex_LKT(p), ", ", length(p), ", ", p, ", ",  twist(x(p))=x(p)) od
+

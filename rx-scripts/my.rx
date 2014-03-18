@@ -30,6 +30,7 @@ to prevent loading of a file comment it out like this: {<coherent}}
 <unitary
 <nilpotent
 <LKT
+<aq
 {here are some examples of things you might define, currently commented out}
 {
 set G=Sp(4,R)

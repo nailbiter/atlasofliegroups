@@ -1,0 +1,96 @@
+set M_LKT(Param p)=ratvec:
+let lambda=involution(x(p))*(infinitesimal_character(p)-nu(p)) in 
+let theta=distinguished_involution(real_form(p)) in 
+let N=id_mat(n_columns(theta))-theta in 
+let (,rv)=projection(N,lambda+rho_i(x(p))-2*rho_c(x(p))) in rv
+
+{need to specify an x_K on the fundamental Cartan to specify K}
+set LKT_final(Param p, KGBElt x_K)=
+if not torus_factor(x(p)) = null(rank(real_form(p))) 
+then prints("The torus factor of ", x(p), " is not 0:", torus_factor(x(p)));null(0) else
+if not is_final(p) then error("The parameter is not final") else
+let (G,H)=(real_form(p), Cartan_class(x(p))) in 
+let L=L(G,x(p)) in 
+{let ()=prints("L:", L) in }
+let lambda=infinitesimal_character(p)-nu(p)  {=(1+\theta)\lambda/2} in
+{let ()=prints("lambda =", lambda) in }
+let lambda=involution(x(p))*lambda in 
+{let ()=prints("x*lambda =", lambda) in }
+let theta=distinguished_involution(real_form(p)) in 
+let N=id_mat(n_columns(theta))-theta in 
+{let ()=prints("N: ", N) in }
+let (,restrict_rho_G)=projection(N,rho(G)) in 
+{let ()=prints("res:", restrict_rho_G) in }
+let shift_G=ratvec:restrict_rho_G-(2*rho_K(G,x_K)) in 
+{let theta=involution(x(p)) in 
+let N=id_mat(n_columns(theta))-theta in }
+{let ()=prints("N: ", N) in }
+let (,restrict_rho_L)=projection(N,rho(L)) in 
+{let ()=prints("rho_L:", restrict_rho_L) in }
+let shift_L=ratvec:restrict_rho_L-2*rho_K(L) in 
+{let ()=prints("M:", M_LKT(p), ", ", shift_G, ", ", shift_L) in }
+{let mu=(M_LKT(p)+shift_G)-shift_L in }
+let mu=lambda+shift_G-shift_L in 
+let ()=prints("mu:", mu) in 
+{let ()=prints("lambda:", lambda) in }
+{let ()=prints("rho-2rho_K:", shift_G) in
+let ()=prints("rho_r-2rho_K_r:", shift_L) in
+let ()=prints("rho(G): ", rho(G), " rho_K(G):", rho_K(G), " shift_G:", shift_G) in 
+let ()=prints("rho(L): ", rho(L), " rho_K(L):", rho_K(L), " shift_L:", shift_L) in}
+mu fi fi
+
+set LKT(Param p, KGBElt x_K)=
+let Q=make_final(make_nu0(p)) in 
+let ()=prints("final terms:") in 
+let ()=for q in Q do prints(q) od in
+let rv=[] in 
+let ()=for q in Q do 
+prints("computing LKT of ", q, ": ");
+rv#:=LKT_final(q,x_K) od in rv
+
+{E(2rho_K(x))-2rho_{K_r}(x,y)}
+set shift(KGBElt x, KGBElt y)=    
+let roots=positive_roots(real_form(x)) in 
+let rv=[null(rank(real_form(x)))] in
+let ()=for alpha in roots do 
+ if is_compact(alpha,x) and not is_real(alpha,y) then rv#:=alpha fi od in  (rv,sum(rv))
+
+{projection of shift on complement of M}
+set shift2(KGBElt x, KGBElt y)=
+let (rv,shift)=shift(x,y) in 
+(shift-involution(y)*shift)/2
+
+set test2(KGBElt x,KGBElt y)=
+let v=shift2(x,y) in 
+{let ()=prints("shift2:", v) in }
+for alpha@i in positive_roots(real_form(x)) do 
+{let ()=prints("testing: ", alpha) in }
+if is_compact(alpha,x) and is_real(alpha,y) then prints("alpha:", alpha, "alphacheck: ", positive_coroots(real_form(x))[i], ",                  ", v*positive_coroots(real_form(x))[i]) fi od
+
+set fundamental_fiber(RealForm G)=[int]:
+let rv=[] in
+let theta=involution(KGB(G,0)) in
+let done=false in
+let i=0 in
+while not done do if involution(KGB(G,i))=theta then rv#:=i;i:=i+1 else done:=true fi od;rv
+
+set no_Cplus_roots(KGBElt x)=bool:
+let rv=true in 
+for type in status_codes(x) do 
+if type="C+" then rv:=false fi od;rv
+
+set map_into_fundamental_fiber(KGBElt x)=int:
+if not no_Cplus_roots(x) then prints("Only defined if no C+ roots");-1 else
+let G=real_form(x) in
+let F=fundamental_fiber(G) in 
+let t=torus_factor(x) in 
+let rv=-1 in
+for j in F do if t=torus_factor(KGB(G,j)) then rv:=j fi od;rv fi
+
+
+
+set G=Sp(4,R)
+set b=get_block(trivial(G))
+set t=trivial(G)
+
+
