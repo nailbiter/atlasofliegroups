@@ -25,3 +25,25 @@ set spherical_principal_series (RealForm G, ratvec nu)= Param:
 { returns [Param] list of parameters in block of trivial }
 set trivial_block(RealForm G) = [Param]: get_block(trivial(G))
 
+set principal_series_by_tau(RealForm G,[int] tau_invariant)=Param:
+if not is_split(G) then error("Group must be split") 
+elif not is_simply_connected(G) then error("Group must be simply connected") else
+let lambda=ratvec:null(rank(G)) in 
+let ()=for i in tau_invariant do lambda+:=fundamental_weight(G,i) od in
+param(KGB(G,KGB_size(G)-1),ratvectovec(rho(G)+lambda),rho(G)) fi
+
+set principal_series_by_tau_complement(RealForm G,[int] tau_invariant)=Param:
+if not is_split(G) then error("Group must be split") 
+elif not is_simply_connected(G) then error("Group must be simply connected") else
+let lambda=ratvec:null(rank(G)) in 
+let ()=for i in tau_invariant do lambda+:=fundamental_weight(G,i) od in
+param(KGB(G,KGB_size(G)-1),ratvectovec(lambda),rho(G)) fi
+
+
+
+
+set all_principal_series(RealForm G)=[Param]:
+if not is_split(G) then error("Group must be split") 
+elif not is_simply_connected(G) then error("Group must be simply connected") else
+let rv=[] in 
+for tau in generate_all_subsets(for i:ss_rank(G) do i od) do rv#:=principal_series_by_tau(G,tau) od;rv fi

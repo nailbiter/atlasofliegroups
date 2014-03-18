@@ -1,0 +1,659 @@
+Examples of lowest K-types
+
+This is 'realex', version 0.81 (compiled on Feb 17 2014 at 07:59:03).
+It is the programmable interpreter interface to the library (version 0.6) of
+the Atlas of Lie Groups and Representations program. http://www.liegroups.org/
+expr> <my
+...
+Completely read file 'my.rx'.
+expr> set G=Sp(4,R)
+Identifier G: RealForm
+expr> set x_K=KGB(G,2)
+Identifier x_K: KGBElt
+expr> set K=K_0(x_K)
+Identifier K: RealForm
+expr> K
+Value: compact connected real group with Lie algebra 'su(2).u(1)'
+expr> rho(K)
+Value: [  1, -1 ]/2
+expr> set B=trivial_block (G)
+Identifier B (overriding previous): [Param]
+expr> for p in B do prints(p, ", ", LKT_highest_weights (p,x_K), LKT_dimensions(p,x_K));
+final parameter (x=0,lambda=[2,1]/1,nu=[0,0]/1), [[  3, -1 ]] dim=[5]
+final parameter (x=1,lambda=[2,1]/1,nu=[0,0]/1), [[  1, -3 ]] dim=[5]
+final parameter (x=2,lambda=[2,1]/1,nu=[0,0]/1), [[ 3, 3 ]] dim=[1]
+final parameter (x=3,lambda=[2,1]/1,nu=[0,0]/1), [[ -3, -3 ]] dim=[1]
+final parameter (x=5,lambda=[2,1]/1,nu=[0,1]/1), [[ 3, 1 ]] dim=[3]
+final parameter (x=6,lambda=[2,1]/1,nu=[0,1]/1), [[ -1, -3 ]] dim=[3]
+final parameter (x=4,lambda=[2,1]/1,nu=[1,-1]/2), [[  2, -2 ]] dim=[5]
+final parameter (x=7,lambda=[2,1]/1,nu=[2,0]/1), [[ 2, 0 ],[ 2, 2 ]] dim=[3,1]
+final parameter (x=8,lambda=[2,1]/1,nu=[2,0]/1), [[  0, -2 ],[ -2, -2 ]] dim=[3,1]
+final parameter (x=9,lambda=[2,1]/1,nu=[3,3]/2), [[  1, -1 ]] dim=[3]
+final parameter (x=10,lambda=[2,1]/1,nu=[2,1]/1), [[ 0, 0 ]] dim=[1]
+final parameter (x=10,lambda=[3,2]/1,nu=[2,1]/1), [[ 1, 1 ],[ -1, -1 ]] dim=[1,1]
+
+{--------example illustrating role played by different versions of K--------}
+
+expr> set p=B[0]  {large discrete series}
+Identifier p: Param
+expr> set mu_p=LKT(p)[0]
+Identifier mu_p: Param
+expr> mu_p
+Value: final parameter (x=0,lambda=[7,3]/2,nu=[0,0]/1)
+expr> highest_weight (mu_p)
+Value: [ 3, 1 ]   {not the same as before}
+expr> dimension (mu_p)
+Value: 5
+expr> rho(K_0(x(p)))
+Value: [ 1, 1 ]/2   {because it is for a different version of K, i.e. K_{x=0}}
+expr>move_highest_weight (x(p),x_K,[3,1])  {use this to move all K-types to fixed K}
+Value: (KGB element #2,[  3, -1 ]/1)       {this is the familiar LKT of large DS}
+expr> set q=B[1]  {other large DS}
+Identifier q: Param
+expr> set mu_q=LKT(q)[0]
+Identifier mu_q: Param
+expr> mu_q
+Value: final parameter (x=0,lambda=[7,3]/2,nu=[0,0]/1)  {looks identical to previous, but is for K_{x=1}
+expr> move_highest_weight (x(q),x_K,[3,1])
+Value: (KGB element #2,[  1, -3 ]/1)
+
+{--------LKT of all principal series of split groups--------}
+
+expr> testps(G,x_K)
+Minimal K-types of all principal series of
+connected split real group with Lie algebra 'sp(4,R)'
+K=compact connected real group with Lie algebra 'su(2).u(1)'
+rho_K=[  1, -1 ]/2
+lambda=[ 2, 2 ]/1  tau=[]  LKT: [[ 1, 0 ],[  0, -1 ]],	dims:[2,2]
+lambda=[ 3, 1 ]/1  tau=[1]  LKT: [[ 1, 0 ],[  0, -1 ]],  dims:[2,2]
+lambda=[ 3, 2 ]/1  tau=[0]  LKT: [[ 1, 1 ],[ -1, -1 ]],  dims:[1,1]
+lambda=[ 2, 1 ]/1  tau=[0,1]  LKT: [[ 0, 0 ]],	dims:[1]
+
+expr> all_LKT_ps (G,x_K)
+all LKT of principal series for
+connected split real group with Lie algebra 'sp(4,R)'
+K=compact connected real group with Lie algebra 'su(2).u(1)'
+rho_K=[  1, -1 ]/2
+K-type : [ 1, 0 ]  dimension=2
+K-type : [  0, -1 ]  dimension=2
+K-type : [ 1, 1 ]  dimension=1
+K-type : [ -1, -1 ]  dimension=1
+K-type : [ 0, 0 ]  dimension=1
+expr>
+expr> testps(Sp(6,R))
+Minimal K-types of all principal series of
+connected split real group with Lie algebra 'sp(6,R)'
+K=compact connected real group with Lie algebra 'su(3).u(1)'
+rho_K=[ 1, 1, 0 ]/1
+lambda=[ 4, 2, 2 ]/1  tau=[]  LKT: [[ 1, 0, 1 ],[  0,  1, -1 ]],  dims:[3,3]
+lambda=[ 3, 3, 1 ]/1  tau=[2]  LKT: [[ 1, 0, 0 ],[ 0, 1, 0 ]],	dims:[3,3]
+lambda=[ 3, 3, 2 ]/1  tau=[1]  LKT: [[ 1, 0, 1 ],[  0,	1, -1 ]],  dims:[3,3]
+lambda=[ 4, 2, 1 ]/1  tau=[1,2]  LKT: [[ 1, 0, 0 ],[ 0, 1, 0 ]],  dims:[3,3]
+lambda=[ 3, 2, 2 ]/1  tau=[0]  LKT: [[ 1, 0, 0 ],[ 0, 1, 0 ]],	dims:[3,3]
+lambda=[ 4, 3, 1 ]/1  tau=[0,2]  LKT: [[ 1, 0, 1 ],[  0,  1, -1 ]],  dims:[3,3]
+lambda=[ 4, 3, 2 ]/1  tau=[0,1]  LKT: [[  1, -1,  1 ],[ -1,  1, -1 ]],	dims:[1,1]
+lambda=[ 3, 2, 1 ]/1  tau=[0,1,2]  LKT: [[ 0, 0, 0 ]],	dims:[1]
+
+{--------all distinct K-types arising as LKT of principal series of split group--------}
+G is simply connected and split
+if G is also adjoint then the numbers add up to 2^rank
+otherwise, with some weight factors, they add up to |Z_2|2^rank, see E_7
+
+expr> all_LKT_ps K(SPKp(6,R))
+
+all LKT of principal series for
+connected split real group with Lie algebra 'sp(6,R)'
+K=compact connected real group with Lie algebra 'su(3).u(1)'
+rho_K=[ 1, 1, 0 ]/1
+K-type : [ 1, 0, 1 ]  dimension=3
+K-type : [  0,	1, -1 ]  dimension=3
+K-type : [ 1, 0, 0 ]  dimension=3
+K-type : [ 0, 1, 0 ]  dimension=3
+K-type : [  1, -1,  1 ]  dimension=1
+K-type : [ -1,	1, -1 ]  dimension=1
+K-type : [ 0, 0, 0 ]  dimension=1
+
+expr> set types=[B4,C4,D4,G2,F4,E6,E7,E8]
+Identifier types: [string]
+expr> for type in types do all_LKT_ps (split_form (type)) od;
+
+all LKT of principal series for
+connected split real group with Lie algebra 'so(5,4)'
+K=compact connected real group with Lie algebra 'so(5).su(2).su(2)'
+rho_K=[ 1, 1, 1, 0 ]/2
+K-type : [ 0, 0, 0, 1 ]  dimension=8
+K-type : [  0,	0,  1, -1 ]  dimension=8
+K-type : [ -1,	1, -1,	2 ]  dimension=3
+K-type : [ -1,	1,  1, -2 ]  dimension=3
+K-type : [ -1,	1,  0,	0 ]  dimension=4
+K-type : [ 0, 0, 0, 0 ]  dimension=1
+
+all LKT of principal series for
+connected split real group with Lie algebra 'sp(8,R)'
+K=compact connected real group with Lie algebra 'su(4).u(1)'
+rho_K=[ 0, 2, 0, 1 ]/2
+K-type : [  1, -1,  1,	0 ]  dimension=6
+K-type : [ -1,	1, -1,	1 ]  dimension=6
+K-type : [  1, -1,  2, -1 ]  dimension=4
+K-type : [ -1,	2, -2,	1 ]  dimension=4
+K-type : [ 1, 0, 0, 0 ]  dimension=4
+K-type : [ -1,	1,  0,	0 ]  dimension=4
+K-type : [  2, -2,  2, -1 ]  dimension=1
+K-type : [ -2,	2, -2,	1 ]  dimension=1
+K-type : [ 0, 0, 0, 0 ]  dimension=1
+
+all LKT of principal series for
+connected split real group with Lie algebra 'so(4,4)'
+K=compact connected real group with Lie algebra 'su(2).su(2).su(2).su(2)'
+rho_K=[ 0, 1, 0, 0 ]/1
+K-type : [  1, -1,  1,	1 ]  dimension=3
+K-type : [ -1,	1, -1,	1 ]  dimension=3
+K-type : [ -1,	1,  1, -1 ]  dimension=3
+K-type : [  1,	1, -1, -1 ]  dimension=3
+K-type : [ 1, 0, 0, 0 ]  dimension=4
+K-type : [ -1,	1,  0,	0 ]  dimension=4
+K-type : [ 0, 0, 1, 0 ]  dimension=4
+K-type : [  0,	1, -1,	0 ]  dimension=4
+K-type : [ 0, 0, 0, 1 ]  dimension=4
+K-type : [  0,	1,  0, -1 ]  dimension=4
+K-type : [ 0, 0, 0, 0 ]  dimension=1
+
+all LKT of principal series for
+connected split real group with Lie algebra 'g2(R)'
+K=compact connected real group with Lie algebra 'su(2).su(2)'
+rho_K=[ 1, 0 ]/1
+K-type : [ -1,	1 ]  dimension=3
+K-type : [ 0, 0 ]  dimension=1
+{note:3+1=2^2}
+
+all LKT of principal series for
+connected split real group with Lie algebra 'f4(R)'
+K=compact connected real group with Lie algebra 'sp(3).su(2)'
+rho_K=[ 1, 1, 0, 2 ]/2
+K-type : [  0,	0,  1, -1 ]  dimension=12
+K-type : [  1, -1,  2, -2 ]  dimension=3
+K-type : [ 0, 0, 0, 0 ]  dimension=1
+{note: 12+3+1=2^4}
+
+all LKT of principal series for
+connected split real group with Lie algebra 'e6(R)'
+K=compact connected real group with Lie algebra 'sp(4)'
+rho_K=[ 1, 0, 0, 1 ]/1
+K-type : [ -1,	1,  1,	0 ]  dimension=36
+K-type : [ 0, 0, 0, 1 ]  dimension=27
+K-type : [ 0, 0, 0, 0 ]  dimension=1
+{note: 36+26+1=2^6}
+
+all LKT of principal series for
+connected split real group with Lie algebra 'e7(R)'
+K=compact connected real group with Lie algebra 'su(8)'
+rho_K=[ 1, 0, 0, 1, 0, 1, 0 ]/1
+K-type : [ -1,	1,  1, -1,  1, -1,  1 ]  dimension=36
+K-type : [ -1, -1,  1,	1, -1,	1, -1 ]  dimension=36
+K-type : [ -1,	0,  1,	0,  0,	0,  0 ]  dimension=63
+K-type : [ 0, 0, 0, 0, 0, 0, 1 ]  dimension=28
+K-type : [  0,	0,  0,	0,  0,	1, -1 ]  dimension=28
+K-type : [ 0, 0, 0, 0, 0, 0, 0 ]  dimension=1
+{note: 36+36+2*63+28+28+2*1=2*2^7}
+
+all LKT of principal series for
+connected split real group with Lie algebra 'e8(R)'
+K=compact connected real group with Lie algebra 'so(16)'
+rho_K=[ 1, 0, 0, 1, 0, 1, 0, 1 ]/1
+K-type : [ -1,	1,  1, -1,  1, -1,  1, -1 ]  dimension=135
+K-type : [  0,	0,  0,	0,  0,	0,  1, -1 ]  dimension=120
+K-type : [ 0, 0, 0, 0, 0, 0, 0, 0 ]  dimension=1
+{135+120+1=120}
+
+{--------computing LKT of A_q(lambda) modules two ways--------}
+{use is_unitary to pick out A_q(lambda) modules from trivial block in equal rank case}
+
+expr> set G=Sp(4,R)
+Identifier G: RealForm
+expr> set x=KGB(G,2)
+Identifier x (overriding previous): KGBElt
+expr> test_aq(G,x)
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of connected split real group with Lie algebra 'sp(4,R)'
+K=compact connected real group with Lie algebra 'su(2).u(1)'
+rho_K=[  1, -1 ]/2
+parameter: 0  LKT=[  3, -1 ], A_q-LKT=[  3, -1 ], true
+parameter: 1  LKT=[  1, -3 ], A_q-LKT=[  1, -3 ], true
+parameter: 2  LKT=[ 3, 3 ], A_q-LKT=[ 3, 3 ], true
+parameter: 3  LKT=[ -3, -3 ], A_q-LKT=[ -3, -3 ], true
+parameter: 4  LKT=[ 3, 1 ], A_q-LKT=[ 3, 1 ], true
+parameter: 5  LKT=[ -1, -3 ], A_q-LKT=[ -1, -3 ], true
+parameter: 6  LKT=[  2, -2 ], A_q-LKT=[  2, -2 ], true
+parameter: 10  LKT=[ 0, 0 ], A_q-LKT=[ 0, 0 ], true
+expr> set G=SU(4,1)
+Identifier G (overriding previous): RealForm
+expr> test_aq(G)
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of connected real group with Lie algebra 'su(4,1)'
+K=compact connected real group with Lie algebra 'su(4).u(1)'
+rho_K=[ 6, 4, 2, 3 ]/2
+parameter: 0  LKT=[  2,  2,  2, -1 ], A_q-LKT=[  2,  2,  2, -1 ], true
+parameter: 1  LKT=[ 2, 2, 0, 1 ], A_q-LKT=[ 2, 2, 0, 1 ], true
+parameter: 2  LKT=[  0,  0,  0, -5 ], A_q-LKT=[  0,  0,  0, -5 ], true
+parameter: 3  LKT=[ 2, 0, 0, 3 ], A_q-LKT=[ 2, 0, 0, 3 ], true
+parameter: 4  LKT=[ 0, 0, 0, 5 ], A_q-LKT=[ 0, 0, 0, 5 ], true
+parameter: 5  LKT=[ 1, 0, 0, 4 ], A_q-LKT=[ 1, 0, 0, 4 ], true
+parameter: 6  LKT=[ 2, 1, 0, 2 ], A_q-LKT=[ 2, 1, 0, 2 ], true
+parameter: 7  LKT=[ 2, 2, 1, 0 ], A_q-LKT=[ 2, 2, 1, 0 ], true
+parameter: 8  LKT=[  1,  1,  1, -3 ], A_q-LKT=[  1,  1,  1, -3 ], true
+parameter: 9  LKT=[ 1, 1, 0, 3 ], A_q-LKT=[ 1, 1, 0, 3 ], true
+parameter: 10  LKT=[ 2, 1, 1, 1 ], A_q-LKT=[ 2, 1, 1, 1 ], true
+parameter: 11  LKT=[  1,  1,  0, -2 ], A_q-LKT=[  1,  1,  0, -2 ], true
+ parameter: 12  LKT=[ 1, 1, 1, 2 ], A_q-LKT=[ 1, 1, 1, 2 ], true
+parameter: 13  LKT=[  1,  0,  0, -1 ], A_q-LKT=[  1,  0,  0, -1 ], true
+parameter: 14  LKT=[ 0, 0, 0, 0 ], A_q-LKT=[ 0, 0, 0, 0 ], true
+expr>test_aq(E6_q)
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of connected quasisplit real group with Lie algebra 'e6(su(6).su(2))'
+K=compact connected real group with Lie algebra 'su(6).su(2)'
+rho_K=[ 1, 0, 0, 1, 0, 1 ]/1
+parameter: 0  LKT=[ 0, 2, 2, 0, 2, 0 ], A_q-LKT=[ 0, 2, 2, 0, 2, 0 ], true
+parameter: 1  LKT=[ -4,  2,  4,  0,  2,  0 ], A_q-LKT=[ -4,  2,  4,  0,  2,  0 ], true
+parameter: 2  LKT=[  0, -2,  2,  2,  2,  0 ], A_q-LKT=[  0, -2,  2,  2,  2,  0 ], true
+parameter: 3  LKT=[  2,  2, -2,  2,  2,  0 ], A_q-LKT=[  2,  2, -2,  2,  2,  0 ], true
+parameter: 4  LKT=[  0,  4,  4, -4,  4,  0 ], A_q-LKT=[  0,  4,  4, -4,  4,  0 ], true
+parameter: 5  LKT=[  0,  2,  2,  2, -2,  2 ], A_q-LKT=[  0,  2,  2,  2, -2,  2 ], true
+parameter: 6  LKT=[  0,  2,  2,  0,  4, -4 ], A_q-LKT=[  0,  2,  2,  0,  4, -4 ], true
+parameter: 7  LKT=[ -4, -2,  4,  2,  2,  0 ], A_q-LKT=[ -4, -2,  4,  2,  2,  0 ], true
+parameter: 8  LKT=[ -4,  4,  6, -4,  4,  0 ], A_q-LKT=[ -4,  4,  6, -4,  4,  0 ], true
+parameter: 9  LKT=[ -4,  2,  4,  2, -2,  2 ], A_q-LKT=[ -4,  2,  4,  2, -2,  2 ], true
+parameter: 10  LKT=[ -4,  2,  4,  0,  4, -4 ], A_q-LKT=[ -4,  2,  4,  0,  4, -4 ], true
+parameter: 11  LKT=[  2, -2, -2,  4,  2,  0 ], A_q-LKT=[  2, -2, -2,  4,  2,  0 ], true
+parameter: 12  LKT=[  0, -2,  2,  4, -2,  2 ], A_q-LKT=[  0, -2,  2,  4, -2,  2 ], true
+parameter: 13  LKT=[  0, -2,  2,  2,  4, -4 ], A_q-LKT=[  0, -2,  2,  2,  4, -4 ], true
+parameter: 14  LKT=[  2,  2, -2,  4, -2,  2 ], A_q-LKT=[  2,  2, -2,  4, -2,  2 ], true
+parameter: 15  LKT=[  2,  2, -2,  2,  4, -4 ], A_q-LKT=[  2,  2, -2,  2,  4, -4 ], true
+parameter: 16  LKT=[  0,  4,  4, -4,  6, -4 ], A_q-LKT=[  0,  4,  4, -4,  6, -4 ], true
+parameter: 17  LKT=[ -4, -2,  4,  4, -2,  2 ], A_q-LKT=[ -4, -2,  4,  4, -2,  2 ], true
+parameter: 18  LKT=[ -4, -2,  4,  2,  4, -4 ], A_q-LKT=[ -4, -2,  4,  2,  4, -4 ], true
+parameter: 19  LKT=[ -6,  6,  6, -6,  6,  0 ], A_q-LKT=[ -6,  6,  6, -6,  6,  0 ], true
+parameter: 20  LKT=[ -4,  4,  6, -4,  6, -4 ], A_q-LKT=[ -4,  4,  6, -4,  6, -4 ], true
+parameter: 21  LKT=[  4, -4, -4,  4,  4,  0 ], A_q-LKT=[  4, -4, -4,  4,  4,  0 ], true
+parameter: 22  LKT=[  2, -2, -2,  6, -2,  2 ], A_q-LKT=[  2, -2, -2,  6, -2,  2 ], true
+parameter: 23  LKT=[  2, -2, -2,  4,  4, -4 ], A_q-LKT=[  2, -2, -2,  4,  4, -4 ], true
+parameter: 24  LKT=[  0, -4,  4,  4, -4,  4 ], A_q-LKT=[  0, -4,  4,  4, -4,  4 ], true
+parameter: 25  LKT=[  4,  4, -4,  4, -4,  4 ], A_q-LKT=[  4,  4, -4,  4, -4,  4 ], true
+parameter: 26  LKT=[  0,  6,  6, -6,  6, -6 ], A_q-LKT=[  0,  6,  6, -6,  6, -6 ], true
+parameter: 27  LKT=[ -4, -4,  6,  4, -4,  4 ], A_q-LKT=[ -4, -4,  6,  4, -4,  4 ], true
+parameter: 28  LKT=[ -6,  6,  6, -6,  8, -4 ], A_q-LKT=[ -6,  6,  6, -6,  8, -4 ], true
+parameter: 29  LKT=[ -4,  6,  8, -6,  6, -6 ], A_q-LKT=[ -4,  6,  8, -6,  6, -6 ], true
+parameter: 30  LKT=[  4, -4, -4,  4,  6, -4 ], A_q-LKT=[  4, -4, -4,  4,  6, -4 ], true
+parameter: 31  LKT=[ -6, -6,  6,  6, -6,  6 ], A_q-LKT=[ -6, -6,  6,  6, -6,  6 ], true
+parameter: 32  LKT=[ -6,  8,  8, -8,  8, -6 ], A_q-LKT=[ -6,  8,  8, -8,  8, -6 ], true
+parameter: 33  LKT=[  6, -6, -6,  6,  6, -6 ], A_q-LKT=[  6, -6, -6,  6,  6, -6 ], true
+parameter: 34  LKT=[ -8, 10,  8, -8,  8, -8 ], A_q-LKT=[ -8, 10,  8, -8,  8, -8 ], true
+parameter: 35  LKT=[ -10,  10,	10, -10,  10, -10 ], A_q-LKT=[ -10,  10,  10, -10,  10, -10 ], true
+parameter: 36  LKT=[  0,  3,  3, -2,  3,  0 ], A_q-LKT=[  0,  3,  3, -2,  3,  0 ], true
+parameter: 37  LKT=[ -4,  3,  5, -2,  3,  0 ], A_q-LKT=[ -4,  3,  5, -2,  3,  0 ], true
+parameter: 38  LKT=[  0,  3,  3, -2,  5, -4 ], A_q-LKT=[  0,  3,  3, -2,  5, -4 ], true
+parameter: 39  LKT=[  3, -3, -3,  4,  3,  0 ], A_q-LKT=[  3, -3, -3,  4,  3,  0 ], true
+parameter: 40  LKT=[  0, -3,  3,  4, -3,  3 ], A_q-LKT=[  0, -3,  3,  4, -3,  3 ], true
+parameter: 41  LKT=[  3,  3, -3,  4, -3,  3 ], A_q-LKT=[  3,  3, -3,  4, -3,  3 ], true
+parameter: 42  LKT=[ -4,  3,  5, -2,  5, -4 ], A_q-LKT=[ -4,  3,  5, -2,  5, -4 ], true
+parameter: 43  LKT=[ -4, -3,  5,  4, -3,  3 ], A_q-LKT=[ -4, -3,  5,  4, -3,  3 ], true
+parameter: 44  LKT=[  3, -3, -3,  4,  5, -4 ], A_q-LKT=[  3, -3, -3,  4,  5, -4 ], true
+parameter: 45  LKT=[ -7,  9,  8, -8,  8, -7 ], A_q-LKT=[ -7,  9,  8, -8,  8, -7 ], true
+parameter: 46  LKT=[  0,  2,  2,  0,  3, -2 ], A_q-LKT=[  0,  2,  2,  0,  3, -2 ], true
+parameter: 47  LKT=[ -4,  2,  4,  0,  3, -2 ], A_q-LKT=[ -4,  2,  4,  0,  3, -2 ], true
+parameter: 48  LKT=[  0, -2,  2,  2,  3, -2 ], A_q-LKT=[  0, -2,  2,  2,  3, -2 ], true
+parameter: 49  LKT=[  2,  2, -2,  2,  3, -2 ], A_q-LKT=[  2,  2, -2,  2,  3, -2 ], true
+parameter: 50  LKT=[  0,  4,  4, -4,  5, -2 ], A_q-LKT=[  0,  4,  4, -4,  5, -2 ], true
+parameter: 51  LKT=[  2, -2, -2,  4,  3, -2 ], A_q-LKT=[  2, -2, -2,  4,  3, -2 ], true
+parameter: 52  LKT=[ -4, -2,  4,  2,  3, -2 ], A_q-LKT=[ -4, -2,  4,  2,  3, -2 ], true
+parameter: 53  LKT=[ -4,  4,  6, -4,  5, -2 ], A_q-LKT=[ -4,  4,  6, -4,  5, -2 ], true
+parameter: 54  LKT=[  4, -4, -4,  4,  5, -2 ], A_q-LKT=[  4, -4, -4,  4,  5, -2 ], true
+parameter: 55  LKT=[ -6,  6,  6, -6,  7, -2 ], A_q-LKT=[ -6,  6,  6, -6,  7, -2 ], true
+parameter: 56  LKT=[ -2,  2,  3,  0,  2,  0 ], A_q-LKT=[ -2,  2,  3,  0,  2,  0 ], true
+parameter: 57  LKT=[ -2, -2,  3,  2,  2,  0 ], A_q-LKT=[ -2, -2,  3,  2,  2,  0 ], true
+parameter: 58  LKT=[ -2,  2,  3,  2, -2,  2 ], A_q-LKT=[ -2,  2,  3,  2, -2,  2 ], true
+parameter: 59  LKT=[ -2,  2,  3,  0,  4, -4 ], A_q-LKT=[ -2,  2,  3,  0,  4, -4 ], true
+parameter: 60  LKT=[ -2,  4,  5, -4,  4,  0 ], A_q-LKT=[ -2,  4,  5, -4,  4,  0 ], true
+parameter: 61  LKT=[ -2, -2,  3,  4, -2,  2 ], A_q-LKT=[ -2, -2,  3,  4, -2,  2 ], true
+parameter: 62  LKT=[ -2, -2,  3,  2,  4, -4 ], A_q-LKT=[ -2, -2,  3,  2,  4, -4 ], true
+parameter: 63  LKT=[ -2,  4,  5, -4,  6, -4 ], A_q-LKT=[ -2,  4,  5, -4,  6, -4 ], true
+parameter: 64  LKT=[ -2, -4,  5,  4, -4,  4 ], A_q-LKT=[ -2, -4,  5,  4, -4,  4 ], true
+parameter: 65  LKT=[ -2,  6,  7, -6,  6, -6 ], A_q-LKT=[ -2,  6,  7, -6,  6, -6 ], true
+parameter: 66  LKT=[ 0, 2, 2, 1, 0, 1 ], A_q-LKT=[ 0, 2, 2, 1, 0, 1 ], true
+parameter: 67  LKT=[ -4,  2,  4,  1,  0,  1 ], A_q-LKT=[ -4,  2,  4,  1,  0,  1 ], true
+parameter: 68  LKT=[  0, -2,  2,  3,  0,  1 ], A_q-LKT=[  0, -2,  2,  3,  0,  1 ], true
+parameter: 69  LKT=[  2,  2, -2,  3,  0,  1 ], A_q-LKT=[  2,  2, -2,  3,  0,  1 ], true
+parameter: 70  LKT=[  0,  5,  5, -5,  6, -5 ], A_q-LKT=[  0,  5,  5, -5,  6, -5 ], true
+parameter: 71  LKT=[  2, -2, -2,  5,  0,  1 ], A_q-LKT=[  2, -2, -2,  5,  0,  1 ], true
+parameter: 72  LKT=[ -4, -2,  4,  3,  0,  1 ], A_q-LKT=[ -4, -2,  4,  3,  0,  1 ], true
+parameter: 73  LKT=[ -4,  5,  7, -5,  6, -5 ], A_q-LKT=[ -4,  5,  7, -5,  6, -5 ], true
+parameter: 74  LKT=[  5, -5, -5,  5,  6, -5 ], A_q-LKT=[  5, -5, -5,  5,  6, -5 ], true
+parameter: 75  LKT=[ -6,  7,  7, -7,  8, -5 ], A_q-LKT=[ -6,  7,  7, -7,  8, -5 ], true
+parameter: 76  LKT=[ 0, 0, 2, 1, 2, 0 ], A_q-LKT=[ 0, 0, 2, 1, 2, 0 ], true
+parameter: 77  LKT=[ -4,  0,  4,  1,  2,  0 ], A_q-LKT=[ -4,  0,  4,  1,  2,  0 ], true
+parameter: 78  LKT=[  2,  0, -2,  3,  2,  0 ], A_q-LKT=[  2,  0, -2,  3,  2,  0 ], true
+parameter: 79  LKT=[  0,  0,  2,  3, -2,  2 ], A_q-LKT=[  0,  0,  2,  3, -2,  2 ], true
+parameter: 80  LKT=[  0,  0,  2,  1,  4, -4 ], A_q-LKT=[  0,  0,  2,  1,  4, -4 ], true
+parameter: 81  LKT=[  2,  0, -2,  5, -2,  2 ], A_q-LKT=[  2,  0, -2,  5, -2,  2 ], true
+parameter: 82  LKT=[ -4,  0,  4,  3, -2,  2 ], A_q-LKT=[ -4,  0,  4,  3, -2,  2 ], true
+parameter: 83  LKT=[ -4,  0,  4,  1,  4, -4 ], A_q-LKT=[ -4,  0,  4,  1,  4, -4 ], true
+parameter: 84  LKT=[  2,  0, -2,  3,  4, -4 ], A_q-LKT=[  2,  0, -2,  3,  4, -4 ], true
+parameter: 85  LKT=[ -9, 10,  9, -9,  9, -9 ], A_q-LKT=[ -9, 10,  9, -9,  9, -9 ], true
+parameter: 86  LKT=[ 1, 2, 0, 1, 2, 0 ], A_q-LKT=[ 1, 2, 0, 1, 2, 0 ], true
+parameter: 87  LKT=[  1, -2,  0,  3,  2,  0 ], A_q-LKT=[  1, -2,  0,  3,  2,  0 ], true
+parameter: 88  LKT=[  1,  2,  0,  3, -2,  2 ], A_q-LKT=[  1,  2,  0,  3, -2,  2 ], true
+parameter: 89  LKT=[  1,  2,  0,  1,  4, -4 ], A_q-LKT=[  1,  2,  0,  1,  4, -4 ], true
+parameter: 90  LKT=[ -5,  5,  6, -5,  5,  0 ], A_q-LKT=[ -5,  5,  6, -5,  5,  0 ], true
+parameter: 91  LKT=[  1, -2,  0,  5, -2,  2 ], A_q-LKT=[  1, -2,  0,  5, -2,  2 ], true
+parameter: 92  LKT=[  1, -2,  0,  3,  4, -4 ], A_q-LKT=[  1, -2,  0,  3,  4, -4 ], true
+parameter: 93  LKT=[ -5,  5,  6, -5,  7, -4 ], A_q-LKT=[ -5,  5,  6, -5,  7, -4 ], true
+parameter: 94  LKT=[ -5, -5,  6,  5, -5,  5 ], A_q-LKT=[ -5, -5,  6,  5, -5,  5 ], true
+parameter: 95  LKT=[ -5,  7,  8, -7,  7, -6 ], A_q-LKT=[ -5,  7,  8, -7,  7, -6 ], true
+parameter: 96  LKT=[  0,  3,  3, -1,  1,  1 ], A_q-LKT=[  0,  3,  3, -1,  1,  1 ], true
+parameter: 97  LKT=[ -4,  3,  5, -1,  1,  1 ], A_q-LKT=[ -4,  3,  5, -1,  1,  1 ], true
+parameter: 98  LKT=[  0, -3,  3,  3, -1,  2 ], A_q-LKT=[  0, -3,  3,  3, -1,  2 ], true
+parameter: 99  LKT=[  3,  3, -3,  3, -1,  2 ], A_q-LKT=[  3,  3, -3,  3, -1,  2 ], true
+parameter: 100	LKT=[  0,  4,  4, -3,  5, -5 ], A_q-LKT=[  0,  4,  4, -3,  5, -5 ], true
+parameter: 101	LKT=[  3, -3, -3,  5,  1,  1 ], A_q-LKT=[  3, -3, -3,  5,  1,  1 ], true
+parameter: 102	LKT=[ -4, -3,  5,  3, -1,  2 ], A_q-LKT=[ -4, -3,  5,  3, -1,  2 ], true
+parameter: 103	LKT=[ -4,  4,  6, -3,  5, -5 ], A_q-LKT=[ -4,  4,  6, -3,  5, -5 ], true
+parameter: 104	LKT=[  4, -4, -4,  5,  5, -5 ], A_q-LKT=[  4, -4, -4,  5,  5, -5 ], true
+parameter: 105	LKT=[ -7,  8,  7, -7,  8, -6 ], A_q-LKT=[ -7,  8,  7, -7,  8, -6 ], true
+parameter: 106	LKT=[  1,  3,  1, -1,  3,  0 ], A_q-LKT=[  1,  3,  1, -1,  3,  0 ], true
+parameter: 107	LKT=[  2, -3, -1,  3,  3,  0 ], A_q-LKT=[  2, -3, -1,  3,  3,  0 ], true
+parameter: 108	LKT=[  1,  3,  1, -1,  5, -4 ], A_q-LKT=[  1,  3,  1, -1,  5, -4 ], true
+parameter: 109	LKT=[ -5,  4,  5, -3,  4,  0 ], A_q-LKT=[ -5,  4,  5, -3,  4,  0 ], true
+parameter: 110	LKT=[  2,  3, -1,  3, -3,  3 ], A_q-LKT=[  2,  3, -1,  3, -3,  3 ], true
+parameter: 111	LKT=[  1, -3,  1,  5, -3,  3 ], A_q-LKT=[  1, -3,  1,  5, -3,  3 ], true
+parameter: 112	LKT=[  2, -3, -1,  3,  5, -4 ], A_q-LKT=[  2, -3, -1,  3,  5, -4 ], true
+parameter: 113	LKT=[ -5,  4,  5, -3,  6, -4 ], A_q-LKT=[ -5,  4,  5, -3,  6, -4 ], true
+parameter: 114	LKT=[ -5, -4,  5,  5, -4,  4 ], A_q-LKT=[ -5, -4,  5,  5, -4,  4 ], true
+parameter: 115	LKT=[ -6,  8,  8, -7,  7, -7 ], A_q-LKT=[ -6,  8,  8, -7,  7, -7 ], true
+parameter: 116	LKT=[  0,  3,  3, -2,  4, -2 ], A_q-LKT=[  0,  3,  3, -2,  4, -2 ], true
+parameter: 117	LKT=[ -4,  3,  5, -2,  4, -2 ], A_q-LKT=[ -4,  3,  5, -2,  4, -2 ], true
+parameter: 118	LKT=[  3, -3, -3,  4,  4, -2 ], A_q-LKT=[  3, -3, -3,  4,  4, -2 ], true
+parameter: 119	LKT=[  0,  1,  3, -1,  3,  0 ], A_q-LKT=[  0,  1,  3, -1,  3,  0 ], true
+parameter: 120	LKT=[ -4,  1,  5, -1,  3,  0 ], A_q-LKT=[ -4,  1,  5, -1,  3,  0 ], true
+parameter: 121	LKT=[  0,  1,  3, -1,  5, -4 ], A_q-LKT=[  0,  1,  3, -1,  5, -4 ], true
+parameter: 122	LKT=[  3, -1, -3,  3,  3,  0 ], A_q-LKT=[  3, -1, -3,  3,  3,  0 ], true
+parameter: 123	LKT=[  0, -1,  3,  3, -3,  3 ], A_q-LKT=[  0, -1,  3,  3, -3,  3 ], true
+parameter: 124	LKT=[  3,  1, -3,  5, -3,  3 ], A_q-LKT=[  3,  1, -3,  5, -3,  3 ], true
+parameter: 125	LKT=[ -4,  1,  5, -1,  5, -4 ], A_q-LKT=[ -4,  1,  5, -1,  5, -4 ], true
+parameter: 126	LKT=[ -4, -1,  5,  3, -3,  3 ], A_q-LKT=[ -4, -1,  5,  3, -3,  3 ], true
+parameter: 127	LKT=[  3, -1, -3,  3,  5, -4 ], A_q-LKT=[  3, -1, -3,  3,  5, -4 ], true
+parameter: 128	LKT=[ -8,  9,  9, -9,  9, -8 ], A_q-LKT=[ -8,  9,  9, -9,  9, -8 ], true
+parameter: 129	LKT=[ -2,  3,  4, -2,  3,  0 ], A_q-LKT=[ -2,  3,  4, -2,  3,  0 ], true
+parameter: 130	LKT=[ -2,  3,  4, -2,  5, -4 ], A_q-LKT=[ -2,  3,  4, -2,  5, -4 ], true
+parameter: 131	LKT=[ -2, -3,  4,  4, -3,  3 ], A_q-LKT=[ -2, -3,  4,  4, -3,  3 ], true
+parameter: 132	LKT=[ -2,  2,  3,  0,  3, -2 ], A_q-LKT=[ -2,  2,  3,  0,  3, -2 ], true
+parameter: 133	LKT=[ -2, -2,  3,  2,  3, -2 ], A_q-LKT=[ -2, -2,  3,  2,  3, -2 ], true
+parameter: 134	LKT=[ -2,  4,  5, -4,  5, -2 ], A_q-LKT=[ -2,  4,  5, -4,  5, -2 ], true
+parameter: 135	LKT=[  0,  2,  2,  1,  1, -1 ], A_q-LKT=[  0,  2,  2,  1,  1, -1 ], true
+parameter: 136	LKT=[ -4,  2,  4,  1,  1, -1 ], A_q-LKT=[ -4,  2,  4,  1,  1, -1 ], true
+parameter: 137	LKT=[  0, -2,  2,  3,  1, -1 ], A_q-LKT=[  0, -2,  2,  3,  1, -1 ], true
+parameter: 138	LKT=[  2,  2, -2,  3,  1, -1 ], A_q-LKT=[  2,  2, -2,  3,  1, -1 ], true
+parameter: 139	LKT=[  0,  5,  5, -5,  5, -3 ], A_q-LKT=[  0,  5,  5, -5,  5, -3 ], true
+parameter: 140	LKT=[  2, -2, -2,  5,  1, -1 ], A_q-LKT=[  2, -2, -2,  5,  1, -1 ], true
+parameter: 141	LKT=[ -4, -2,  4,  3,  1, -1 ], A_q-LKT=[ -4, -2,  4,  3,  1, -1 ], true
+parameter: 142	LKT=[ -4,  5,  7, -5,  5, -3 ], A_q-LKT=[ -4,  5,  7, -5,  5, -3 ], true
+parameter: 143	LKT=[  5, -5, -5,  5,  5, -3 ], A_q-LKT=[  5, -5, -5,  5,  5, -3 ], true
+parameter: 144	LKT=[ -6,  7,  7, -7,  7, -3 ], A_q-LKT=[ -6,  7,  7, -7,  7, -3 ], true
+parameter: 145	LKT=[  0,  0,  2,  1,  3, -2 ], A_q-LKT=[  0,  0,  2,  1,  3, -2 ], true
+parameter: 146	LKT=[ -4,  0,  4,  1,  3, -2 ], A_q-LKT=[ -4,  0,  4,  1,  3, -2 ], true
+parameter: 147	LKT=[  2,  0, -2,  3,  3, -2 ], A_q-LKT=[  2,  0, -2,  3,  3, -2 ], true
+parameter: 148	LKT=[  1,  2,  0,  1,  3, -2 ], A_q-LKT=[  1,  2,  0,  1,  3, -2 ], true
+parameter: 149	LKT=[  1, -2,  0,  3,  3, -2 ], A_q-LKT=[  1, -2,  0,  3,  3, -2 ], true
+parameter: 150	LKT=[ -5,  5,  6, -5,  6, -2 ], A_q-LKT=[ -5,  5,  6, -5,  6, -2 ], true
+parameter: 151	LKT=[ -2,  2,  3,  1,  0,  1 ], A_q-LKT=[ -2,  2,  3,  1,  0,  1 ], true
+parameter: 152	LKT=[ -2, -2,  3,  3,  0,  1 ], A_q-LKT=[ -2, -2,  3,  3,  0,  1 ], true
+parameter: 153	LKT=[ -2,  5,  6, -5,  6, -5 ], A_q-LKT=[ -2,  5,  6, -5,  6, -5 ], true
+parameter: 154	LKT=[ -2,  0,  3,  1,  2,  0 ], A_q-LKT=[ -2,  0,  3,  1,  2,  0 ], true
+parameter: 155	LKT=[ -2,  0,  3,  3, -2,  2 ], A_q-LKT=[ -2,  0,  3,  3, -2,  2 ], true
+parameter: 156	LKT=[ -2,  0,  3,  1,  4, -4 ], A_q-LKT=[ -2,  0,  3,  1,  4, -4 ], true
+parameter: 157	LKT=[ -1,  2,  1,  1,  2,  0 ], A_q-LKT=[ -1,  2,  1,  1,  2,  0 ], true
+parameter: 158	LKT=[ -1, -2,  1,  3,  2,  0 ], A_q-LKT=[ -1, -2,  1,  3,  2,  0 ], true
+parameter: 159	LKT=[ -1,  2,  1,  3, -2,  2 ], A_q-LKT=[ -1,  2,  1,  3, -2,  2 ], true
+parameter: 160	LKT=[ -1,  2,  1,  1,  4, -4 ], A_q-LKT=[ -1,  2,  1,  1,  4, -4 ], true
+parameter: 161	LKT=[ -3,  5,  5, -5,  5,  0 ], A_q-LKT=[ -3,  5,  5, -5,  5,  0 ], true
+parameter: 162	LKT=[ -1, -2,  1,  5, -2,  2 ], A_q-LKT=[ -1, -2,  1,  5, -2,  2 ], true
+parameter: 163	LKT=[ -1, -2,  1,  3,  4, -4 ], A_q-LKT=[ -1, -2,  1,  3,  4, -4 ], true
+parameter: 164	LKT=[ -3,  5,  5, -5,  7, -4 ], A_q-LKT=[ -3,  5,  5, -5,  7, -4 ], true
+parameter: 165	LKT=[ -3, -5,  5,  5, -5,  5 ], A_q-LKT=[ -3, -5,  5,  5, -5,  5 ], true
+parameter: 166	LKT=[ -3,  7,  7, -7,  7, -6 ], A_q-LKT=[ -3,  7,  7, -7,  7, -6 ], true
+parameter: 167	LKT=[ 0, 0, 2, 2, 0, 1 ], A_q-LKT=[ 0, 0, 2, 2, 0, 1 ], true
+parameter: 168	LKT=[ -4,  0,  4,  2,  0,  1 ], A_q-LKT=[ -4,  0,  4,  2,  0,  1 ], true
+parameter: 169	LKT=[  2,  0, -2,  4,  0,  1 ], A_q-LKT=[  2,  0, -2,  4,  0,  1 ], true
+parameter: 170	LKT=[ 1, 2, 0, 2, 0, 1 ], A_q-LKT=[ 1, 2, 0, 2, 0, 1 ], true
+parameter: 171	LKT=[  1, -2,  0,  4,  0,  1 ], A_q-LKT=[  1, -2,  0,  4,  0,  1 ], true
+parameter: 172	LKT=[ -5,  6,  7, -6,  7, -5 ], A_q-LKT=[ -5,  6,  7, -6,  7, -5 ], true
+parameter: 173	LKT=[ 1, 0, 0, 2, 2, 0 ], A_q-LKT=[ 1, 0, 0, 2, 2, 0 ], true
+parameter: 174	LKT=[  1,  0,  0,  4, -2,  2 ], A_q-LKT=[  1,  0,  0,  4, -2,  2 ], true
+parameter: 175	LKT=[  1,  0,  0,  2,  4, -4 ], A_q-LKT=[  1,  0,  0,  2,  4, -4 ], true
+parameter: 177	LKT=[ -5,  4,  5, -2,  2,  1 ], A_q-LKT=[ -5,  4,  5, -2,  2,  1 ], true
+parameter: 179	LKT=[  1,  4,  2, -2,  5, -5 ], A_q-LKT=[  1,  4,  2, -2,  5, -5 ], true
+parameter: 183	LKT=[ -5, -4,  5,  4, -2,  3 ], A_q-LKT=[ -5, -4,  5,  4, -2,  3 ], true
+parameter: 184	LKT=[  3, -4, -2,  4,  5, -5 ], A_q-LKT=[  3, -4, -2,  4,  5, -5 ], true
+parameter: 189	LKT=[  0, -3,  3,  3,  0,  0 ], A_q-LKT=[  0, -3,  3,  3,  0,  0 ], true
+parameter: 190	LKT=[  3,  3, -3,  3,  0,  0 ], A_q-LKT=[  3,  3, -3,  3,  0,  0 ], true
+parameter: 193	LKT=[ -4, -3,  5,  3,  0,  0 ], A_q-LKT=[ -4, -3,  5,  3,  0,  0 ], true
+parameter: 195	LKT=[ -7,  8,  7, -7,  7, -4 ], A_q-LKT=[ -7,  8,  7, -7,  7, -4 ], true
+parameter: 199	LKT=[  0,  2,  4, -2,  5, -5 ], A_q-LKT=[  0,  2,  4, -2,  5, -5 ], true
+parameter: 203	LKT=[ -4,  2,  6, -2,  5, -5 ], A_q-LKT=[ -4,  2,  6, -2,  5, -5 ], true
+parameter: 204	LKT=[  4, -2, -4,  4,  5, -5 ], A_q-LKT=[  4, -2, -4,  4,  5, -5 ], true
+parameter: 205	LKT=[ -8,  8,  8, -8,  9, -7 ], A_q-LKT=[ -8,  8,  8, -8,  9, -7 ], true
+parameter: 206	LKT=[ -2,  3,  4, -1,  1,  1 ], A_q-LKT=[ -2,  3,  4, -1,  1,  1 ], true
+parameter: 207	LKT=[ -2, -3,  4,  3, -1,  2 ], A_q-LKT=[ -2, -3,  4,  3, -1,  2 ], true
+parameter: 208	LKT=[ -2,  4,  5, -3,  5, -5 ], A_q-LKT=[ -2,  4,  5, -3,  5, -5 ], true
+parameter: 211	LKT=[  0, -3,  0,  3,  3,  0 ], A_q-LKT=[  0, -3,  0,  3,  3,  0 ], true
+parameter: 213	LKT=[  0,  3,  0,  3, -3,  3 ], A_q-LKT=[  0,  3,  0,  3, -3,  3 ], true
+parameter: 217	LKT=[  0, -3,  0,  3,  5, -4 ], A_q-LKT=[  0, -3,  0,  3,  5, -4 ], true
+parameter: 218	LKT=[ -4,  8,  7, -7,  7, -7 ], A_q-LKT=[ -4,  8,  7, -7,  7, -7 ], true
+parameter: 219	LKT=[  1,  3,  1, -1,  4, -2 ], A_q-LKT=[  1,  3,  1, -1,  4, -2 ], true
+parameter: 220	LKT=[  2, -3, -1,  3,  4, -2 ], A_q-LKT=[  2, -3, -1,  3,  4, -2 ], true
+parameter: 221	LKT=[ -5,  4,  5, -3,  5, -2 ], A_q-LKT=[ -5,  4,  5, -3,  5, -2 ], true
+parameter: 225	LKT=[ -5,  2,  5, -2,  4,  0 ], A_q-LKT=[ -5,  2,  5, -2,  4,  0 ], true
+parameter: 229	LKT=[ -5,  2,  5, -2,  6, -4 ], A_q-LKT=[ -5,  2,  5, -2,  6, -4 ], true
+parameter: 230	LKT=[ -5, -2,  5,  4, -4,  4 ], A_q-LKT=[ -5, -2,  5,  4, -4,  4 ], true
+parameter: 231	LKT=[ -7,  8,  9, -8,  8, -8 ], A_q-LKT=[ -7,  8,  9, -8,  8, -8 ], true
+parameter: 235	LKT=[  0,  1,  3, -1,  4, -2 ], A_q-LKT=[  0,  1,  3, -1,  4, -2 ], true
+parameter: 236	LKT=[ -4,  1,  5, -1,  4, -2 ], A_q-LKT=[ -4,  1,  5, -1,  4, -2 ], true
+parameter: 237	LKT=[  3, -1, -3,  3,  4, -2 ], A_q-LKT=[  3, -1, -3,  3,  4, -2 ], true
+parameter: 238	LKT=[ -2,  3,  4, -2,  4, -2 ], A_q-LKT=[ -2,  3,  4, -2,  4, -2 ], true
+parameter: 239	LKT=[ -2,  1,  4, -1,  3,  0 ], A_q-LKT=[ -2,  1,  4, -1,  3,  0 ], true
+parameter: 240	LKT=[ -2,  1,  4, -1,  5, -4 ], A_q-LKT=[ -2,  1,  4, -1,  5, -4 ], true
+parameter: 241	LKT=[ -2, -1,  4,  3, -3,  3 ], A_q-LKT=[ -2, -1,  4,  3, -3,  3 ], true
+parameter: 245	LKT=[ -2,  2,  3,  1,  1, -1 ], A_q-LKT=[ -2,  2,  3,  1,  1, -1 ], true
+parameter: 246	LKT=[ -2, -2,  3,  3,  1, -1 ], A_q-LKT=[ -2, -2,  3,  3,  1, -1 ], true
+parameter: 247	LKT=[ -2,  5,  6, -5,  5, -3 ], A_q-LKT=[ -2,  5,  6, -5,  5, -3 ], true
+parameter: 248	LKT=[ -2,  0,  3,  1,  3, -2 ], A_q-LKT=[ -2,  0,  3,  1,  3, -2 ], true
+parameter: 249	LKT=[ -1,  2,  1,  1,  3, -2 ], A_q-LKT=[ -1,  2,  1,  1,  3, -2 ], true
+parameter: 250	LKT=[ -1, -2,  1,  3,  3, -2 ], A_q-LKT=[ -1, -2,  1,  3,  3, -2 ], true
+parameter: 251	LKT=[ -3,  5,  5, -5,  6, -2 ], A_q-LKT=[ -3,  5,  5, -5,  6, -2 ], true
+parameter: 252	LKT=[  0,  0,  2,  2,  1, -1 ], A_q-LKT=[  0,  0,  2,  2,  1, -1 ], true
+parameter: 253	LKT=[ -4,  0,  4,  2,  1, -1 ], A_q-LKT=[ -4,  0,  4,  2,  1, -1 ], true
+parameter: 254	LKT=[  2,  0, -2,  4,  1, -1 ], A_q-LKT=[  2,  0, -2,  4,  1, -1 ], true
+parameter: 255	LKT=[  1,  2,  0,  2,  1, -1 ], A_q-LKT=[  1,  2,  0,  2,  1, -1 ], true
+parameter: 256	LKT=[  1, -2,  0,  4,  1, -1 ], A_q-LKT=[  1, -2,  0,  4,  1, -1 ], true
+parameter: 257	LKT=[ -5,  6,  7, -6,  6, -3 ], A_q-LKT=[ -5,  6,  7, -6,  6, -3 ], true
+parameter: 258	LKT=[  1,  0,  0,  2,  3, -2 ], A_q-LKT=[  1,  0,  0,  2,  3, -2 ], true
+parameter: 265	LKT=[ -2,  0,  3,  2,  0,  1 ], A_q-LKT=[ -2,  0,  3,  2,  0,  1 ], true
+parameter: 266	LKT=[ -1,  2,  1,  2,  0,  1 ], A_q-LKT=[ -1,  2,  1,  2,  0,  1 ], true
+parameter: 267	LKT=[ -1, -2,  1,  4,  0,  1 ], A_q-LKT=[ -1, -2,  1,  4,  0,  1 ], true
+parameter: 268	LKT=[ -3,  6,  6, -6,  7, -5 ], A_q-LKT=[ -3,  6,  6, -6,  7, -5 ], true
+parameter: 269	LKT=[ -1,  0,  1,  2,  2,  0 ], A_q-LKT=[ -1,  0,  1,  2,  2,  0 ], true
+parameter: 270	LKT=[ -1,  0,  1,  4, -2,  2 ], A_q-LKT=[ -1,  0,  1,  4, -2,  2 ], true
+parameter: 271	LKT=[ -1,  0,  1,  2,  4, -4 ], A_q-LKT=[ -1,  0,  1,  2,  4, -4 ], true
+parameter: 272	LKT=[ 1, 0, 0, 3, 0, 1 ], A_q-LKT=[ 1, 0, 0, 3, 0, 1 ], true
+parameter: 276	LKT=[ 2, 4, 0, 0, 0, 2 ], A_q-LKT=[ 2, 4, 0, 0, 0, 2 ], true
+parameter: 277	LKT=[  2, -4,  0,  4,  0,  2 ], A_q-LKT=[  2, -4,  0,  4,  0,  2 ], true
+parameter: 278	LKT=[ -6,  6,  6, -4,  6, -6 ], A_q-LKT=[ -6,  6,  6, -4,  6, -6 ], true
+parameter: 279	LKT=[ 0, 0, 4, 0, 0, 2 ], A_q-LKT=[ 0, 0, 4, 0, 0, 2 ], true
+parameter: 280	LKT=[ -4,  0,  6,  0,  0,  2 ], A_q-LKT=[ -4,  0,  6,  0,  0,  2 ], true
+parameter: 281	LKT=[  4,  0, -4,  4,  0,  2 ], A_q-LKT=[  4,  0, -4,  4,  0,  2 ], true
+parameter: 289	LKT=[ -5, -4,  5,  4, -1,  1 ], A_q-LKT=[ -5, -4,  5,  4, -1,  1 ], true
+parameter: 310	LKT=[  1, -4, -1,  4,  5, -5 ], A_q-LKT=[  1, -4, -1,  4,  5, -5 ], true
+parameter: 312	LKT=[  0,  4,  4, -2,  2, -2 ], A_q-LKT=[  0,  4,  4, -2,  2, -2 ], true
+parameter: 313	LKT=[ -4,  4,  6, -2,  2, -2 ], A_q-LKT=[ -4,  4,  6, -2,  2, -2 ], true
+parameter: 314	LKT=[  4, -4, -4,  6,  2, -2 ], A_q-LKT=[  4, -4, -4,  6,  2, -2 ], true
+parameter: 324	LKT=[ -8,  8,  8, -8,  8, -5 ], A_q-LKT=[ -8,  8,  8, -8,  8, -5 ], true
+parameter: 326	LKT=[ -2, -3,  4,  3,  0,  0 ], A_q-LKT=[ -2, -3,  4,  3,  0,  0 ], true
+parameter: 330	LKT=[ -2,  2,  5, -2,  5, -5 ], A_q-LKT=[ -2,  2,  5, -2,  5, -5 ], true
+parameter: 334	LKT=[ -2,  4,  2, -2,  4,  0 ], A_q-LKT=[ -2,  4,  2, -2,  4,  0 ], true
+parameter: 335	LKT=[ -2,  4,  2, -2,  6, -4 ], A_q-LKT=[ -2,  4,  2, -2,  6, -4 ], true
+parameter: 336	LKT=[ -2, -4,  2,  6, -4,  4 ], A_q-LKT=[ -2, -4,  2,  6, -4,  4 ], true
+parameter: 339	LKT=[  0, -3,  0,  3,  4, -2 ], A_q-LKT=[  0, -3,  0,  3,  4, -2 ], true
+parameter: 349	LKT=[ -5,  8,  8, -8,  8, -8 ], A_q-LKT=[ -5,  8,  8, -8,  8, -8 ], true
+parameter: 355	LKT=[ -5,  2,  5, -2,  5, -2 ], A_q-LKT=[ -5,  2,  5, -2,  5, -2 ], true
+parameter: 356	LKT=[ 2, 0, 0, 0, 4, 0 ], A_q-LKT=[ 2, 0, 0, 0, 4, 0 ], true
+parameter: 357	LKT=[  2,  0,  0,  0,  6, -4 ], A_q-LKT=[  2,  0,  0,  0,  6, -4 ], true
+parameter: 358	LKT=[  2,  0,  0,  4, -4,  4 ], A_q-LKT=[  2,  0,  0,  4, -4,  4 ], true
+parameter: 363	LKT=[ -2,  1,  4, -1,  4, -2 ], A_q-LKT=[ -2,  1,  4, -1,  4, -2 ], true
+parameter: 377	LKT=[ -2,  0,  3,  2,  1, -1 ], A_q-LKT=[ -2,  0,  3,  2,  1, -1 ], true
+parameter: 378	LKT=[ -1,  2,  1,  2,  1, -1 ], A_q-LKT=[ -1,  2,  1,  2,  1, -1 ], true
+parameter: 379	LKT=[ -1, -2,  1,  4,  1, -1 ], A_q-LKT=[ -1, -2,  1,  4,  1, -1 ], true
+parameter: 380	LKT=[ -3,  6,  6, -6,  6, -3 ], A_q-LKT=[ -3,  6,  6, -6,  6, -3 ], true
+parameter: 381	LKT=[ -1,  0,  1,  2,  3, -2 ], A_q-LKT=[ -1,  0,  1,  2,  3, -2 ], true
+parameter: 382	LKT=[  1,  0,  0,  3,  1, -1 ], A_q-LKT=[  1,  0,  0,  3,  1, -1 ], true
+parameter: 391	LKT=[ -1,  0,  1,  3,  0,  1 ], A_q-LKT=[ -1,  0,  1,  3,  0,  1 ], true
+ parameter: 427	LKT=[ -2,  0,  5,  0,  0,  2 ], A_q-LKT=[ -2,  0,  5,  0,  0,  2 ], true
+parameter: 467	LKT=[ -2,  4,  5, -2,  2, -2 ], A_q-LKT=[ -2,  4,  5, -2,  2, -2 ], true
+parameter: 477	LKT=[ -2,  4,  2, -2,  5, -2 ], A_q-LKT=[ -2,  4,  2, -2,  5, -2 ], true
+parameter: 496	LKT=[  2,  0,  0,  0,  5, -2 ], A_q-LKT=[  2,  0,  0,  0,  5, -2 ], true
+parameter: 523	LKT=[ -1,  0,  1,  3,  1, -1 ], A_q-LKT=[ -1,  0,  1,  3,  1, -1 ], true
+parameter: 540	LKT=[ -1,  5,  1, -1,  1,  2 ], A_q-LKT=[ -1,  5,  1, -1,  1,  2 ], true
+parameter: 541	LKT=[ -1, -5,  1,  5, -1,  3 ], A_q-LKT=[ -1, -5,  1,  5, -1,  3 ], true
+parameter: 542	LKT=[ -3,  6,  3, -3,  6, -6 ], A_q-LKT=[ -3,  6,  3, -3,  6, -6 ], true
+parameter: 543	LKT=[  2,  5,  1, -1,  1, -1 ], A_q-LKT=[  2,  5,  1, -1,  1, -1 ], true
+parameter: 544	LKT=[  3, -5, -1,  5,  1, -1 ], A_q-LKT=[  3, -5, -1,  5,  1, -1 ], true
+parameter: 545	LKT=[ -6,  6,  6, -3,  3, -3 ], A_q-LKT=[ -6,  6,  6, -3,  3, -3 ], true
+parameter: 548	LKT=[ -6,  0,  6,  0,  0,  3 ], A_q-LKT=[ -6,  0,  6,  0,  0,  3 ], true
+parameter: 570	LKT=[ -7,  4,  7, -4,  7, -7 ], A_q-LKT=[ -7,  4,  7, -4,  7, -7 ], true
+parameter: 583	LKT=[  3,  0,  0,  0,  6, -6 ], A_q-LKT=[  3,  0,  0,  0,  6, -6 ], true
+parameter: 596	LKT=[  0,  1,  5, -1,  1, -1 ], A_q-LKT=[  0,  1,  5, -1,  1, -1 ], true
+parameter: 597	LKT=[ -4,  1,  7, -1,  1, -1 ], A_q-LKT=[ -4,  1,  7, -1,  1, -1 ], true
+parameter: 598	LKT=[  5, -1, -5,  5,  1, -1 ], A_q-LKT=[  5, -1, -5,  5,  1, -1 ], true
+parameter: 633	LKT=[ -1,  1,  1, -1,  5,  0 ], A_q-LKT=[ -1,  1,  1, -1,  5,  0 ], true
+parameter: 634	LKT=[ -1,  1,  1, -1,  7, -4 ], A_q-LKT=[ -1,  1,  1, -1,  7, -4 ], true
+parameter: 635	LKT=[ -1, -1,  1,  5, -5,  5 ], A_q-LKT=[ -1, -1,  1,  5, -5,  5 ], true
+parameter: 773	LKT=[ -2,  1,  6, -1,  1, -1 ], A_q-LKT=[ -2,  1,  6, -1,  1, -1 ], true
+parameter: 799	LKT=[ -1,  1,  1, -1,  6, -2 ], A_q-LKT=[ -1,  1,  1, -1,  6, -2 ], true
+parameter: 853	LKT=[  0, -6,  0,  6,  0,  0 ], A_q-LKT=[  0, -6,  0,  6,  0,  0 ], true
+parameter: 884	LKT=[ 4, 0, 0, 0, 0, 4 ], A_q-LKT=[ 4, 0, 0, 0, 0, 4 ], true
+parameter: 1015  LKT=[ -2,  7,	2, -2,	2, -2 ], A_q-LKT=[ -2,	7,  2, -2,  2, -2 ], true
+parameter: 1188  LKT=[ -2,  2,	2, -2,	8, -8 ], A_q-LKT=[ -2,	2,  2, -2,  8, -8 ], true
+parameter: 1208  LKT=[ -8,  2,	8, -2,	2, -2 ], A_q-LKT=[ -8,	2,  8, -2,  2, -2 ], true
+parameter: 1471  LKT=[ 0, 0, 0, 0, 0, 6 ], A_q-LKT=[ 0, 0, 0, 0, 0, 6 ], true
+parameter: 1500  LKT=[ 6, 0, 0, 0, 0, 0 ], A_q-LKT=[ 6, 0, 0, 0, 0, 0 ], true
+parameter: 1878  LKT=[ 0, 0, 0, 0, 0, 0 ], A_q-LKT=[ 0, 0, 0, 0, 0, 0 ], true
+
+
+{some nonequal rank examples, can't use is_unitary to pick out A_q(lambda)'s
+use print_blocku(G, dual_quasisplit_form(G)) 
+then make list of parameters by hand from output of print_block(trivial(G))
+the number are probably not the same as those from print_blocku
+match them for example by types of roots}
+
+expr> set G=SL(4,R)
+Identifier G (overriding previous): RealForm
+expr> set Gd=dual_quasisplit_form (G)
+Identifier Gd: DualRealForm
+expr> print_blocku(G,Gd)
+ 0( 0,11):  0  0  [C+,i1,C+]  [* ,* ,* ]  e
+ 1( 1,11):  0  0  [C+,i1,C+]  [* ,* ,* ]  e
+ 2( 2,10):  1  1  [C+,r1,C+]  [* ,r1,* ]  2^e
+ 3( 3, 9):  1  0  [C-,C+,C-]  [C-,* ,C-]  1xe
+ 4( 4, 9):  1  0  [C-,C+,C-]  [C-,* ,C-]  1xe
+12(12, 0):  4  2  [r2,r2,r2]  [r2,r2,r2]  1^2x3x2^e
+expr> print_block(GKtrivial(G))
+Parameter defines element 12 of the following block:
+ 0( 0,11):  0  [C+,i1,C+]   2	1   2	( *, *)  ( 4, *)  ( *, *)  *(x= 0,lam=rho+  [0,0,0], nu=  [0,0,0]/1)  e
+ 1( 1,11):  0  [C+,i1,C+]   3	0   3	( *, *)  ( 4, *)  ( *, *)  *(x= 1,lam=rho+  [0,0,0], nu=  [0,0,0]/1)  e
+ 2( 2,10):  1  [C-,C+,C-]   0	6   0	( *, *)  ( *, *)  ( *, *)  *(x= 3,lam=rho+  [0,0,0], nu=  [1,0,1]/1)  1xe
+ 3( 3,10):  1  [C-,C+,C-]   1	7   1	( *, *)  ( *, *)  ( *, *)  *(x= 4,lam=rho+  [0,0,0], nu=  [1,0,1]/1)  1xe
+ 4( 4, 9):  1  [C+,r1,C+]   5	4   8	( *, *)  ( 0, 1)  ( *, *)  *(x= 2,lam=rho+  [0,0,0], nu= [0,1,-1]/2)  2^e
+ 5( 5, 8):  2  [C-,C+,C+]   4	9  10	( *, *)  ( *, *)  ( *, *)  *(x= 6,lam=rho+  [0,0,0], nu=  [2,0,0]/1)  1x2^e
+ 6( 6, 7):  2  [i1,C-,i1]   7	2   7	( 9, *)  ( *, *)  (11, *)  *(x= 7,lam=rho+  [0,0,0], nu=  [2,2,0]/1)  2x1xe
+ 7( 7, 7):  2  [i1,C-,i1]   6	3   6	( 9, *)  ( *, *)  (11, *)  *(x= 8,lam=rho+  [0,0,0], nu=  [2,2,0]/1)  2x1xe
+ 8( 8, 6):  2  [C+,C+,C-]  10  11   4	( *, *)  ( *, *)  ( *, *)  *(x= 5,lam=rho+  [0,0,0], nu=  [2,2,2]/1)  3x2^e
+ 9( 9, 5):  3  [r1,C-,i2]   9	5   9	( 6, 7)  ( *, *)  (12,13)  *(x=11,lam=rho+  [0,0,0], nu=  [5,3,0]/2)  1^2x1xe
+10(10, 4):  3  [C-,i2,C-]   8  10   5	( *, *)  (12,14)  ( *, *)  *(x=10,lam=rho+  [0,0,0], nu=  [6,3,3]/2)  1x3x2^e
+11(11, 3):  3  [i2,C-,r1]  11	8  11	(12,13)  ( *, *)  ( 6, 7)  *(x= 9,lam=rho+  [0,0,0], nu=  [5,5,2]/2)  2x3x2^e
+12(12, 0):  4  [r2,r2,r2]  13  14  13	(11, *)  (10, *)  ( 9, *)  *(x=12,lam=rho+  [0,0,0], nu=  [3,2,1]/1)  1^2x3x2^e
+13(12, 1):  4  [r2,rn,r2]  12  13  12	(11, *)  ( *, *)  ( 9, *)  *(x=12,lam=rho+[-1,-1,0], nu=  [3,2,1]/1)  1^2x3x2^e
+14(12, 2):  4  [rn,r2,rn]  14  12  14	( *, *)  (10, *)  ( *, *)  *(x=12,lam=rho+[0,-1,-1], nu=  [3,2,1]/1)  1^2x3x2^e
+expr> set params=[0,1,4,2,3,12]
+Identifier params: [int]
+expr> test_aq_list (params,KGB(G,0))
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of connected split real group with Lie algebra 'sl(4,R)'
+Unequal rank: testing parameters [0,1,4,2,3,12]
+K=compact connected real group with Lie algebra 'su(2).su(2)'
+rho_K=[ 1, 1 ]/1
+parameter: 0  LKT=[ 4, 2 ], A_q-LKT=[ 4, 2 ], true
+parameter: 1  LKT=[ 4, 6 ], A_q-LKT=[ 4, 6 ], true
+parameter: 4  LKT=[ 4, 4 ], A_q-LKT=[ 4, 4 ], true
+parameter: 2  LKT=[ 3, 0 ], A_q-LKT=[ 3, 0 ], true
+parameter: 3  LKT=[ 3, 6 ], A_q-LKT=[ 3, 6 ], true
+parameter: 12  LKT=[ 0, 0 ], A_q-LKT=[ 0, 0 ], true
+expr> set G=GL(4,R)
+Identifier G (overriding previous): RealForm
+expr>set Gd=dual_quasisplit_form0(G)
+Identifier Gd (overriding previous): DualRealForm
+expr> print_blocku(G,Gd)
+ 0(0,20):  0  0  [C+,i2,C+]  [* ,* ,* ]  e
+ 1(1,18):  1  1  [C+,r2,C+]  [* ,r2,* ]  2^e
+ 2(1,19):  1  1  [C+,r2,C+]  [* ,r2,* ]  2^e
+ 3(2,17):  1  0  [C-,C+,C-]  [C-,* ,C-]  1xe
+15(9, 0):  4  2  [r2,r2,r2]  [r2,r2,r2]  1^2x3x2^e
+19(9, 4):  4  2  [r2,r2,r2]  [r2,r2,r2]  1^2x3x2^e
+expr> print_block(trivial(G))
+...
+expr> set params=[0,2,3,1,15,19]
+Identifier params (overriding previous): [int]
+expr>test_aq_list(params,KGB(G,0)))
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of disconnected split real group with Lie algebra 'sl(4,R).gl(1,R)'
+Unequal rank: testing parameters [0,2,3,1,15,19]
+K=compact connected real group with Lie algebra 'su(2).su(2)'
+rho_K=[  0, -1 ]/1
+parameter: 0  LKT=[ -2, -4 ], A_q-LKT=[ -2, -4 ], true
+parameter: 2  LKT=[  0, -4 ], A_q-LKT=[  0, -4 ], true
+parameter: 3  LKT=[  0, -4 ], A_q-LKT=[  0, -4 ], true
+parameter: 1  LKT=[ -3, -3 ], A_q-LKT=[ -3, -3 ], true
+parameter: 15  LKT=[ 0, 0 ], A_q-LKT=[ 0, 0 ], true
+parameter: 19  LKT=[ 0, 0 ], A_q-LKT=[ 0, 0 ], true
+expr> set G=SL(6,R)
+Identifier G (overriding previous): RealForm
+expr> set Gd=dual_quasisplit_form (G)
+Identifier Gd (overriding previous): DualRealForm
+expr> print_blocku(G,Gd)
+  0( 0,114):  0  0  [C+,C+,i1,C+,C+]  [* ,* ,* ,* ,* ]	e
+  1( 1,114):  0  0  [C+,C+,i1,C+,C+]  [* ,* ,* ,* ,* ]	e
+  2( 2,113):  1  1  [C+,C+,r1,C+,C+]  [* ,* ,r1,* ,* ]	3^e
+  3( 3,112):  1  0  [C+,C-,C+,C-,C+]  [* ,C-,* ,C-,* ]	2xe
+  4( 4,112):  1  0  [C+,C-,C+,C-,C+]  [* ,C-,* ,C-,* ]	2xe
+  5( 5,111):  1  0  [C-,C+,i1,C+,C-]  [C-,* ,* ,* ,C-]	1xe
+  6( 6,111):  1  0  [C-,C+,i1,C+,C-]  [C-,* ,* ,* ,C-]	1xe
+  9( 9,108):  2  1  [C-,C+,r1,C+,C-]  [C-,* ,r1,* ,C-]	1x3^e
+ 27(27, 95):  3  0  [C-,C-,C+,C-,C-]  [C-,C-,* ,C-,C-]	1x2x1xe
+ 28(28, 95):  3  0  [C-,C-,C+,C-,C-]  [C-,C-,* ,C-,C-]	1x2x1xe
+ 29(29, 92):  4  2  [C+,r2,r2,r2,C+]  [* ,r2,r2,r2,* ]	2^3x4x3^e
+120(90,  0):  9  3  [r2,r2,r2,r2,r2]  [r2,r2,r2,r2,r2]	1^2x3x2^4x3x5x4x3^e
+expr>set_params=[0,1,6,4,5,2,3,17,18,40,120]
+Identifier params (overriding previous): [int]
+expr>test_aq_list1(params,KGB(G,0))
+Computing LKT of A_q(lambda) modules two ways
+For all representations in trivial block of connected split real group with Lie algebra 'sl(6,R)'
+Unequal rank: testing parameters [0,1,6,4,5,2,3,17,18,40,120]
+K=compact connected real group with Lie algebra 'su(4)'
+rho_K=[ 2, 2, 1 ]/1
+parameter: 0  LKT=[ 6, 4, 2 ], A_q-LKT=[ 6, 4, 2 ], true
+parameter: 1  LKT=[ 6, 8, 2 ], A_q-LKT=[ 6, 8, 2 ], true
+parameter: 6  LKT=[ 6, 6, 2 ], A_q-LKT=[ 6, 6, 2 ], true
+parameter: 4  LKT=[ 6, 3, 3 ], A_q-LKT=[ 6, 3, 3 ], true
+parameter: 5  LKT=[ 6, 9, 3 ], A_q-LKT=[ 6, 9, 3 ], true
+parameter: 2  LKT=[ 5, 3, 0 ], A_q-LKT=[ 5, 3, 0 ], true
+parameter: 3  LKT=[ 5, 7, 0 ], A_q-LKT=[ 5, 7, 0 ], true
+parameter: 17  LKT=[ 4, 0, 0 ], A_q-LKT=[ 4, 0, 0 ], true
+parameter: 18  LKT=[ 4, 8, 0 ], A_q-LKT=[ 4, 8, 0 ], true
+parameter: 40  LKT=[ 6, 6, 6 ], A_q-LKT=[ 6, 6, 6 ], true
+parameter: 120	LKT=[ 0, 0, 0 ], A_q-LKT=[ 0, 0, 0 ], true

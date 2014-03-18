@@ -54,6 +54,8 @@ set %(vec v,int d) = vec: for x in v do x%d od
 set sum (vec v)= let s=0 in for e in v do s+:=e od; s
 set product (vec v)= let s=1 in for e in v do s*:=e od; s
 
+set gcd([int] v)=inv_fact([v])[0]
+
 set sum (mat m)= { sum of columns of m }
   let (r,)=#m then sum = null(r) in for col in m do sum+:=col od; sum
 
@@ -124,44 +126,6 @@ set max (int k, int l) = int: if k<l then l else k fi
 
 set ones(int n)= vec: for i:n do 1 od
 
-set rho (RootDatum rd) = ratvec:
-( let res= ratvec: null(rank(rd))
-  in for i:semisimple_rank(rd) do res +:= fundamental_weight(rd,i) od
-; res
-) { uses fewer additions than computing half sum of the positive roots }
-
-set imaginary_roots (RootDatum rd, mat theta) = mat:
-( let ir = [vec]: [] in
-  for alpha in roots(rd) do if theta*alpha = alpha then
-    ir #:= alpha
-  fi od
-; if #ir=0 then null(rank(rd),0) else ir fi
-)
-
-set real_roots (RootDatum rd, mat theta) = mat:
-( let rr = [vec]: [] in
-  for alpha in roots(rd) do if theta*alpha = -alpha then
-     rr #:= alpha
-  fi od
-; if #rr=0 then null(rank(rd),0) else rr fi
-)
-
-set imaginary_coroots (RootDatum rd, mat theta) = mat:
-( let ic = [vec]: [] in
-  for alpha in coroots(rd) do if alpha*theta = alpha then
-    ic #:= alpha
-  fi od
-; if #ic=0 then null(rank(rd),0) else ic fi
-)
-
-set real_coroots (RootDatum rd, mat theta) = mat:
-( let rc = [vec]: [] in
-  for alpha in coroots(rd) do if alpha*theta = -alpha
-    then rc #:= alpha
-  fi od
-; if #rc=0 then null(rank(rd),0) else rc fi
-)
-
 set simple_reflection (RootDatum rd, int s) = mat: { s indexes simple root }
   id_mat(rank(rd))- [simple_roots(rd)[s]] * ^[simple_coroots(rd)[s]]
 
@@ -175,16 +139,6 @@ set involution (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
   in for i : #tw downto 0 do theta := simple_reflection(rd,tw[i])*theta od
   ; theta
 )
-
-
-set imaginary_roots (InnerClass ic, [int] tw) = mat:   { tw is a Weyl word }
-  imaginary_roots(ic,involution(ic,tw))
-set real_roots (InnerClass ic, [int] tw) = mat:        { tw is a Weyl word }
-  real_roots(ic,involution(ic,tw))
-set imaginary_coroots (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
-  imaginary_coroots(ic,involution(ic,tw))
-set real_coroots (InnerClass ic, [int] tw) = mat:      { tw is a Weyl word }
-  real_coroots(ic,involution(ic,tw))
 
 { integrality inner class (dual side) defined by inf. character and involution }
 set dual_integral(InnerClass ic, ratvec gamma) = InnerClass:
@@ -257,8 +211,84 @@ let rv=[] in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od;rv
 
 {some necessities now that implicit conversion Param->ParamPol is disabled}
 set virtual(Param p)=ParamPol:null_module(real_form(p))+p
+set virtual([Param] P)=ParamPol:let rv=null_module(real_form(P[0])) in for p in P do rv+:=virtual(p) od;rv
 set *(int n,Param p)=ParamPol:n*virtual(p)
 set -(Param p)=ParamPol:(-1)*p
 set -(ParamPol P,Param p)=ParamPol:P+(-1)*virtual(p)
 set +(Param p,Param q)=ParamPol:virtual(p)+virtual(q)
 set -(Param p,Param q)=ParamPol:virtual(p)+(-1)*virtual(q)
+
+{--------functions involving types of roots, sums of roots--------}
+{also see misc.rx, and K.rx for compact/noncompact roots}
+
+set rho (RootDatum rd) = ratvec:
+( let res= ratvec: null(rank(rd))
+  in for i:semisimple_rank(rd) do res +:= fundamental_weight(rd,i) od
+; res
+) { uses fewer additions than computing half sum of the positive roots }
+
+set imaginary_roots (RootDatum rd, mat theta) = mat:
+( let ir = [vec]: [] in
+  for alpha in roots(rd) do if theta*alpha = alpha then
+    ir #:= alpha
+  fi od
+; if #ir=0 then null(rank(rd),0) else ir fi
+)
+
+set real_roots (RootDatum rd, mat theta) = mat:
+( let rr = [vec]: [] in
+  for alpha in roots(rd) do if theta*alpha = -alpha then
+     rr #:= alpha
+  fi od
+; if #rr=0 then null(rank(rd),0) else rr fi
+)
+
+set imaginary_coroots (RootDatum rd, mat theta) = mat:
+( let ic = [vec]: [] in
+  for alpha in coroots(rd) do if alpha*theta = alpha then
+    ic #:= alpha
+  fi od
+; if #ic=0 then null(rank(rd),0) else ic fi
+)
+
+set real_coroots (RootDatum rd, mat theta) = mat:
+( let rc = [vec]: [] in
+  for alpha in coroots(rd) do if alpha*theta = -alpha
+    then rc #:= alpha
+  fi od
+; if #rc=0 then null(rank(rd),0) else rc fi
+)
+
+
+
+set imaginary_roots (InnerClass ic, [int] tw) = mat:   { tw is a Weyl word }
+  imaginary_roots(ic,involution(ic,tw))
+set real_roots (InnerClass ic, [int] tw) = mat:        { tw is a Weyl word }
+  real_roots(ic,involution(ic,tw))
+set imaginary_coroots (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
+  imaginary_coroots(ic,involution(ic,tw))
+set real_coroots (InnerClass ic, [int] tw) = mat:      { tw is a Weyl word }
+  real_coroots(ic,involution(ic,tw))
+
+set is_imaginary(vec alpha,KGBElt x)=bool:involution(x)*alpha=alpha
+set is_real(vec alpha,KGBElt x)=bool:involution(x)*alpha=-alpha
+set is_complex(vec alpha,KGBElt x)=bool:not( is_imaginary(alpha,x) or is_real(alpha,x))
+
+set imaginary_roots(KGBElt x)=[vec]:let rv=[] in 
+for alpha in positive_roots(real_form(x)) do if is_imaginary(alpha,x) then rv#:=alpha fi od;rv
+
+set real_roots(KGBElt x)=[vec]:let rv=[] in 
+for alpha in positive_roots(real_form(x)) do if is_real(alpha,x) then rv#:=alpha fi od;rv
+
+set complex_roots(KGBElt x)=[vec]: let rv=[] in 
+for alpha in positive_roots(real_form(x)) do if is_complex(alpha,x) then rv#:=alpha fi od;rv
+
+set complex_roots(RootDatum rd,mat theta)=[vec]:let rv=[] in
+for alpha in positive_roots(rd) do if alpha != theta*alpha then rv#:=alpha fi od;rv
+
+set rho_i(KGBElt x)=ratvec:let rv=if #imaginary_roots(x)>0 then sum(imaginary_roots(x)) else null(rank(real_form(x))) fi in rv/2
+set rho_r(KGBElt x)=ratvec:let rv=if #real_roots(x)>0 then sum(real_roots(x)) else null(rank(real_form(x))) fi in rv/2
+
+
+
+

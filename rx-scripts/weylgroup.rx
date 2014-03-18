@@ -15,7 +15,6 @@ make_dominant_internal:(RootDatum,[int],[int]->([int],[int]))
 make_dominant_internal:=((RootDatum rd, [int] v,[int] w):
 if is_dominant(rd,v) then (v,w) else let (new_v,k)=move_towards_dominant(rd,v) in make_dominant_internal(rd,new_v,w#k) fi);
 set make_dominant(RootDatum rd, [int] v)=([int],[int]):make_dominant_internal(rd,v,[])
-
 set make_dominant(RootDatum rd,[rat] v)=([rat],[int]):
 let (num,denom)=%v in let (vector,w)=make_dominant(rd,num) in (vector/denom,w)
 
@@ -28,4 +27,26 @@ set w_matrix(RootDatum rd, [int] w)=
 let rv=id_mat(rank(rd)) in for j in reverse(w) do rv*:=simple_reflection(rd,j) od;rv
 
 set w_matrix(RealForm G, [int] w)=w_matrix(root_datum(G),w)
+
+{action of Weyl word}
+set action(RootDatum rd,[int] w,ratvec v)=ratvec:
+let ()=for i:#w downto 0 do v:=simple_reflection(rd,w[i])*v od in v
+
+set cross([int] w,KGBElt x)=KGBElt:
+let ()=for i:#w downto 0 do x:=cross(w[i],x) od in x
+
+set move_towards_simple(RootDatum rd,[int] v)=([int],int):
+if is_simple(rd,v) then (v,-1) else
+let n=semisimple_rank(rd) in
+let w=^simple_coroots(rd)*v in 
+let done=false in
+let i=0 in
+while done=false do if w[i]>0 then v:=simple_reflection(rd,i)*v;done:=true else i:=i+1 fi od;(v,i) fi
+
+make_simple_internal:(RootDatum,[int],[int]->([int],[int]))
+make_simple_internal:=((RootDatum rd, [int] v,[int] w):
+if is_simple(rd,v) then (v,w) else let (new_v,k)=move_towards_simple(rd,v) in make_simple_internal(rd,new_v,w#k) fi);
+set make_simple(RootDatum rd, [int] v)=([int],[int]):make_simple_internal(rd,v,[])
+
+
 

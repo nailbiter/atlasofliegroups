@@ -18,8 +18,7 @@ set rattoint (rat r) = int:
   let (n,d)=%r in if d=1 then n else error("Not an integer") fi
 
 { make a rational vector into an integer one if possible }
-set ratvectovec (ratvec v)= vec:
-  let (w,d)=%v in if d=1 then w else error("Not an integer vector") fi
+set ratvectovec([rat] v)=vec:let (w,d)=%v in if d=1 then w else error("Not an integer vector") fi
 
 { define dot product ratvec*ratvec,ratvec*vec,vec*ratvec  moved to basic.rx}
 {set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)}
@@ -127,6 +126,14 @@ set most_split_Cartan(RealForm G)=CartanClass:Cartan_class(G,nr_of_Cartan_classe
 
 set fiber_part(RealForm G)=fiber_part(Cartan_class(G,0),G)
 
+set in_distinguished_fiber(KGBElt x)=bool:involution(x)=distinguished_involution(real_form(x))
+
+set distinguished_fiber(RealForm G)=[int]:
+let done=false in 
+let rv=[] in 
+let i=0 in 
+while i<KGB_size(G) do  if in_distinguished_fiber(KGB(G,i)) then rv#:=i;i:=i+1 else i:=KGB_size(G) fi od;rv
+
 set rank(RealForm G)=rank(root_datum(G))
 
 set semisimple_rank(RealForm G)=semisimple_rank(root_datum(G))
@@ -137,4 +144,83 @@ set ss_rank(RealForm G)= semisimple_rank(G)
 
 set dimension(RealForm G)=n_columns(roots(G))+rank(G)
 
+set length(RootDatum rd,vec alpha)=int:rattoint(alpha*rhocheck(rd))
+set is_simple(RootDatum rd,[int] alpha)=bool:length(rd,alpha)=1
 
+set get_simple_number(RootDatum rd,vec alpha)=
+let rv=-1 in 
+let i=0 in 
+while i<ss_rank(rd) do  if alpha=simple_roots(rd)[i] then rv:=i;i:=ss_rank(rd) else i:=i+1 fi od;rv
+
+set reverse (vec v)= vec: for i:#v downto 0 do v[i] od
+
+{lists of simple roots, coroots}
+set extract_simple_roots_and_coroots(mat positive_roots,mat positive_coroots)=(mat,mat):
+let tworho=sum(positive_roots) in 
+let tworhocheck=sum(positive_coroots) in 
+let (simple_roots,simple_coroots)=([],[]) in
+(for alpha in positive_roots do if alpha*tworhocheck=1 then simple_roots#:=alpha fi od,
+ for alphacheck in positive_coroots do if alphacheck*tworho=1 then simple_coroots#:=alphacheck fi od);(simple_roots,simple_coroots)
+
+set extract_positive_roots(RootDatum rd, mat set_of_roots)=mat:
+let rv=[] in let rhocheck=rhocheck(rd) in for a in set_of_roots do if a*rhocheck>0 then rv#:=a fi od;rv
+
+set extract_positive_coroots(RootDatum rd, mat set_of_coroots)=mat:
+let rv=[] in let rho=rho(rd) in for a in set_of_coroots do if a*rho>0 then rv#:=a fi od;rv
+
+set imaginary_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
+( let im_roots = [vec]: [],im_coroots=[vec]:[],roots=roots(rd), coroots=coroots(rd) in
+  for alpha@i in roots do if theta*alpha = alpha then
+    (im_roots #:= alpha, im_coroots#:=coroots[i]) 
+  fi od
+; if #im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (im_roots,im_coroots) fi
+)
+set imaginary_roots_and_coroots (KGBElt x) = (mat,mat):imaginary_roots_and_coroots (root_datum(real_form(x)),involution(x))
+
+set positive_imaginary_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
+( let im_roots = [vec]: [],im_coroots=[vec]:[],roots=positive_roots(rd), coroots=positive_coroots(rd) in
+  for alpha@i in roots do if theta*alpha = alpha then
+    (im_roots #:= alpha, im_coroots#:=coroots[i]) 
+  fi od
+; if #im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (im_roots,im_coroots) fi
+)
+set positive_imaginary_roots_and_coroots (KGBElt x) = (mat,mat):positive_imaginary_roots_and_coroots (root_datum(real_form(x)),involution(x))
+
+set real_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
+( let im_roots = [vec]: [],im_coroots=[vec]:[],roots=roots(rd), coroots=coroots(rd) in
+  for alpha@i in roots do if theta*alpha = -alpha then
+    (im_roots #:= alpha, im_coroots#:=coroots[i]) 
+  fi od
+; if #im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (im_roots,im_coroots) fi
+)
+
+set real_roots_and_coroots (KGBElt x) = (mat,mat):real_roots_and_coroots (root_datum(real_form(x)),involution(x))
+
+set positive_real_roots_and_coroots (RootDatum rd, mat theta) = (mat,mat):
+( let im_roots = [vec]: [],im_coroots=[vec]:[],roots=positive_roots(rd), coroots=positive_coroots(rd) in
+  for alpha@i in roots do if theta*alpha = -alpha then
+    (im_roots #:= alpha, im_coroots#:=coroots[i]) 
+  fi od
+; if #im_roots=0 then (null(rank(rd),0),null(rank(rd),0)) else (im_roots,im_coroots) fi
+)
+
+set positive_real_roots_and_coroots (KGBElt x) = (mat,mat):positive_real_roots_and_coroots (root_datum(real_form(x)),involution(x))
+
+set split_rank(RealForm G)=int:
+let ((c,C,s),,,)=Cartan_info(most_split_Cartan(G)) in C+s
+
+addone:([int],int->[int])
+addone:=(([int] v, int k):
+let rv=if k>=#v then null(#v) elif
+v[#v-k-1]=0 then v[#v-k-1]:=1;v else
+v[#v-k-1]:=0;addone(v,k+1) fi in rv);
+
+set generate_all_binary(int n)=[vec]:
+let v=null(n) then
+rv=[v] in
+let ()=for i:2^n-1  do v:=addone(v,0);rv:=rv#v od in rv
+
+set generate_all_subsets([int] S)=
+let b=generate_all_binary(#S) in
+for x in b do 
+ let rv=[] in for i:#x do if x[i]=1 then rv:=rv#S[i] else rv:=rv  fi od;rv od  

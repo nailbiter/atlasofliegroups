@@ -29,7 +29,7 @@ to prevent loading of a file comment it out like this: {<coherent}}
 <hermitian
 <unitary
 <nilpotent
-
+<LKT
 {here are some examples of things you might define, currently commented out}
 {
 set G=Sp(4,R)
@@ -40,5 +40,4 @@ set trivial=J(trivial_parameter)
 set ds=large_discrete_series(G)
 set pi=J(ds)
 }
-
 

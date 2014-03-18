@@ -1,7 +1,8 @@
-<misc
+<isc
 <matrix
 <sort
 <lattice
+<torus
 {----------------some more general group constructions----------------}
 {real forms}
 
@@ -123,6 +124,36 @@ let complex_levi=levi(root_datum(G),S) in
 let simple_levi_roots=simple_roots(complex_levi) in 
 let levi_theta=sub_matrix(distinguished_involution(G),simple_levi_roots) in
 inner_class(complex_levi,distinguished_involution(G))
+
+{------------------Levi factor of real parabolic-----------}
+
+
+{M=centralizer of A in H=TA, as a RealForm}
+{don't have a definitive way to decide the real form
+use split_rank(M_der)+dim(A)=split_rank(G)
+might be more than one real form of M satisfying this}
+set real_levi(RealForm G,KGBElt x)=
+let (imaginary_roots,imaginary_coroots)=imaginary_roots_and_coroots(x) in
+let (simple_imaginary_roots,simple_imaginary_coroots)=extract_simple_roots_and_coroots(imaginary_roots,imaginary_coroots) in
+let rd=root_datum(simple_imaginary_roots,simple_imaginary_coroots,rank(G)) in 
+let ic_M=inner_class(rd, involution(x)) in 
+let C_M=Cartan_class(ic_M,0) in 
+let rv=[] in 
+let ()=for H in real_forms(ic_M) do 
+if split_rank(derived(H))+split_rank(torus(Cartan_class(x)))=split_rank(G) then  rv#:=H fi od in 
+if #rv>1 then (prints("Warning: could not determine real form of Levi");for H in rv do prints(H) od) fi ;rv[0] 
+
+set M(RealForm G,KGBElt x)=real_levi(G,x)
+
+set theta_stable_levi(RealForm G,KGBElt x)=
+let (real_roots,real_coroots)=real_roots_and_coroots(x) in
+let (simple_real_roots,simple_real_coroots)=extract_simple_roots_and_coroots(real_roots,real_coroots) in
+let rd=root_datum(simple_real_roots,simple_real_coroots,rank(G)) in 
+let ic_L=inner_class(rd, involution(x)) in 
+real_form(ic_L, nr_of_real_forms(ic_L)-1)
+
+set L(RealForm G,KGBElt x)=theta_stable_levi(G,x)
+
 
 
 

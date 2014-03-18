@@ -16,3 +16,5 @@ real_form(ic,0)
 set compact_torus(int k)=RealForm:torus(k,0,0)
 set split_torus(int k)=RealForm:torus(0,k,0)
 set complex_torus(int k)=RealForm:torus(0,0,k)
+
+set torus(CartanClass C)=RealForm:let (type,,,)=Cartan_info(C) in torus(type)

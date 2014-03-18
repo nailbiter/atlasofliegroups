@@ -42,11 +42,10 @@ if abs(product(v)) !=1 then error("no integral right inverse")
 elif #v<n_columns(D) then error("no right inverse") else
 T*(^D)*S fi
 
+set weak_left_inverse(mat A)=(int,mat):
+let (S,D,T)=weak_snf(A) 
+in let d=1 in
+for i:min(n_rows(D),n_columns(D)) do if D[i,i]>1 then d*:=D[i,i];D[i,i]:=1 fi od;(d,T*(^D)*S) 
 
-
-
-
-
-
-
-
+set reduce(mat M)=mat:let d=gcd(for col in M do gcd(col) od) in
+for col in M do ratvectovec(col/d) od
