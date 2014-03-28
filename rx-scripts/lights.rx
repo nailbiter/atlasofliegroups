@@ -1,0 +1,15 @@
+<basic
+set dist (int p, int q, int n) = int: { |p-q| interpreted on a n*n board }
+  let (a,b)=p\%n, (c,d)=q\%n in abs(a-c)+abs(b-d)
+
+set gen_v (int i, int n) = vec:
+  for p:n*n do #(dist(p,i,n)<=1) od
+
+set dual_basis(int n) = [vec]:
+  let n2=n*n
+  then (,expr,,pivots)= subspace_normal(for i:n2 do gen_v(i,n) od)
+  , inv = null(n2)
+  then ()=if #pivots=n2 then for p@i in pivots do inv[p]:=i od
+          else error("Only "+#pivots+" independent generators")
+          fi
+  in for i:n2 do expr[inv[i]] od

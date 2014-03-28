@@ -1,0 +1,48 @@
+<basic.rx
+
+set comb (mat B) = (mat,mat):
+( let (n,m)=#B then ()=if n!=m then error("Not square") fi, D=null(n,n) in
+  for k: n downto 0
+  do (let s=k in for j:k do s-:=B[k,j] od; D[k,k]:=s)
+  ; for i: n-1-k from k
+    do let cur=0, d=0 in
+      for j:k-1
+      do cur -:= B[i,j]-B[i+1,j]
+      ; if cur>d
+        then d:=cur; B[i,j]:=1; B[i+1,j]:=0
+        fi
+      od
+    ; D[i,k]:=D[i,k]-d; D[i+1,k]:=D[i+1,k]+d
+    od
+  od
+; (B,D)
+)
+
+set uncomb (mat B, mat D) = mat:
+( let (n,m)=#B
+  then ()=if n!=m or #D!=(n,n) then error("Not square") fi, h=null(n) in
+  for k:n from 0
+  do
+    for i:n-k downto k
+    do h[i] := if k=0 then i else h[i]-B[i,k-1] fi
+    ; if i<n-1
+      then let d=D[i+1,k], cur=h[i+1]-h[i]-1
+      in D[i+1,k]:=0; D[i,k]:=D[i,k]+d
+      ; h[i+1]:=h[i+1]-d; h[i]:=h[i]+d
+      ; for j:k downto 0
+        do cur +:= B[i+1,j]-B[i,j]
+        ; if cur<d
+          then d:=cur; B[i,j]:=0; B[i+1,j]:=1
+          fi
+        od
+      fi
+    od
+  od
+; B
+)
+
+set B(int seed, int n)=
+( let B=null(n,n) in
+  for i:n do for j:i do let (q,r)=seed\%2 in B[i,j]:=r; seed:=q od od
+; B
+)
