@@ -3,6 +3,7 @@
 <unitary.rx
 <nilpotent.rx
 <lietypes.rx
+<representations.rx
 
 { test list [(Param p,bool answer)],
   test p for unitarity and compare result with answer

@@ -4,23 +4,23 @@
 set cut([int] a)=for i:#a -1 from 1 do a[i] od
 
 {lexicographical order on equal length arrays of integers}
-less:([int],[int]->bool)
+set < = ([int],[int]->bool):
+let less ([int] v,[int] w) = true { dummy } in
 less:=(([int] v,[int] w):
-if (#v != #w) then error("can't compare vectors of unequal length") 
-elif (v=w) then false 
-elif v[0]<w[0] then true 
+if (#v != #w) then error("can't compare vectors of unequal length")
+elif (v=w) then false
+elif v[0]<w[0] then true
 elif v[0]>w[0] then false
-else less(cut(v),cut(w)) fi);
-set <([int] v,[int] w)=bool:less(v,w)
+else less(cut(v),cut(w)) fi)
 
-greater:([int],[int]->bool)
+set > = ([int],[int]->bool):
+let greater ([int] v,[int] w) = true { dummy } in
 greater:=(([int] v,[int] w):
-if (#v != #w) then error("can't compare vectors of unequal length") 
-elif (v=w) then false 
-elif v[0]>w[0] then true 
+if (#v != #w) then error("can't compare vectors of unequal length")
+elif (v=w) then false
+elif v[0]>w[0] then true
 elif v[0]<w[0] then false
-else greater(cut(v),cut(w)) fi);
-set >([int] v,[int] w)=bool:greater(v,w)
+else greater(cut(v),cut(w)) fi)
 
 {in_list(list,v)=(bool,int):
 (true,k): list[k]=v  (0<=k<=#k-1)
@@ -29,13 +29,14 @@ set >([int] v,[int] w)=bool:greater(v,w)
 (false,#list): list[#list-1]<v
 precondition: list is strictly increasing}
 {}
-in_list:([[int]],[int],int->(bool,int))
+set in_list = ([[int]],[int],int->bool,int):
+  let in_list ([[int]] list,[int] v,int loc) = (false,0) { dummy } in
 in_list:=(([[int]] list,[int] v,int loc):
 if #list=0 then (false,loc)
 else
  let k=(#list+1)\2 in
  if (v=list[k-1]) then (true,loc+k-1)
- elif (v<list[k-1]) then in_list(for i:k-1 do list[i] od,v,loc) 
+ elif (v<list[k-1]) then in_list(for i:k-1 do list[i] od,v,loc)
  else  in_list(for i:#list-k from k do list[i] od,v,loc+k)  fi
 fi)
 set in_list([[int]] list,[int] v)=
@@ -47,13 +48,14 @@ for i:#list-1 do if not(list[i]<list[i+1]) then error("list is not strictly decr
 (false,k): list[k-1]>v>list[k] (0<=k<=#list-1)
 (false,#list): list[#list-1]>v
 precondition: list is strictly decreasing}
-in_list_reverse:([[int]],[int],int->(bool,int))
+set in_list_reverse = ([[int]],[int],int->bool,int):
+  let in_list_reverse ([[int]] list,[int] v,int loc) = (false,0) { dummy } in
 in_list_reverse:=(([[int]] list,[int] v,int loc):
 if #list=0 then (false,loc)
 else
  let k=(#list+1)\2 in
  if (v=list[k-1]) then (true,loc+k-1)
- elif (v>list[k-1]) then in_list_reverse(for i:k-1 do list[i] od,v,loc) 
+ elif (v>list[k-1]) then in_list_reverse(for i:k-1 do list[i] od,v,loc)
  else  in_list_reverse(for i:#list-k from k do list[i] od,v,loc+k)  fi
 fi)
 

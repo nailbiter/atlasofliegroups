@@ -209,11 +209,12 @@ set positive_real_roots_and_coroots (KGBElt x) = (mat,mat):positive_real_roots_a
 set split_rank(RealForm G)=int:
 let ((c,C,s),,,)=Cartan_info(most_split_Cartan(G)) in C+s
 
-addone:([int],int->[int])
+set addone = ([int],int->[int]):
+  let addone ([int] v, int k) = v { dummy } in
 addone:=(([int] v, int k):
 let rv=if k>=#v then null(#v) elif
 v[#v-k-1]=0 then v[#v-k-1]:=1;v else
-v[#v-k-1]:=0;addone(v,k+1) fi in rv);
+v[#v-k-1]:=0;addone(v,k+1) fi in rv)
 
 set generate_all_binary(int n)=[vec]:
 let v=null(n) then

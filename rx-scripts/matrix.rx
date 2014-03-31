@@ -1,4 +1,6 @@
-<basic
+<basic.rx
+<misc.rx
+
 set block_matrix(mat A,mat B)=
 let X=for i:n_columns(A) do A[i]#null(n_rows(B)) od in
 let Y=for i:n_columns(B) do null(n_rows(A))#B[i] od in mat:X#Y
@@ -11,16 +13,16 @@ set minor(mat M,int size)=mat:minor(M,size,0)
 {invert a matrix of determinant \pm 1}
 set Z_invert(mat M)=mat:
 let (rv,d)=invert(M) in
-if d=1 then rv 
-elif d=-1 then -rv 
+if d=1 then rv
+elif d=-1 then -rv
 else  error("Matrix does not have determinant 1") fi
 set Z_inverse(mat M)=mat:Z_invert(M)
 
-{D=SMT weak Smith normal form, S,T are Z-invertible, D is diagonal 
+{D=SMT weak Smith normal form, S,T are Z-invertible, D is diagonal
 with nonzero entries first, but not assuming divisibiliy
 diagonalize(M)=(v,S,T), v->D->SMT=D}
 set weak_snf(mat M)=
-let (v,S,T)=diagonalize(M) in    
+let (v,S,T)=diagonalize(M) in
 let D=null(n_rows(S),n_columns(T))  in
 let ()=for i:#v do D[i,i]:=v[i] od in (S,D,T)
 
@@ -29,23 +31,23 @@ set nonzero_diagonal_elements(mat M)=vec:
 let v=[] in for i:min(n_columns(M),n_rows(M)) do if M[i,i]!=0 then v:=v#M[i,i] fi od;v
 
 set right_inverse(mat A)=mat:
-let (S,D,T)=weak_snf(A) in 
-let v=nonzero_diagonal_elements(D) in 
-if abs(product(v)) !=1 then error("no integral right inverse") 
+let (S,D,T)=weak_snf(A) in
+let v=nonzero_diagonal_elements(D) in
+if abs(product(v)) !=1 then error("no integral right inverse")
 elif #v<n_rows(D) then error("no right inverse") else
 T*(^D)*S fi
 
 set left_inverse(mat A)=mat:
-let (S,D,T)=weak_snf(A) in 
-let v=nonzero_diagonal_elements(D) in 
-if abs(product(v)) !=1 then error("no integral right inverse") 
+let (S,D,T)=weak_snf(A) in
+let v=nonzero_diagonal_elements(D) in
+if abs(product(v)) !=1 then error("no integral right inverse")
 elif #v<n_columns(D) then error("no right inverse") else
 T*(^D)*S fi
 
 set weak_left_inverse(mat A)=(int,mat):
-let (S,D,T)=weak_snf(A) 
+let (S,D,T)=weak_snf(A)
 in let d=1 in
-for i:min(n_rows(D),n_columns(D)) do if D[i,i]>1 then d*:=D[i,i];D[i,i]:=1 fi od;(d,T*(^D)*S) 
+for i:min(n_rows(D),n_columns(D)) do if D[i,i]>1 then d*:=D[i,i];D[i,i]:=1 fi od;(d,T*(^D)*S)
 
 set reduce(mat M)=mat:let d=gcd(for col in M do gcd(col) od) in
 for col in M do ratvectovec(col/d) od

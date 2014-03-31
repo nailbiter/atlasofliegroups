@@ -5,11 +5,11 @@ set irr="irr"
 set I(Param p)=(Param,string):
 if not is_standard(p) then error("parameter is not standard") else (p,std) fi
 set J(Param p)=(Param,string):
- if not is_standard(p) then error("parameter is not standard") 
+ if not is_standard(p) then error("parameter is not standard")
  elif not is_final(p) then error("parameter is not final") else (p,irr) fi
 
 set to_string(int n)=string:int_format(n)
-set to_string(rat a)=string:let (n,d)=%a in to_string(n)#"/"#to_string(d) 
+set to_string(rat a)=string:let (n,d)=%a in to_string(n)#"/"#to_string(d)
 
 set to_string(vec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_string(v[i])#"," od;rv:=rv#to_string(v[#v-1])#"]";rv
 set to_string(ratvec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_string(v[i])#"," od;rv:=rv#to_string(v[#v-1])#"]";rv
@@ -17,13 +17,13 @@ set to_string(ratvec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_string(v
 set kgb_number(KGBElt x)=int:
 let  G=real_form(x) in let (kgb,i,rv)=(KGB(G), 0, -1) in while i<#kgb do if x=KGB(G,i) then (rv:=i,i:=#kgb) else i:=i+1 fi od;rv
 
-set to_string(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in 
+set to_string(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in
 "(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
-set to_string_std(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p),nu(p)) in let n=kgb_number(x) in 
+set to_string_std(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p),nu(p)) in let n=kgb_number(x) in
 "I(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
-set to_string_irr(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in 
+set to_string_irr(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in
 "J(x="#to_string(n)#",lambda="#to_string(lambda)#",nu="#to_string(nu)#")"
 
 set to_string(Param p, string type)=string:
@@ -49,8 +49,8 @@ let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition
 
 {composition series of linear combination of standards (ParamPol P,std)}
 set composition_series(ParamPol P,string type)=(ParamPol,string):
-if type=std then 
-let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;(N,irr) 
+if type=std then
+let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;(N,irr)
 else error("Composition series not defined for sum of irreducible modules") fi
 
 {character formula of (p,irr,[...]}
@@ -64,18 +64,18 @@ let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*character_f
 
 {character formula of linear combination of standards (ParamPol P,irr)}
 set character_formula(ParamPol P,string type)=(ParamPol,string):
-if type=irr then 
-let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*character_formula(p) od;(N,std) 
+if type=irr then
+let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*character_formula(p) od;(N,std)
 else error("Character formula not defined for sum of irreducible modules") fi
 
 
 
 set composition_series(ParamPol P,string type)=(ParamPol,string):
-if type=std then 
-let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;(N,irr) 
+if type=std then
+let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;(N,irr)
 else error("Composition series not defined for sum of irreducible modules") fi
 
-set module_print(ParamPol P)=void:array_prints(to_string(P)) 
+set module_print(ParamPol P)=void:array_prints(to_string(P))
 set module_print(ParamPol P,string type)=
 if (type=irr or type=std)  then array_prints(to_string(P,type)) else error("Incorrect type") fi
 set mprint(ParamPol P)=module_print(P)
@@ -94,21 +94,21 @@ set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),typ
 (P,std)=(Q,irr): character_formula(Q)=P}
 
 set =((Param,string)(p,typep),(Param,string)(q,typeq))=bool:
-if (typep != typeq) then 
+if (typep != typeq) then
 prints("cannot compare standards and irreducibles; to compare in the Grothendieck\
 group do virtual(I(p))=virtual(J(q))");false
 else p=q fi
 
 set =((ParamPol,string)(P,typeP),(ParamPol,string)(Q,typeQ))=bool:
-if ((typeP=irr) and (typeQ=irr) or ((typeP=std and typeQ=std))) then P=Q 
-elif ((typeP=irr) and (typeQ=std)) then character_formula(P)=Q 
-elif ((typeQ=irr) and (typeP=std)) then character_formula(Q)=P else 
+if ((typeP=irr) and (typeQ=irr) or ((typeP=std and typeQ=std))) then P=Q
+elif ((typeP=irr) and (typeQ=std)) then character_formula(P)=Q
+elif ((typeQ=irr) and (typeP=std)) then character_formula(Q)=P else
 error("Incorrect type(s)") fi
 
 set +((ParamPol,string)(P,typeP),(ParamPol,string)(Q,typeQ))=(ParamPol,string):
-if typeP=typeQ then (P+Q,typeP) 
-elif typeP=std and typeQ=irr then (P+character_formula(Q),typeP) 
-elif typeP=irr and typeQ=std then (P+composition_series(Q),typeP) 
+if typeP=typeQ then (P+Q,typeP)
+elif typeP=std and typeQ=irr then (P+character_formula(Q),typeP)
+elif typeP=irr and typeQ=std then (P+composition_series(Q),typeP)
 else error("incorrect type(s)") fi
 
 set +((Param,string)(p,typep),(Param,string)(q,typeq))=(ParamPol,string):virtual(p,typep)+virtual(q,typeq)
@@ -155,14 +155,13 @@ let (,p)=(%P)[0] in infinitesimal_character(p) fi
 set infinitesimal_character(ParamPol P, string type)=ratvec:infinitesimal_character(P)
 
 set tau(Param p,string type)=tau(p)
-set in_tau(int s,(Param,string)(p,type))=bool:if is_compact(s,x(p)) or status_code(s,x(p))="C-" or is_non_parity(s,p) then true else false fi
-set in_tau_complement(int s,(Param,string)(p,type))=bool:not(in_tau(s,p))
-set tau_complement(Param p, string type)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau_complement(s,p) then rv:=rv#s fi od;rv
+set in_tau(int s,(Param,string)(p,type))=bool:if is_compact(s,x(p)) or status_text(s,x(p))="C-" or is_non_parity(s,p) then true else false fi
+set in_tau_complement(int s,(Param,string)ps)=bool:not(in_tau(s,ps))
+set tau_complement(Param p, string type) =
+  let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau_complement(s,(p,type)) then rv:=rv#s fi od;rv
 
-set status_code(int s,(Param,string) (p,type))=status_code(s,p)
-set full_status_code(int s,(Param,string) (p,type))=full_status_code(s,p)
-set status_codes(Param p,string type)=status_codes(p)
-set full_status_codes(Param p,string type)=full_status_codes(p)
+set status_text(int s,(Param,string) (p,type))=status_text(s,p)
+set status_texts(Param p,string type)=status_texts(p)
 
 {
 {--------------------auxiliary tools---------------------}

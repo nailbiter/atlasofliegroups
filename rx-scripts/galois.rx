@@ -1,5 +1,6 @@
-<groups
-<generate_groups
+<groups.rx
+<group_operations.rx
+<generate_groups.rx
 
 {G is a RealForm
 pi0(G)=order of component group of G(R)
@@ -23,9 +24,9 @@ set PSOstar(int n)=let G=PSO(n,0) in  let sc=square_classes(SO(n,0)) in real_for
 
 {match(v,k) returns true if k occurs in v, false otherwise}
 set match([int] v,int k)=bool:
- let rv=false in 
- let i=0 in 
- while i<#v do 
+ let rv=false in
+ let i=0 in
+ while i<#v do
   if (v[i]=k) then rv:=true; i:=#v fi;
   i+:=1
  od;rv
@@ -33,7 +34,7 @@ set match([int] v,int k)=bool:
 {find(vecs,k) returns the (smallest) int j such that k in occurs in vecs[j]
  returns -1 otherwise}
 set find([[int]] vecs, int k)=int:
- let rv=-1 in 
+ let rv=-1 in
  let i=0 in
  while i<#vecs do
   if match(vecs[i],k) then rv:=i;i:=#vecs fi;
@@ -52,7 +53,7 @@ form_number(Sp(2,0))=0 form_number(Sp(1,1))=1
 central_invariant(Sp(2,0))=central_invariant(Sp(1,1))=1}
 set central_invariant(RealForm G)=int:find(square_classes(G),form_number(G))
 set central_invariant(InnerClass ic, int k)=int:central_invariant(real_forms(ic)[k])
-  
+
 {
 strong_real_forms_same_type(ic,k)
 strong_real_forms_same_type(G)
@@ -60,8 +61,8 @@ returns a list [int] (with multiplicity)
 of the real form numbers in given inner class with same x^2 as given real form
 real form is given by (inner class, number) or (RealForm G)
 if j occurs with multiplicity this means several strong real forms mapping to the given real form
-for example if ic=inner_class(Spin(4,4)) then 
-strong_real_forms_type(ic,0)=[4,0,0,0,0] 
+for example if ic=inner_class(Spin(4,4)) then
+strong_real_forms_type(ic,0)=[4,0,0,0,0]
 meaning one split strong real form and 4 compact ones
 }
 set strong_real_forms_same_type(InnerClass ic, int k)=[int]:square_classes(ic)[central_invariant(ic,k)]
@@ -74,16 +75,16 @@ set H1(RealForm G)=int:#strong_real_forms_same_type(G)
 {calculate H1 for all simple groups of given rank bounds, both simply connected and adjoint
 uses all_simple from generate_groups.rx}
 set iterate_H1(int min_rank, int max_rank)=void:
- for rank:max_rank-min_rank+1 from min_rank do 
-  for isogeny in ["sc","ad"] do 
+ for rank:max_rank-min_rank+1 from min_rank do
+  for isogeny in ["sc","ad"] do
    prints("-------------------------------------------------------------------------");
-   if (isogeny ="sc") then 
+   if (isogeny ="sc") then
      prints("Calculating H^1(Gamma,G) for simply connected simple groups of rank ", rank)
    elif( isogeny ="ad") then
      prints("Calculating H^1(Gamma,G) for adjoint simple groups of rank ", rank)
    fi;
    prints("");
-   for g in all_simple(isogeny,rank) do prints(g,"   ",H1(g)) od 
+   for g in all_simple(isogeny,rank) do prints(g,"   ",H1(g)) od
   od
 od
 

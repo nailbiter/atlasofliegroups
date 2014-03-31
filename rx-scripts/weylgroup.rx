@@ -1,3 +1,6 @@
+<misc.rx
+<Weyl.rx
+
 {move_towards_dominant(rd,v)=(s_i.v,i) where i is the first simple root negative on v}
 set move_towards_dominant(RootDatum rd,[int] v)=([int],int):
 if is_dominant(rd,v) then (v,-1) else

@@ -2,25 +2,103 @@ set #(int n)= [int]: for i:n do i od       { [0,1,...,n-1] }
 set #(bool b) = int: if b then 1 else 0 fi { Iverson symbol }
 set #(ratvec v)= int: let (n,)=%v in #n    { length }
 
-set n_rows(mat m)= int: let (r,)=#m in r
-set n_columns(mat m)= int: let (,c)=#m in c
+{ bitsets encoded as functions (int->bool) and upper bound limit }
+
+set list ((int->bool) filter, int limit) = [int]:
+  let result=[int]:[]
+  in for i:limit do if filter(i) then result#:=i fi od; result
+set complement ((int->bool) filter, int limit) = [int]:
+  let result=[int]:[]
+  in for i:limit do if not filter(i) then result#:=i fi od; result
+
+set count ((int->bool) filter, int limit) = int:
+  let c=0 in for i:limit do if filter(i) then c+:=1 fi od; c
+
+set all ((int->bool) filter, int limit) = bool:
+  while limit-:=1; limit>=0 and filter(limit) do () od; limit<0
+set none ((int->bool) filter, int limit) = bool:
+  while limit-:=1; limit>=0 and not filter(limit) do () od; limit<0
+
+
+{				Integers				}
+
+{ absolute value and sgn of integer}
+set abs (int k)= int: if k<0 then -k else k fi
+set sgn (int k)= int: if k<0 then -1 elif k=0 then 0 else 1 fi
+
+set min (int k, int l) = int: if k<l then k else l fi
+set max (int k, int l) = int: if k<l then l else k fi
+
+set = ((int,int)(x0,y0),(int,int)(x1,y1)) = bool: x0=x1 and y0=y1
+set !=((int,int)(x0,y0),(int,int)(x1,y1)) = bool: x0!=x1 or y0!=y1
+
+
+{			    Rational numbers				}
+
+set numer (rat a) = let (n,)=%a in n
+set denom (rat a) = let (,d)=%a in d
+
+set floor (rat a) = int: \ %a     { decompose, then integer division }
+set ceil  (rat a) = int: -\ %-a   { same, sandwiched in negations }
+
+{ these are mostly for ratvec arguments, but avoid coercing from vec }
+set floor ([rat] v) = vec: for a in v do floor(a) od
+set ceil  ([rat] v) = vec: for a in v do  ceil(a) od
+
+
+{				Strings					}
 
 set != ((string,string)p) = bool: not =p
 set > ((string,string)p) = bool: not <=p
 set >= (string x, string y) = bool: y<=x
 set < (string x, string y) = bool: y>x
+
+set +(string s,string t) = string: s # t { alias for concatenation }
 set *(string s, int n)= string: let r="" in (for i:n do r#:=s od; r)
-
-{fix > for rational numbers, -1/1>0 gave wrong answer}
-set > (rat r,rat s)=let (a,b)=%r then (c,d)=%s in a*d-b*c>0
-set >= (rat r,rat s)=let (a,b)=%r then (c,d)=%s in a*d-b*c>=0
-
-set *(int c,vec v) = vec: for e in v do c*e od
-set *(int c,mat m) = mat: for col in m do for e in col do c*e od od
 
 set +(string s, int i)= string: s # int_format(i)
 set +(int i, string s)= string: int_format(i) # s
-set +(string s,string t) = string: s # t { alias for concatenation }
+
+set +(string s, (int,int)(x,y)) = s + "(" + x + "," + y + ")"
+
+
+{				Vectors					}
+
+set ones(int n)= vec: for i:n do 1 od
+
+{ for computing greatest common divisors, inv_fact can do most of the work }
+set gcd(vec v)= int: let f=inv_fact([v]) in if #f=0 then 0 else f[0] fi
+
+set +(vec v,vec w)= vec:
+( if #v != #w then error("Size mismatch " + #v + ":" + #w) fi
+; for e@i in v do e+w[i] od
+)
+
+set -(vec v,vec w)= vec:
+( if #v != #w then error("Size mismatch " + #v + ":" + #w) fi
+; for e@i in v do e-w[i] od
+)
+
+{ scalar multiplication }
+set *(int c,vec v) = vec: for e in v do c*e od
+set -(vec w)= vec: for e in w do -e od
+
+{ entrywise modulo }
+set %(vec v,int d) = vec: for x in v do x%d od
+
+{ sum, product of entries }
+set sum (vec v)= let s=0 in for e in v do s+:=e od; s
+set product (vec v)= let s=1 in for e in v do s*:=e od; s
+
+
+{				Matrices				}
+
+set n_rows(mat m)= int: let (r,)=#m in r
+set n_columns(mat m)= int: let (,c)=#m in c
+
+{ scalar multiplication }
+set *(int c,mat m) = mat: for col in m do for e in col do c*e od od
+set -(mat m)= mat: for c in m do for e in c do -e od od
 
 set ^ =
   let matrix_power (mat m,int n)= mat: m { dummy for recursion }
@@ -36,54 +114,30 @@ set ^ =
   else error("Negative matrix power "+n)
   fi
 
-set -(vec w)= vec: for e in w do -e od
-set -(mat m)= mat: for c in m do for e in c do -e od od
-
-set +(vec v,vec w)= vec:
-( if #v != #w then error("Size mismatch " + #v + ":" + #w) fi
-; for e@i in v do e+w[i] od
-)
-
-set -(vec v,vec w)= vec:
-( if #v != #w then error("Size mismatch " + #v + ":" + #w) fi
-; for e@i in v do e-w[i] od
-)
-
-set %(vec v,int d) = vec: for x in v do x%d od
-
-set sum (vec v)= let s=0 in for e in v do s+:=e od; s
-set product (vec v)= let s=1 in for e in v do s*:=e od; s
-
-set gcd([int] v)=inv_fact([v])[0]
-
-set sum (mat m)= { sum of columns of m }
+{ sum of columns of a matrix }
+set sum (mat m)=
   let (r,)=#m then sum = null(r) in for col in m do sum+:=col od; sum
 
-set +(string s, (int,int)(x,y)) = s + "(" + x + "," + y + ")"
 
-set floor (rat a) = \ %a
-set ceil  (rat a) = -\ %-a
+{			    Rational vectors				}
 
-{absolute value and sgn of integer}
-set abs (int k)=if k<0 then -k else k fi
-set sgn (int k)=if k<0 then -1 else 1 fi
+set numer (ratvec a) = vec: let (n,)=%a in n
+set denom (ratvec a) = int: let (,d)=%a in d
+set =(ratvec v,ratvec w) = bool: let (n,d)=%v, (m,e)=%w in e*n=d*m
+set -(ratvec v) = ratvec: let (n,d)=%v in (-n)/d
+set *(int m,ratvec v) = ratvec: let (n,d)=%v in m*n/d
+set *(rat r,ratvec v) = ratvec: let (n,d)=%r, (nv,dv)=%v in (n*nv)/(d*dv)
+set /(ratvec v,int m) = ratvec: let (n,d)=%v in n/(m*d)
+set /(ratvec v,rat r) = ratvec: let (nv,dv)=%v, (n,d)=%r in (d*nv)/(n*dv)
 
-set numer (rat a) = let (n,)=%a in n
-set denom (rat a) = let (,d)=%a in d
-set numer (ratvec a) = let (n,)=%a in n
-set denom (ratvec a) = let (,d)=%a in d
-set =(ratvec v,ratvec w) = let (n,d)=%v, (m,e)=%w in e*n=d*m
-set -(ratvec v) = let (n,d)=%v in (-n)/d
-set *(int m,ratvec v) = let (n,d)=%v in m*n/d
-set /(ratvec v,int m) = let (n,d)=%v in n/(m*d)
-set *(rat r,ratvec v) = let (n,d)=%r, (nv,dv)=%v in (n*nv)/(d*dv)
-set *(ratvec r, vec v) = let (n,d)=%r in n*v/d
+{ extend built-in scalar product of vectors to rational vector case }
+set *(ratvec v, ratvec w) = rat: let (nv,dv)=%v,(nw,dw)=%w in nv*nw/(dv*dw)
 
-set floor ([rat] v) = for a in v do floor(a) od
-set ceil  ([rat] v) = for a in v do  ceil(a) od
+set *(vec v, ratvec w) = rat: let (nw,dw)=%w in v*nw/dw { more efficient }
+{ cannot also define: *(ratvec v, vec w) = rat: let (nv,dv)=%v in nv*w/dv }
 
-set = ((int,int)(x0,y0),(int,int)(x1,y1)) = bool: x0=x1 and y0=y1
-set !=((int,int)(x0,y0),(int,int)(x1,y1)) = bool: x0!=x1 or y0!=y1
+
+{			    Split integers				}
 
 set = (Split x,Split y) = %x = %y
 set != (Split x,Split y) = %x != %y
@@ -92,17 +146,17 @@ set s = Split:(0,1)
 set + (Split x) = let (r,)=%x in r { real part }
 set ^ (Split x) = let (,y)=%x in y { s part }
 
-set split_power = (Split,int->Split):
-let p = (Split x,int n): x
-in p:= ((Split x,int n): { we shall have n>0 }
-  if n=1 then x
-  else let (q,r)=n\%2 then y=p(x,q) in y*if r=0 then y else x*y fi
-  fi)
-set ^(Split x,int n) =
-  if n>0 then split_power(x,n) elif n=0 then Split:(1,0)
-  elif let (a,b)=%x in abs(a)+abs(b)=1 then if n%2=0 then 1 else x fi
-  else error("Negative power "+n+" of split integer")
-  fi
+set ^ = { exponentiation of split integers }
+  let split_power (Split x,int n) = Split: x { dummy }
+  then () = split_power := ((Split x,int n): { we shall have n>0 }
+    if n=1 then x
+    else let (q,r)=n\%2 then y=split_power(x,q) in y*if r=0 then y else x*y fi
+    fi)
+  in { set ^ = } (Split x,int n): Split:
+    if n>0 then split_power(x,n) elif n=0 then Split:(1,0)
+    elif let (a,b)=%x in abs(a)+abs(b)=1 then if n%2=0 then 1 else x fi
+    else error("Negative power "+n+" of split integer")
+    fi
 
 set -(ParamPol a, (Split,Param) (c,p)) = ParamPol: a+(-c,p)
 
@@ -121,51 +175,73 @@ set -(mat M,mat N)= mat:
 ; for col@j in M do for e@i in col do e-N[i,j] od od
 )
 
-set min (int k, int l) = int: if k<l then k else l fi
-set max (int k, int l) = int: if k<l then l else k fi
 
-set ones(int n)= vec: for i:n do 1 od
+{				Root data 				}
 
-set simple_reflection (RootDatum rd, int s) = mat: { s indexes simple root }
-  id_mat(rank(rd))- [simple_roots(rd)[s]] * ^[simple_coroots(rd)[s]]
+set rho (RootDatum rd) = ratvec:
+  let res= ratvec: null(rank(rd))
+  in for i:semisimple_rank(rd) do res +:= fundamental_weight(rd,i) od; res
+{ this uses fewer additions than computing half sum of the positive roots }
 
-set reflection (RootDatum rd, int alpha) = mat: { alpha indexes any root! }
-  id_mat(rank(rd))- [roots(rd)[alpha]] * ^[coroots(rd)[alpha]]
+{ see also rho_i@KGBElt and rho_r@KGBElt defined below }
+
+set singular_roots(RootDatum rd,ratvec v)=[int]:
+  let rv=[int]:[]
+  in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od; rv
+
+set is_imaginary (mat theta) = (vec->bool): (vec alpha): theta*alpha=alpha
+set is_real      (mat theta) = (vec->bool): (vec alpha): theta*alpha=-alpha
+set is_complex   (mat theta) = (vec->bool): (vec alpha):
+  let ta = theta*alpha in ta!=alpha and ta!=-alpha
+
+set columns_with ((vec->bool) p,mat m) = mat:
+( let res = [vec]: [] in for alpha in m do if p(alpha) then res #:= alpha fi od
+; if #res=0 then null(n_rows(m),0) else res fi
+)
+
+set imaginary_roots (RootDatum rd, mat theta) = mat:
+  columns_with(is_imaginary(theta),roots(rd))
+set real_roots (RootDatum rd, mat theta) = mat:
+  columns_with(is_real(theta),roots(rd))
+
+{ for coroots we need to use the transpose matrix }
+set imaginary_coroots (RootDatum rd, mat theta) = mat:
+  columns_with(is_imaginary(^theta),coroots(rd))
+set real_coroots (RootDatum rd, mat theta) = mat:
+  columns_with(is_real(^theta),coroots(rd))
+
+set complex_posroots(RootDatum rd,mat theta) = mat:
+  columns_with(is_complex(theta),positive_roots(rd))
+
+
+
+{				Inner classes				}
 
 set != (InnerClass x,InnerClass y) = bool: not(x=y)
-
-set involution (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
-( let rd = root_datum(ic), theta = distinguished_involution(ic)
-  in for i : #tw downto 0 do theta := simple_reflection(rd,tw[i])*theta od
-  ; theta
-)
 
 { integrality inner class (dual side) defined by inf. character and involution }
 set dual_integral(InnerClass ic, ratvec gamma) = InnerClass:
   inner_class(dual(integrality_datum(ic,gamma)),-^distinguished_involution(ic))
 
+
+{				Real forms				}
+
 set = (RealForm f, RealForm g) = bool:
   inner_class(f) = inner_class(g) and form_number(f)=form_number(g)
 set != (RealForm f, RealForm g) = bool: not(f=g)
 
-set -(ParamPol P,ParamPol Q) = ParamPol: P+(-1)*Q
-set =(ParamPol P,ParamPol Q) = bool: #(P-Q)=0
 
-{ order of operands in the next function avoids conflicting *@(int,ParamPol) }
-set *(Param p,rat alpha) = let (x,lambda,nu)=%p in param(x,lambda,alpha*nu)
+{			       KGB elements				}
 
-{need some overloads since coercion RealForm->InnerClass or RootDatum is disabled}
-{set root_datum(RealForm G)=root_datum(inner_class(G))
-set semisimple_rank(RealForm G)=semisimple_rank(root_datum(G))
-set roots(RealForm G)=roots(root_datum(G))
-set coroots(RealForm G)=coroots(root_datum(G))
-set nr_of_Cartan_classes(RealForm G)=nr_of_Cartan_classes(inner_class(G))
-set nr_of_real_forms(RealForm G)=nr_of_real_forms(inner_class(G))
-set distinguished_involution(RealForm G)=distinguished_involution(inner_class(G))
-set positive_roots(RealForm G)=positive_roots(root_datum(G))
-set simple_roots(RealForm G)=simple_roots(root_datum(G))}
+set != (KGBElt x,KGBElt y) = bool: not(x=y)
 
 set KGB(RealForm rf) = [KGBElt]: for i:KGB_size(rf) do KGB(rf,i) od
+
+set status_text(int s,KGBElt x) = string:
+  ["C-","ic","r ","nc","C+"][status(s,x)]
+set status_texts(KGBElt x) = [string]:
+  for s:semisimple_rank(real_form(x)) do status_text(s,x) od
+
 set is_complex(int s,KGBElt x) = status(s,x)%4=0
 set is_real(int s,KGBElt x) = status(s,x)=2
 set is_imaginary(int s,KGBElt x) = status(s,x)%2=1
@@ -173,122 +249,90 @@ set is_noncompact(int s,KGBElt x) = status(s,x)=3
 set is_compact(int s,KGBElt x) = status(s,x)=1
 set is_descent(int s,KGBElt x) = status(s,x)<3
 set is_ascent(int s,KGBElt x) = status(s,x)>=3
-set status_code(int s,KGBElt x) = ["C-","ic","r ","nc","C+"][status(s,x)]
-set status_codes(KGBElt x) =
-  for s:semisimple_rank(real_form(x)) do status_code(s,x) od
-set x(Param p) = KGBElt: let (x,,) =%p in x {so don't have to load misc.rx}
+
+
+{ status of general roots for a KGBElt (which here just represents its fiber) }
+
+set is_imaginary(KGBElt x) = (vec->bool): is_imaginary(involution(x))
+set is_real(KGBElt x)      = (vec->bool): is_real(involution(x))
+set is_complex(KGBElt x)   = (vec->bool): is_complex(involution(x))
+
+set imaginary_roots(KGBElt x) = mat:
+  columns_with(is_imaginary(x),roots(real_form(x)))
+set real_roots(KGBElt x) = mat:
+  columns_with(is_real(x),roots(real_form(x)))
+set complex_roots(KGBElt x) = mat:
+  columns_with(is_complex(x),roots(real_form(x)))
+
+set imaginary_posroots(KGBElt x) = mat:
+  columns_with(is_imaginary(x),positive_roots(real_form(x)))
+set real_posroots(KGBElt x) = mat:
+  columns_with(is_real(x),positive_roots(real_form(x)))
+set complex_posroots(KGBElt x) = mat:
+  columns_with(is_complex(x),positive_roots(real_form(x)))
+
+set rho_i(KGBElt x) = ratvec: sum(imaginary_posroots(x))/2
+set rho_r(KGBElt x) = ratvec: sum(imaginary_posroots(x))/2
+
+
+{			    Module parameters				}
+
+set != (Param x,Param y) = bool: not(x=y)
+
+{ deforming |nu| (operand order voids conflicting with *@(int,ParamPol) ) }
+set *(Param p,rat alpha) = let (x,lambda,nu)=%p in param(x,lambda,alpha*nu)
+
+set x(Param p) = KGBElt: let (x,,) =%p in x
+
+{ simulate coercion (KGBElt->RealForm) in some cases }
 set involution(Param p)=involution(x(p))
-set status_code(int s,Param p)=status_code(s,x(p))
-set status_codes(Param p)=status_codes(x(p))
 
-set imaginary_type(int s, Param p)=if cross(s,Cayley(s,p))=Cayley(s,p) then 1 else 2 fi
-set real_type(int s,Param p)=imaginary_type(s,Cayley(s,p))
+{ status of a parameter with respect of a Weyl generator s }
 
-set is_parity(int s,Param p)=bool: if status_code(s,x(p))="r " then inv_Cayley(s,p)=p else false fi
-set is_non_parity(int s,Param p)=bool: if status_code(s,x(p))="r " then not(is_parity(s,p)) else false fi
+set imaginary_type(int s, Param p) = int: if cross(s,p)=p then 2 else 1 fi
+set real_type(int s,Param p) = int: if cross(s,p)=p then 1 else 2 fi
 
-set full_status_code(int s,Param p)=string:
-if is_real(s,x(p)) then 
- if is_parity(s,p) then "rn" else ["r1","r2"][real_type(s,p)-1] fi
-elif is_noncompact(s,x(p)) then ["i1","i2"][imaginary_type(s,p)-1] else
-status_code(s,x(p)) fi
+set is_non_parity(int s,Param p)=bool: is_real(s,x(p)) and inv_Cayley(s,p)=p
+set is_parity(int s,Param p)= bool: is_real(s,x(p)) and inv_Cayley(s,p)!=p
 
-set full_status_codes(Param p)=[string]:for s:semisimple_rank(real_form(p)) do full_status_code(s,p) od
+set status(int s,Param p) = int: { enum: C-, ic, r1, r2, C+, rn, i1, i2 }
+let st=status(s,x(p)) in
+if st<=1 or st=4 then st { complex and imaginary compact cases keep old code }
+elif st=3 then { imaginary non-compact } 5+imaginary_type(s,p)
+elif inv_Cayley(s,p)=p then { real non-parity } 5
+else 1+real_type(s,p)
+fi
 
-set in_tau(int s,Param p)=bool:if is_compact(s,x(p)) or status_code(s,x(p))="C-" or is_non_parity(s,p) then true else false fi
-set tau(Param p)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau(s,p) then rv:=rv#s fi od;rv
-set in_tau_complement(int s,Param p)=bool:not(in_tau(s,p))
-set tau_complement(Param p)=let rv=[] in for s:semisimple_rank(real_form(p)) do if in_tau_complement(s,p) then rv:=rv#s fi od;rv
+set status_text(int s,Param p) = string:
+  ["C-","ic","r1","r2","C+","rn","i1","i2"][status(s,p)]
+set status_texts(Param p) = [string]:
+  for s:semisimple_rank(real_form(p)) do status_text(s,p) od
 
-set null_module(Param p)=ParamPol:null_module(real_form(p))
-set null_module(ParamPol P)=ParamPol:null_module(real_form(P))
+set is_descent (int s,Param p) = bool: status(s,p)<4
+set tau_bitset(Param p) = ((int->bool),int):
+  ((int s): is_descent(s,p), semisimple_rank(real_form(p)))
 
-{ define dot product ratvec*ratvec,ratvec*vec,vec*ratvec }
-set *(ratvec v,ratvec w)= rat: let (a,b)=%v then (c,d)=%w in a*c/(b*d)
-
-set singular_roots(RootDatum rd,ratvec v)=[int]:
-let rv=[] in for a@i in simple_coroots(rd) do if a*v=0 then rv:=rv#i fi od;rv
-
-{some necessities now that implicit conversion Param->ParamPol is disabled}
-set virtual(Param p)=ParamPol:null_module(real_form(p))+p
-set virtual([Param] P)=ParamPol:let rv=null_module(real_form(P[0])) in for p in P do rv+:=virtual(p) od;rv
-set *(int n,Param p)=ParamPol:n*virtual(p)
-set -(Param p)=ParamPol:(-1)*p
-set -(ParamPol P,Param p)=ParamPol:P+(-1)*virtual(p)
-set +(Param p,Param q)=ParamPol:virtual(p)+virtual(q)
-set -(Param p,Param q)=ParamPol:virtual(p)+(-1)*virtual(q)
-
-{--------functions involving types of roots, sums of roots--------}
-{also see misc.rx, and K.rx for compact/noncompact roots}
-
-set rho (RootDatum rd) = ratvec:
-( let res= ratvec: null(rank(rd))
-  in for i:semisimple_rank(rd) do res +:= fundamental_weight(rd,i) od
-; res
-) { uses fewer additions than computing half sum of the positive roots }
-
-set imaginary_roots (RootDatum rd, mat theta) = mat:
-( let ir = [vec]: [] in
-  for alpha in roots(rd) do if theta*alpha = alpha then
-    ir #:= alpha
-  fi od
-; if #ir=0 then null(rank(rd),0) else ir fi
-)
-
-set real_roots (RootDatum rd, mat theta) = mat:
-( let rr = [vec]: [] in
-  for alpha in roots(rd) do if theta*alpha = -alpha then
-     rr #:= alpha
-  fi od
-; if #rr=0 then null(rank(rd),0) else rr fi
-)
-
-set imaginary_coroots (RootDatum rd, mat theta) = mat:
-( let ic = [vec]: [] in
-  for alpha in coroots(rd) do if alpha*theta = alpha then
-    ic #:= alpha
-  fi od
-; if #ic=0 then null(rank(rd),0) else ic fi
-)
-
-set real_coroots (RootDatum rd, mat theta) = mat:
-( let rc = [vec]: [] in
-  for alpha in coroots(rd) do if alpha*theta = -alpha
-    then rc #:= alpha
-  fi od
-; if #rc=0 then null(rank(rd),0) else rc fi
-)
+set tau(Param p)            = list(tau_bitset(p))
+set tau_complement(Param p) = complement(tau_bitset(p))
 
 
+{		    Polynomials in module parameters			}
 
-set imaginary_roots (InnerClass ic, [int] tw) = mat:   { tw is a Weyl word }
-  imaginary_roots(ic,involution(ic,tw))
-set real_roots (InnerClass ic, [int] tw) = mat:        { tw is a Weyl word }
-  real_roots(ic,involution(ic,tw))
-set imaginary_coroots (InnerClass ic, [int] tw) = mat: { tw is a Weyl word }
-  imaginary_coroots(ic,involution(ic,tw))
-set real_coroots (InnerClass ic, [int] tw) = mat:      { tw is a Weyl word }
-  real_coroots(ic,involution(ic,tw))
+set -(ParamPol P,ParamPol Q) = ParamPol: P+(-1)*Q
+set =(ParamPol P,ParamPol Q) = bool: #(P-Q)=0
+set !=(ParamPol P,ParamPol Q) = bool: #(P-Q)>0
 
-set is_imaginary(vec alpha,KGBElt x)=bool:involution(x)*alpha=alpha
-set is_real(vec alpha,KGBElt x)=bool:involution(x)*alpha=-alpha
-set is_complex(vec alpha,KGBElt x)=bool:not( is_imaginary(alpha,x) or is_real(alpha,x))
+set null_module(ParamPol P)= 0*P { also handles null_module(Param) }
 
-set imaginary_roots(KGBElt x)=[vec]:let rv=[] in 
-for alpha in positive_roots(real_form(x)) do if is_imaginary(alpha,x) then rv#:=alpha fi od;rv
+set virtual(Param p) = ParamPol: null_module(real_form(p)) + p
+set virtual([Param] P) = ParamPol:
+  let rv=null_module(real_form(P[0])) in for p in P do rv+:=virtual(p) od;rv
 
-set real_roots(KGBElt x)=[vec]:let rv=[] in 
-for alpha in positive_roots(real_form(x)) do if is_real(alpha,x) then rv#:=alpha fi od;rv
+set *(int n,Param p)      = ParamPol: n*virtual(p)
+set -(Param p)            = ParamPol: (-1)*p
+set -(ParamPol P,Param p) = ParamPol: P+(-1)*virtual(p)
+set +(Param p,Param q)    = ParamPol: virtual(p)+virtual(q)
 
-set complex_roots(KGBElt x)=[vec]: let rv=[] in 
-for alpha in positive_roots(real_form(x)) do if is_complex(alpha,x) then rv#:=alpha fi od;rv
-
-set complex_roots(RootDatum rd,mat theta)=[vec]:let rv=[] in
-for alpha in positive_roots(rd) do if alpha != theta*alpha then rv#:=alpha fi od;rv
-
-set rho_i(KGBElt x)=ratvec:let rv=if #imaginary_roots(x)>0 then sum(imaginary_roots(x)) else null(rank(real_form(x))) fi in rv/2
-set rho_r(KGBElt x)=ratvec:let rv=if #real_roots(x)>0 then sum(real_roots(x)) else null(rank(real_form(x))) fi in rv/2
-
-
-
-
+set -(Param p,Param q)    = ParamPol: virtual(p)+(-1)*virtual(q)
+set -(ParamPol P)         = ParamPol: (-1)*P
+set -(Param p,Param q) 	  = ParamPol: virtual(p)+(-1)*virtual(q)

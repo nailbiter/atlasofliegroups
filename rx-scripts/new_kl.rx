@@ -51,7 +51,7 @@ set character_formula (Param p) = ParamPol: s_to_1(KL_sum_at_s(p))
 
 set composition_series (Param p) = ParamPol:
 ( let block=partial_block(p)
-  , result= null_module(real_form(p)), acc=ParamPol: p in
+  , result= null_module(real_form(p)) then  acc=ParamPol: result+p in
   for i:#block downto 0
   do let coef = acc[block[i]] in
     if coef!=0

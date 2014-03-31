@@ -1,5 +1,6 @@
 <misc.rx
 <new_kl.rx
+<representations.rx
 
 { a variable used in this file; set to true for more output from functions }
 set hermitian_debug = false

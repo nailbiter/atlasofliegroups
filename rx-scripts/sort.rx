@@ -19,7 +19,7 @@ set sort= { merge sort }
     fi)
   in (vec v) vec: ms(v,#v)
 
-
+set reverse (vec v)= vec: for i:#v downto 0 do v[i] od
 set reverse_sort (vec v)= vec: reverse(sort(v))
 
 { the following helps stable-sorting of anything according to a statistic }
