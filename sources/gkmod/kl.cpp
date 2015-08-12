@@ -1170,5 +1170,5 @@ void wGraph(wgraph::WGraph& wg, const KLContext& klc)
 
 } // |wGraph|
 
-} // namespace kl
-} // namespace atlas
+} // |namespace kl|
+} // |namespace atlas|

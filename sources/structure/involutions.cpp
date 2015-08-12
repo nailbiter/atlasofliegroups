@@ -443,12 +443,6 @@ void Cartan_orbits::add(ComplexReductiveGroup& G, CartanNbr cn)
   orbit.push_back(Cartan_orbit(static_cast<InvolutionTable&>(*this),G,cn));
 }
 
-void Cartan_orbits::add(ComplexReductiveGroup& G, const BitMap& Cartan_classes)
-{
-  for (BitMap::iterator it=Cartan_classes.begin(); it(); ++it)
-    add(G,*it);
-}
-
 unsigned int Cartan_orbits::locate(InvolutionNbr i) const
 {
   unsigned int low=0, high=orbit.size();
@@ -495,4 +489,4 @@ size_t Cartan_orbits::total_size(const BitMap& Cartan_classes) const
 
 } // namsepace
 
-} // namespace atlas
+} // |namespace atlas|

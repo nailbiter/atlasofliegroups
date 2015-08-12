@@ -1400,9 +1400,12 @@ weyl::Twist check_involution
   return p;
 }
 
-@ That |M| is an automorphism means that the roots are permuted among
-each other, and that after applying the Weyl group action to map simple roots
-to simple roots, the result is a diagram automorphism; this is tested by
+@ That |M| is an automorphism means that the roots are permuted among each
+other, that the coroots are (under right multiplication) also permuted among
+each other (this is not implied by the first condition if the root datum is
+not semisimple; when it does hold, the permutation is necessarily the same),
+and that after applying the Weyl group action to map simple roots to simple
+roots, the result is a diagram automorphism. This final condition is tested by
 checking that the Cartan matrix is invariant under the corresponding
 permutation of its rows and columns.
 
@@ -1415,6 +1418,10 @@ permutation of its rows and columns.
     if (Delta[i]==rd.numRoots()) // then image not found
       throw runtime_error@|
         ("Matrix maps simple root "+str(i)+" to non-root");
+    if (M.right_prod(rd.simpleCoroot(i))!=rd.coroot(Delta[i]))
+      throw runtime_error@|
+        ("Matrix does not map simple coroot "+str(i)
+        @|+" to coroot "+str(Delta[i]-rd.numPosRoots()));
   }
   ww = wrt_distinguished(rd,Delta);
   for (weyl::Generator i=0; i<s; ++i)
@@ -2398,14 +2405,19 @@ void dual_quasisplit_form_wrapper(expression_base::level l)
 It is useful to be able to compute a real form based on other information than
 its index within its inner class, namely on a strong involution representative
 (involution and torus element). The synthetic \.{realex} function |real_form|
-takes an inner class, a matrix giving an involution~$\theta$, and a
-$\theta$-stable rational coweight describing (through $l\mapsto\exp(\pi\ii
-l)$) a torus element; it returns the corresponding real form, but in which a
-|cocharacter| value is stored deduced from $\exp(\pi\ii l)$ that identifies
-the strong real form, and may differ from the |cocharacter| value for the weak
-real form that could be obtained by selecting by number in the inner class.
-This difference notably allows the same strong involution representative to be
-subsequently used to specify a KGB element for this (strong) real form.
+takes an inner class, a matrix giving an involution~$\theta$, and a rational
+coweight~$t$. After projecting $t$ to the $+1$ eigenspace of~$\theta$ to make
+it $\theta$-stable, it describes (through $\exp_{-1}:l\mapsto\exp(\pi\ii l)$)
+a torus element; the square of this element should be central (meaning in
+coordinates that all simple roots have integral evaluation on the projected
+rational vector; in the code below the doubled projection is made first, and
+evaluations must be even). If this test succeeds, the function then returns
+the corresponding real form, but in which a |cocharacter| value is stored
+deduced from the torus element that identifies the strong real form, and may
+differ from the |cocharacter| value for the weak real form that could be
+obtained by selecting by number in the inner class. This difference notably
+allows the same strong involution representative to be subsequently used to
+specify a KGB element for this (strong) real form.
 
 @:synthetic_real_form@>
 
@@ -2431,7 +2443,8 @@ void synthetic_real_form_wrapper(expression_base::level l)
     Ratvec_Numer_t& num = torus_factor->val.numerator();
     num += theta->val.right_prod(num);
       // make torus factor $\theta$-fixed, temporarily doubled
-    TorusElement t(torus_factor->val,false); // take a copy as |TorusElement|
+    TorusElement t(torus_factor->val,false);
+      // take a copy as |TorusElement|, using $\exp_{-1}$
     const RootDatum& rd = G->val.rootDatum();
     WeightList alpha(rd.beginSimpleRoot(),rd.endSimpleRoot());
     if (not is_central(alpha,t)) // every root should now have even evaluation
@@ -2988,7 +3001,7 @@ void KGB_involution_wrapper(expression_base::level l)
   const ComplexReductiveGroup& G=x->rf->val.complexGroup();
   if (l!=expression_base::no_value)
     push_value(std::make_shared<matrix_value>
-      (G.involutionMatrix(kgb.involution(x->val))));
+      (G.matrix(kgb.involution(x->val))));
 }
 
 void KGB_length_wrapper(expression_base::level l)
@@ -4680,6 +4693,14 @@ $K$ parameters'' used to designate $K$-types is both hard to decipher and does
 not seem to relate easily to values used elsewhere. However, these parameters
 do in fact correspond to the subset of module pareters with $\nu=0$.
 
+The function |K_type_formula| converts its parameter to a |StandardRepK|
+value~|sr|, for which it calls the method |SRK_context::K_type_formula|. Since
+the terms of that formula are not necessarily standard, one needs to pass each
+term though |KhatContext::standardize|; finally, to incorporate the resulting
+terms into a |virtual_module|, they need to be passed through
+|Rep_context::expand_final|. One must not forget to multiply the small integer
+coefficients that these two methods produce.
+
 @h "standardrepk.h"
 
 @< Local function def...@>=
@@ -4688,25 +4709,28 @@ void K_type_formula_wrapper(expression_base::level l)
 { shared_module_parameter p = get<module_parameter_value>();
   RealReductiveGroup& G = p->rf->val;
   const Rep_context& rc = p->rc();
-  standardrepk::SRK_context srkc(G);
+  standardrepk::KhatContext khc(G);
   StandardRepK sr =
-    srkc.std_rep_rho_plus (rc.lambda_rho(p->val),G.kgb().titsElt(p->val.x()));
+    khc.std_rep_rho_plus (rc.lambda_rho(p->val),G.kgb().titsElt(p->val.x()));
   @< Check that |sr| is final, and if not |throw| an error @>
-  standardrepk::Char formula = srkc.K_type_formula(sr).second;
+  if (l==expression_base::no_value)
+    return;
 @)
-  if (l!=expression_base::no_value)
-  { RatWeight zero_nu(p->rf->val.rank());
-    own_virtual_module acc @|
-      (new virtual_module_value(p->rf, repr::SR_poly(p->rc().repr_less())));
-    for (standardrepk::Char::const_iterator
-           it=formula.begin(); it!=formula.end(); ++it)
+  const standardrepk::Char formula = khc.K_type_formula(sr).second;
+  const RatWeight zero_nu(p->rf->val.rank());
+@/own_virtual_module acc @|
+    (new virtual_module_value(p->rf, repr::SR_poly(p->rc().repr_less())));
+  for (auto it=formula.begin(); it!=formula.end(); ++it)
+  {
+    standardrepk::combination st=khc.standardize(it->first);
+    for (auto stit=st.cbegin(); stit!=st.cend(); ++stit)
     {
-      StandardRepr term =  rc.sr(it->first,srkc,zero_nu);
-      repr::SR_poly contribution = rc.expand_final(term);
-      acc->val.add_multiple(contribution,Split_integer(it->second));
+      StandardRepr term =  rc.sr(khc.rep_no(stit->first),khc,zero_nu);
+      acc->val.add_multiple(rc.expand_final(term),
+                            Split_integer(it->second*stit->second));
     }
-    push_value(acc);
   }
+  push_value(acc);
 }
 
 @ We must test the parameter for being final, or else the method
@@ -4715,11 +4739,11 @@ since the parameter itself reported here might be final.
 
 @< Check that |sr| is final, and if not |throw| an error @>=
 { size_t witness;
-  if (not srkc.isFinal(sr,witness))
+  if (not khc.isFinal(sr,witness))
   { std::ostringstream os;
-    RootNbr simp_wit = srkc.fiber(sr).simpleReal(witness);
+    RootNbr simp_wit = khc.fiber(sr).simpleReal(witness);
     print(os << "Non final restriction to K: ",p->val,rc)
-    @| << "\n  (witness "	<< srkc.rootDatum().coroot(simp_wit) << ')';
+    @| << "\n  (witness "	<< khc.rootDatum().coroot(simp_wit) << ')';
     throw runtime_error(os.str());
   }
 }
