@@ -76,14 +76,14 @@ end
 
 set unitri_inv (poly_mat M) = poly_mat:
 begin
-  let ()=prints("Inverse of matrix of size ", #M) in
+{  let ()=prints("Inverse of matrix of size ", #M) in}
   let n=#M, zero=poly:[], one=poly:[1] in
   assert(all(n,(int i) bool: let Mi=M[i] in all(i,(int j) bool: =Mi[j]))
         ,"Matrix isn't upper triangular")
 ; assert(all(n,(int i) bool: =(M[i][i]-[1]))
         ,"Matrix doesn't have ones on diagonal")
 ; for i:n { compute row i of inverse }
-  do prints(i);let row = M[i] in
+  do {prints(i);}let row = M[i] in
     for j:n { compute entry j of that row, and update row }
     do
       if j<=i then if j<i then zero else one fi

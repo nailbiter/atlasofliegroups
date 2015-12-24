@@ -1,0 +1,64 @@
+<KL_P_polynomials.rx
+<inverse.rx
+
+{The Q polynomials are trickier than the P polynomials
+ The P polynomials are computed directly in terms of KLV polynomials
+ The Q polynomials are the inverse, or can be computed a P polynomials for the 
+   dual block
+ Since the dual block is problematic (at singular/nonintegral infinitesimal character, 
+  and also in terms of an extra permutation which is sometimes introduced), 
+  the basic version computes Q as the inverse of P (in this file)
+  alternatively Q is computed using Vogan duality in dual.rx
+}
+
+{ define the P and Q polynomials
+  P,Q matrices of polynomials in q
+  P,Q are upper triangular if B is in standard (increasing) order
+  P: positive/negative integer coefficients
+  Q: non-negative integer coefficients
+  P(1) is the multiplicity of a standard module in an irreducible
+    (character formula)
+  Q(1) is the multiplicity of an irreducible module in a standard module
+  Q is computed here, for P see KL_P_polynomials.rx
+}
+set KL_P_polynomials ([Param] B) = poly_mat: KL_block_polynomials(B,true)
+
+{ The Q polynomials are obtained from KL_P_polynomials(dual block)
+  after applying a permutation and transpose
+  should satisfy P*Q=I
+  test this with P*Q=identity_poly_matrix(#P)
+  assuming B is in standard length increasing order:
+  P and Q are  both upper triangular
+}
+set KL_Q_polynomials ([Param] B)=poly_mat:unitri_inv(KL_P_polynomials(B))
+
+{individual Q polynomials
+ given B to make sure have the right basis in the right order
+ given Q so don't need to recompute it
+}
+set KL_Q_polynomial([Param] B, poly_mat Q,Param irr,Param std)=poly:
+let index_irr=find(B,irr) then
+index_std=find(B,std) in
+assert(index_irr>=0 and index_std>=0,"irr and/or std not found in block");
+Q[index_irr][index_std]
+
+set print_KL_Q_polynomial([Param] B, poly_mat Q,Param irr,Param std)=void:printPoly(KL_Q_polynomial(B,Q,irr,std))
+
+{if not given Q, compute it, and include it in the output}
+set KL_Q_polynomial([Param] B,Param irr,Param std)=(poly_mat,poly):let Q=KL_Q_polynomials(B) in (Q,KL_Q_polynomial(B,Q,irr,std))
+set print_KL_Q_polynomial([Param] B,Param irr,Param std)=void:let (,f)=KL_Q_polynomial(B,irr,std) in printPoly(f)
+
+{if not given B, compute it also, and return (B,Q,polynomial)}
+set KL_Q_polynomial_long(Param irr,Param std)=([Param],poly_mat,poly):let B=block_of(irr) in let (Q,f)=KL_Q_polynomial(B,std,irr) in (B,Q,f)
+{single Q polynomial only}
+set KL_Q_polynomial(Param irr,Param std)=poly:let (,,f)=KL_Q_polynomial_long(irr,std) in f
+
+
+{instead give irr and std by their indices in B}
+set KL_Q_polynomial([Param] B, poly_mat Q,int index_irr,int index_std)=poly:Q[index_irr][index_std]
+set print_KL_Q_polynomial([Param] B, poly_mat Q,int index_irr,int index_std)=void:printPoly(KL_Q_polynomial(B,Q,index_irr,index_std))
+set KL_Q_polynomial([Param] B,int index_irr,int index_std)=(poly_mat,poly):let Q=KL_Q_polynomials(B) in (Q,KL_Q_polynomial(B,Q,index_irr,index_std))
+set print_KL_Q_polynomial([Param] B,int index_irr,int index_std)=void:let (,f)=KL_Q_polynomial(B,index_irr,index_std) in printPoly(f)
+
+{both P and Q}
+set KL_polynomials([Param] B)=(poly_mat,poly_mat):let P=KL_P_polynomials(B) in (P,unitri_inv(P))

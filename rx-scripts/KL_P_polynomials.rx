@@ -1,0 +1,78 @@
+<polynomial.rx
+
+{these functions related to P polynomials have been moved from dual.rx}
+
+{ define the P and Q polynomials
+  P,Q matrices of polynomials in q
+  P,Q are upper triangular if B is in standard (increasing) order
+  P: positive/negative integer coefficients
+  Q: non-negative integer coefficients
+  P(1) is the multiplicity of a standard module in an irreducible
+    (character formula)
+  Q(1) is the multiplicity of an irreducible module in a standard module
+  P is computed here, for Q see KL_Q_polynomials.rx
+}
+
+
+{ recover required length_diff function, now only remaining in old_kl.rx }
+set length (int i, vec stops) = int: { compute length=max{k:stops[k]<=i} }
+( let a=0, b=#stops { use binary search; invariant: a <= length < b } in
+  while a+1<b { when b=a+1, a is our max }
+  do let avg=(a+b)\2 in if stops[avg]<=i then a:=avg else b:=avg fi od
+; a
+)
+
+set length_diff (int i,int j,vec stops) = int: length(j,stops)-length(i,stops)
+
+set permutation ([Param] B1, [Param] B2) = [int]:
+  for i:#B2 do find(B2,B1[i]) od
+
+{ matrix of P-polynomials for B, with signs if second argument is true
+  usually B and then the block returned by KL_block should be identical to B,
+  in the same order, so perm_B_block is the identity. In particular this
+  should hold if B was constructed using block_of().
+  Otherwise perm_B_block might be nontrivial
+}
+set KL_block_polynomials ([Param] B,bool signs)=poly_mat:
+( let (block,n,Pmatrix,polynomials,stops,survivors,)=KL_block(B[0]) in
+  let m=n_rows(Pmatrix) in
+  let P=zero_poly_matrix(m) in
+  for i:m do
+    for j:m do
+      let length_diff = if signs then length_diff(i,j,stops) else 0 fi in
+      P:=update_matrix_entry(P,i,j,
+        convolve(sgn_poly((-1)^length_diff),polynomials[Pmatrix[i,j]]))
+    od
+  od
+; let perm_B_block=permutation(B,block) in
+  poly_permute_basis(perm_B_block,P)
+)
+
+set KL_P_polynomials([Param] B)=poly_mat:KL_block_polynomials(B,true)
+
+{individual P polynomials
+ given B to make sure have the right basis in the right order
+ given P so don't need to recompute it
+}
+set KL_P_polynomial([Param] B, poly_mat P,Param std,Param irr)=poly:
+let index_std=find(B,std) then
+index_irr=find(B,irr) in
+assert(index_irr>=0 and index_std>=0,"irr and/or std not found in block");
+P[index_std][index_irr]
+
+set print_KL_P_polynomial([Param] B, poly_mat P,Param std,Param irr)=void:printPoly(KL_P_polynomial(B,P,std,irr))
+
+{if not given P, compute it, and include it in the output}
+set KL_P_polynomial([Param] B,Param std,Param irr)=(poly_mat,poly):let P=KL_P_polynomials(B) in (P,KL_P_polynomial(B,P,std,irr))
+set print_KL_P_polynomial([Param] B,Param std,Param irr)=void:let (,f)=KL_P_polynomial(B,std,irr) in printPoly(f)
+
+{if not given B, compute it also, and return (B,P,polynomial)}
+set KL_P_polynomial_long(Param std,Param irr)=([Param],poly_mat,poly):let B=block_of(std) in let (P,f)=KL_P_polynomial(B,std,irr) in (B,P,f)
+{single P polynomial only}
+set KL_P_polynomial(Param std,Param irr)=poly:let (,,f)=KL_P_polynomial_long(std,irr) in f
+
+{instead give irr and std by their indices in B}
+set KL_P_polynomial([Param] B, poly_mat P,int index_std,int index_irr)=poly:P[index_irr][index_std]
+set print_KL_P_polynomial([Param] B, poly_mat P,int index_std,int index_irr)=void:printPoly(KL_P_polynomial(B,P,index_irr,index_std))
+set KL_P_polynomial([Param] B,int index_std,int index_irr)=(poly_mat,poly):let P=KL_P_polynomials(B) in (P,KL_P_polynomial(B,P,index_irr,index_std))
+set print_KL_P_polynomial([Param] B,int index_std,int index_irr)=void:let (,f)=KL_P_polynomial(B,index_irr,index_std) in printPoly(f)
