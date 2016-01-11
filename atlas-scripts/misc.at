@@ -101,3 +101,6 @@ set prettyPrint (Split w) = string:
 set prettyPrint (ParamPol P)= void:
 for w@p in P
 do prints("(",prettyPrint(w),")*",p,", ",infinitesimal_character(p)) od
+
+{use Smith normal form (inv_fact) to compute LCM}
+set lcm([int] v)=int:inv_fact(diagonal(v))[#v-1]

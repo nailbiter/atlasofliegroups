@@ -1,8 +1,8 @@
-<misc.at
-<kl.at
+<K_types.at
 
 set std="std"
 set irr="irr"
+set K_types="K_types"
 set I(Param p)=(Param,string):
 if not is_standard(p) then error("parameter is not standard") else (p,std) fi
 set J(Param p)=(Param,string):
@@ -15,8 +15,7 @@ set to_str(rat a)=string:let (n,d)=%a in to_str(n)#"/"#to_str(d)
 set to_str(vec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_str(v[i])#"," od;rv:=rv#to_str(v[#v-1])#"]";rv
 set to_str(ratvec v)=string:let rv ="[" in for i:  #v-1 do rv:=rv#to_str(v[i])#"," od;rv:=rv#to_str(v[#v-1])#"]";rv
 
-set kgb_number(KGBElt x)=int:
-let  G=real_form(x) in let (kgb,i,rv)=(KGB(G), 0, -1) in while i<#kgb do if x=KGB(G,i) then (rv:=i,i:=#kgb) else i:=i+1 fi od;rv
+set kgb_number(KGBElt x)=int:let G=real_form(x) in first(KGB_size(G), (int i):bool: KGB(G,i)=x)
 
 set to_str(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in
 "(x="#to_str(n)#",lambda="#to_str(lambda)#",nu="#to_str(nu)#")"
@@ -27,14 +26,24 @@ set to_str_std(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p),nu(p)) in let n
 set to_str_irr(Param p)=string:let (x,lambda,nu)=(x(p),lambda(p), nu(p)) in let n=kgb_number(x) in
 "J(x="#to_str(n)#",lambda="#to_str(lambda)#",nu="#to_str(nu)#")"
 
+set to_str_Ktypes(KParam p)=string:let (x,lambda)=(x(p),lambda(p)) in let n=kgb_number(x) in
+"J_K(x="#to_str(n)#",lambda="#to_str(lambda)#")"
+
+set to_str_Ktypes(Param p)=string:to_str_Ktypes(Kparameter(p))
+
 set to_str(Param p, string type)=string:
- if type=std then to_str_std(p) elif type=irr then to_str_irr(p) else error("type is incorrect") fi
+ if type=std then to_str_std(p) 
+ elif type=irr then to_str_irr(p) 
+ elif type=K_types then to_str_Ktypes(p) 
+ else error("type is incorrect") fi
 
 set to_str(ParamPol P)=[string]:
-for w@p in P do "("#prettyPrint(w)#")*"#to_str(p)#")" od
+{for w@p in P do "("#prettyPrint(w)#")*"#to_str(p)#")" od}
+for w@p in P do prettyPrint(w)#"*"#to_str(p)#")" od
 
 set to_str(ParamPol P,string type)=[string]:
-for w@p in P do "("#prettyPrint(w)#")*"#to_str(p,type)#")" od
+{for w@p in P do "("#prettyPrint(w)#")*"#to_str(p,type)#")" od}
+for w@p in P do  prettyPrint(w)#"*"#to_str(p,type)#")" od
 
 set array_prints([string] A)=void:for a in A do prints(a) od
 
@@ -69,29 +78,19 @@ if type=irr then
 let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*character_formula(p) od;(N,std)
 else error("Character formula not defined for sum of irreducible modules") fi
 
-
-
 set composition_series(ParamPol P,string type)=(ParamPol,string):
 if type=std then
 let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;(N,irr)
 else error("Composition series not defined for sum of irreducible modules") fi
 
-set module_print(ParamPol P)=void:array_prints(to_str(P))
-set module_print(ParamPol P,string type)=
-if (type=irr or type=std)  then array_prints(to_str(P,type)) else error("Incorrect type") fi
-set mprint(ParamPol P)=module_print(P)
-set mprint(ParamPol P,string type)=module_print(P,type)
-set mprint((Param,string)(p,type))=prints(to_str(p,type))
-set print((Param,string)(p,type))=prints(to_str(p,type))
+set show(ParamPol P)=void:array_prints(to_str(P))
+set show(ParamPol P,string type)=void:
+if (type=irr or type=std or type=K_types)  then array_prints(to_str(P,type)) else error("Incorrect type") fi
+set show((Param,string)(p,type))=prints(to_str(p,type))
 
-{moved to basic.rx set virtual(Param p)=null_module(real_form(p))+p}
+
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
 set virtual(Param p,string type)=if (type=irr or type=std)  then (virtual(p),type) else error("incorrect type") fi
-
-{equality of (ParamPol,irr or std)
-(P,irr)=(Q,irr) or (P,std)=(Q,std): P=Q
-(P,irr)=(Q,std): character_formula(P)=Q
-(P,std)=(Q,irr): character_formula(Q)=P}
 
 set =((Param,string)(p,typep),(Param,string)(q,typeq))=bool:
 if (typep != typeq) then
@@ -135,7 +134,6 @@ set -((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=(ParamPol,string):(P,t
 set *(Split w,(ParamPol, string)(P,type))=(w*P,type)
 set *(Split w,(Param, string)(p,type))=(w*virtual(p),type)
 
-
 set =((ParamPol,string)(P,typeP),(Param,string)(q,typeq))=bool:(P,typeP)=(virtual(q,typeq))
 
 set infinitesimal_character(Param p,string type)=ratvec:infinitesimal_character(p)
@@ -162,15 +160,17 @@ set tau_complement(Param p, string type) =
 
 set status(int s,(Param,string) (p,type))=status(s,p)
 
-{
-{--------------------auxiliary tools---------------------}
-{convert sum of standards to sum of irreducibles}
-set std_to_irr(ParamPol P)=ParamPol:
-let N=null_module(real_form(P)) in for (coeff,p) in %P do N:=N+coeff*composition_series(p) od;N
+{---- KParam ----}
 
-{convert sum of irreducibles to sum of standards}
-set irr_to_std(ParamPol P)=ParamPol:
-let N=null_module(real_form(P)) in
-for (coeff,p) in %P do N:=N+coeff*character_formula(p) od;N
+{see K_parameters.at
+KParam=(x,lambda), ratvec: lambda\in rho+X^*
 }
+
+set show(KParam p)=void:prints("J_K(x=", kgb_number(x(p)), ",", lambda(p))
+
+set branch((Param p,string type), int n)=(ParamPol,string):
+if type="std" then (branch_std(p,n),K_types)
+elif type="irr" then (branch_irr(p,n),K_types)
+else error("wrong type") fi
+
 

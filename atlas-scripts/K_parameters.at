@@ -13,6 +13,7 @@
 :KParam=(KGBElt,ratvec)
 :KParamPol=ParamPol   {I don't see a convenient way to define a different type for KParamPol}
 
+
 set x(KParam p)=let (x,)=p in x
 set lambda(KParam p)=let (,lambda)=p in lambda
 set root_datum(KParam p)=root_datum(x(p))
@@ -68,7 +69,7 @@ for (c,p) in result do prints(split_as_int(c),"*",p, " ", K_norm(v)(p)) od
 
 set print_by_K_norm(ratvec v,KParamPol P)=void:print_by_K_norm(v)(P)
 
-{set K_norm(ratvec v)=(KParamPol->int):(KParamPol P):
+{set K_norm(ratvec v)=(ParamPol->int):(ParamPol P):
 let rv=int:0 in
 for p in monomials(P) do let m=K_norm(v)(Kparameter(p)) in if m>rv then rv:=m fi od;rv
 }
@@ -81,7 +82,7 @@ for p in monomials(P) do let m=K_norm(v)(Kparameter(p)) in if m>rv then rv:=m fi
 set K_norms(ratvec v,KParamPol P)=[int]:for p in monomials(P) do K_norm(v,p) od
 set K_norms(KParamPol P)=[int]:for p in monomials(P) do K_norm(rho_check(real_form(P)),p) od
 
-set leading_terms(ratvec v)=(KParamPol->KParamPol):(KParamPol P):
+set leading_terms(ratvec v)=(KParamPol->ParamPol):(KParamPol P):
 let max=K_norm(v,P) then
 rv=null_module(real_form(P)) in
 for c@p in P do if K_norm(v)(Kparameter(p))=max then rv+:=c*p fi od;rv
