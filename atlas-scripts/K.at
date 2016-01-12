@@ -1,5 +1,6 @@
 { embedding of the complex group K defined by compact imaginary root system }
 <kgp.at
+{also matrix.at  for left_inverse }
 
 {---------------- tests for any root, not just simple  --------------}
 

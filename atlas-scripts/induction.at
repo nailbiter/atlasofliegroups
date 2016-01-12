@@ -6,6 +6,7 @@ set verbose=false
 <coherent.at
 <synthetic.at {for unnormalized_torus_factor}
 <K_norm.at
+{also kl.at for character_formula }
 
 {L is a theta-stable Levi factor in G}
 

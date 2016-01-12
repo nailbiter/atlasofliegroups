@@ -1,5 +1,6 @@
 <synthetic.at
 <translate.at  { for T@(Param,ratvec) }
+{Weylgroup.at  for type W_word, make_dominant and friends }
 
 { this function differs from posroot_cross@(int,Param) in synthetic.at only
   in that is calls make_dominant_using_roots from Weylgroup.at; also it has

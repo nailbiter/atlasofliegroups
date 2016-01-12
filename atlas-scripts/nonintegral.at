@@ -2,6 +2,7 @@
 <extended.at
 <extended_cross.at
 <extended_cayley.at { for ext_Cayley_simple }
+{also extended_misc.at  for extended_param }
 
 { only use ext_cross_simple from extended_cross.at: }
 forget test_ext_cross@(Param,[int],extended_param)

@@ -35,7 +35,7 @@ set eval(vec v,Split w)= Split:
 
 set at_s(vec v) = Split: eval(v,Split:(0,1))
 
-
+set coeff(poly f,int k)=int:if k<=#f-1 then f[k] else 0 fi
 
 {			  Polynomial matrices				}
 

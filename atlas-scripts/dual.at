@@ -1,6 +1,7 @@
 <extended.at
 <polynomial.at
 <Vogan-dual.at
+<KL_P_polynomials.at  {moved stuff related only to P/Q polynomials here}
 
 { recover required length_diff function, now only remaining in old_kl.at }
 set length (int i, vec stops) = int: { compute length=max{k:stops[k]<=i} }
@@ -76,38 +77,6 @@ set dual_block (Param p)=[Param]:block_of(dual(p))
 set dual_extended_parameter ( extended_param
     (ic,delta,gamma,lambda,theta,g,l,omega,tau,t)) = extended_param:
   (dual(ic),^delta,g,l,omega,gamma,lambda,theta,t,tau)
-
-{ matrix of P-polynomials for B, with signs if second argument is true
-  usually B and then the block returned by KL_block should be identical to B,
-  in the same order, so perm_B_block is the identity. In particular this
-  should hold if B was constructed using block_of().
-  Otherwise perm_B_block might be nontrivial
-}
-set KL_block_polynomials ([Param] B,bool signs)=
-( let (block,n,Pmatrix,polynomials,stops,survivors,)=KL_block(B[0]) in
-  let m=n_rows(Pmatrix) in
-  let P=zero_poly_matrix(m) in
-  for i:m do
-    for j:m do
-      let length_diff = if signs then length_diff(i,j,stops) else 0 fi in
-      P:=update_matrix_entry(P,i,j,
-        convolve(sgn_poly((-1)^length_diff),polynomials[Pmatrix[i,j]]))
-    od
-  od
-; let perm_B_block=permutation(B,block) in
-  poly_permute_basis(perm_B_block,P)
-)
-
-{ define the P and Q polynomials
-  P,Q matrices of polynomials in q
-  P,Q are upper triangular if B is in standard (increasing) order
-  P: positive/negative integer coefficients
-  Q: non-negative integer coefficients
-  P(1) is the multiplicity of a standard module in an irreducible
-    (character formula)
-  Q(1) is the multiplicity of an irreducible module in a standard module
-}
-set KL_P_polynomials ([Param] B) = KL_block_polynomials(B,true)
 
 { The Q polynomials are obtained from KL_P_polynomials(dual block)
   after applying a permutation and transpose

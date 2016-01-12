@@ -1,6 +1,13 @@
 <representations.at { for trivial_block }
 <synthetic.at       { for is_conjugate, also defines type KGBElt_gen }
 <extended_types.at  { for ext_type }
+{also uses:}
+{lattice.at          for solve@(mat,vec) }
+{representations.at  for trivial_block }
+{synthetic.at        for is_conjugate, also defines type KGBElt_gen }
+{parameters.at       for square(x) }
+{extended_misc.at    base script extended parameters, defines extended_param }
+{extended_types.at   for ext_type }
 
 {       references:
   Parameters for Twisted Representations (Adams/Vogan)
