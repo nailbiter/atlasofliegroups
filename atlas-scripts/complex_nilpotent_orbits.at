@@ -1,7 +1,4 @@
-<misc.at
-<Weylgroup.at
 <thetastable.at
-<sort.at
 
 {ComplexNilpotent: (RootDatum rd,vec H) where [H,X,Y] is a Lie triple and orbit=G.X}
 

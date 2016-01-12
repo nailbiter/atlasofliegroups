@@ -1,12 +1,7 @@
-<lietypes.at
-<Weylgroup.at
-<coherent.at
-<thetastable.at
-<sort.at
 <all_Kparameters.at
 <complex_nilpotent_orbits.at
-<K_norm.at
 <LKT_aux.at
+
 set kn_verbose=false
 set kn_very_verbose=false
 {implementation of parts of Letter to Atlas II: nilpotent orbits}

@@ -1,5 +1,4 @@
 { embedding of the complex group K defined by compact imaginary root system }
-<basic.at
 <matrix.at { for left_inverse }
 
 {---------------- tests for any root, not just simple  --------------}

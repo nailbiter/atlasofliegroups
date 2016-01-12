@@ -1,9 +1,4 @@
-<misc.at
-<Weylgroup.at
 <thetastable.at
-<sort.at
-
-{<knilpotent3.at {for box}}
 
 set dim_nilpotent(RootDatum rd,ratvec H)=
 if (#H>0) then let (g_0,g_1)=(rank(rd),0) in

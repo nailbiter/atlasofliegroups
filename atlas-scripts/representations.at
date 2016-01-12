@@ -1,4 +1,3 @@
-<misc.at { for generate_all_subsets }
 <group_operations.at { for is_split and such }
 
 { some common representations }

@@ -1,5 +1,3 @@
-<basic.at
-<extended_misc.at
 <extended_types.at
 
 { debug ext_cross construction, shouldn't be necessary }

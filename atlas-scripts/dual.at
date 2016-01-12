@@ -1,6 +1,5 @@
 <extended.at
 <polynomial.at
-<parameters.at
 <Vogan-dual.at
 
 { recover required length_diff function, now only remaining in old_kl.at }

@@ -1,10 +1,8 @@
 {induction_fix.at AP10/20/2015}
 {parabolic induction from real and theta-stable parabolics}
 set verbose=false
-<basic.at
 <K.at {for rho_K}
 <parabolics.at
-<kl.at { for character_formula }
 <coherent.at
 <synthetic.at {for unnormalized_torus_factor}
 <K_norm.at

@@ -1,6 +1,4 @@
-<basic.at     { for *@(Param,rat) }
 <LKT.at       { for sort_by_height }
-<hermitian.at { for hermitian_form_irreducible }
 
 set sort_by_height (ParamPol P) = [(Split,Param)]:
   sort_by_height(for c@p in P do (c,p) od)

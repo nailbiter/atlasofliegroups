@@ -1,8 +1,5 @@
-<basic.at
 <Weylgroup.at   { for make_simple@(RootDatum,vec) }
 <parameters.at  { for parity }
-<lattice.at     { for in_lattice }
-
 
 set rho_check_i (RootDatum rd, mat theta) = ratvec:
   sum(imaginary_poscoroots(rd,theta))/2

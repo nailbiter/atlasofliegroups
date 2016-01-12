@@ -1,14 +1,20 @@
 #!/usr/bin/perl
 #generate graph of inclusions of at files
-#usage: file_graph.pl files
-# generates files and files.ps
+#usage: file_graph.pl [filename]
+# generates dependencies.dot, dependencies.ps, dependencies_reduced.dot, dependencies_reduced.ps (or filename in place of dependencies)
 
 use strict;
 use List::MoreUtils qw/uniq/;
 
-my $out=$ARGV[0];
+my $filename=$ARGV[0]||"dependencies";
 
-open(OUT,">$out")||die("Can't open $out for output");
+
+
+my $dotfile="$filename".".dot";
+my $dotfile_reduced="$filename"."_reduced.dot";
+my $psfile="$filename".".ps";
+my $psfile_reduced="$filename"."_reduced.ps";
+open(OUT,">$dotfile")||die("Can't open $dotfile for output");
 
 #my $files=`grep -h "^<.*at" *`;
 my $files=`ls *at`;
@@ -38,7 +44,10 @@ foreach my $file (@files){
     }
 }
 print("\n}");
-`dot -Tps -o$out.ps $out`;
+`tred $dotfile > $dotfile_reduced`;
+
+`dot -Tps -o$psfile $dotfile`;
+`dot -Tps -o$psfile_reduced $dotfile_reduced`;
 close(OUT);
 
 

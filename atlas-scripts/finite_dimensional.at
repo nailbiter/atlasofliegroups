@@ -1,4 +1,3 @@
-<basic.at
 <Weylgroup.at { dominant }
 <hermitian.at { c_form_irreducible }
 

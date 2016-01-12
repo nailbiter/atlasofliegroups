@@ -1,6 +1,4 @@
 { the functions in this file have not been carefully checked }
-
-<basic.at
 <hermitian.at
 
 set translate_debug=false

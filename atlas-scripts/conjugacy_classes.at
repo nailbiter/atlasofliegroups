@@ -1,6 +1,5 @@
 <tits.at
 <Weylgroup_aux.at
-<W_orbit.at
 { compute conjugacy class of w, based on cross_W_orbit.at
 
   returns: (words, class) where class is list of elements of the conjugacy class,

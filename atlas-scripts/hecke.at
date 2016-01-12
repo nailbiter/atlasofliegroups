@@ -1,11 +1,5 @@
-<basic.at
-<sort.at
 <polynomial.at
-<extended.at
-
-<extended_cayley.at { for ext_Cayley }
 <nonintegral.at { for ext_cross }
-<polynomial.at { for polynomial arithmetic }
 
 { Parameters and extended parameters are parametrized by pairs (x,y)
   x is a KGB element and y is a *generalized* KGB element, y^2 not necessarily
