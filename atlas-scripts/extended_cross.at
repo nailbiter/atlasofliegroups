@@ -1,4 +1,5 @@
 <extended_types.at
+<Weylgroup_aux.at
 
 { debug ext_cross construction, shouldn't be necessary }
 set test_ext_cross (Param p, [int] kappa, extended_param xq) = void:

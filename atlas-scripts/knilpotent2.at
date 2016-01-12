@@ -32,9 +32,3 @@ let P=[Param]:[] in
 for lambda in lambdas do
 let p=parameter(x,lambda,nu) in
 if is_standard(p) and not is_zero(p) then P#:=monomials(ParamPol:p) fi od;P
-
-set many_K_types(RealForm G,int height)=[Param]:
-let ps=many_minimal_ps(G,height) in
-let P=null_module(G) in
-for p in ps do prints(p);P+:=branch_std(p,height) od;sort_by_K_norm(monomials(P))
-
